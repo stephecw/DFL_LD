@@ -3,6 +3,7 @@ import pyepo
 import pyepo.data as data
 import torch
 from pyepo.model.grb import knapsackModel
+import gurobipy as gp
 
 def solve_kn1d(c, mu, weights, capacity, n_items, principal=False):
     """
@@ -17,9 +18,11 @@ def solve_kn1d(c, mu, weights, capacity, n_items, principal=False):
     principal : bool : Si True, on ajoute les multiplicateurs de Lagrange au profit
     """
     profit = c + mu.sum(axis=0) if principal else -mu 
+    profit = list(profit)
+
     
     # Création d’un modèle knapsack
-    model = knapsackModel(n=n_items, budget=capacity, weight=weights)
+    model = knapsackModel(weights, capacity)
 
     # Objectif
     model.setObj(profit)
@@ -52,22 +55,28 @@ class OptimizationModel:
         """Borne de la décomposition lagrangienne"""
         return self.f(self.X, self.c) + np.sum(self.mu*(self.X[0] - self.X[1:]))
             
-    def gradient(self, mu_):
+    def gradient(self, mu_, verbose=False):
         """Gradient de B par rapport à mu. On a besoin de trouver X° qui maximise B à mu fixé"""
-        self.X[0], self.val_actuelle = solve_kn1d(self.c, mu_, self.weight[0], self.capacity[0], self.num_item, principal=True)
+        if verbose:
+            print("               X_1") 
+        self.X[0], self.val_actuelle = solve_kn1d(self.c, mu_, np.expand_dims(self.weight[0], axis = 0), [self.capacity[0]], self.num_item, principal=True)
         for i in range(1, self.dim, 1):
-            X_i, val = solve_kn1d(self.c, mu_, self.weight[i], self.capacity[i], self.num_item)
+            if verbose:
+                print(f"               X_{i+1}") 
+            X_i, val = solve_kn1d(self.c, mu_[i-1], np.expand_dims(self.weight[i], axis = 0), [self.capacity[i]], self.num_item)
             self.X[i] = X_i
             self.val_actuelle += val
         return self.X[0] - self.X[1:]
 
-    def adam_optimizer(self, grad_func, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
+    def adam_optimizer(self, grad_func, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000, verbose=False):
         mu_ = self.mu
         m = np.zeros_like(mu_)
         v = np.zeros_like(mu_)
 
-        for t in range(1, max_iter + 1):
-            g = grad_func(self, mu_)
+        for t in range(1, max_iter+1):
+            if verbose:
+                print(f"    Iteration {t}/{max_iter} :")
+            g = grad_func(mu_, verbose)
 
             m = beta1 * m + (1 - beta1) * g
             v = beta2 * v + (1 - beta2) * (g ** 2)
@@ -77,15 +86,15 @@ class OptimizationModel:
 
             mu_ -= lr * m_hat / (np.sqrt(v_hat) + eps)
 
-            if t % 100 == 0 or t == 1:
-                print(f"Iter {t}, B(mu) = {self.val_actuelle:.6f}")
+            if t % 500 == 0:
+                print(f"        Iter {t}, B(mu) = {self.val_actuelle:.6f}")
 
         self.mu = mu_
         
     def get_mu(self):
         return self.mu
     
-    def optim_mu(self, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
+    def optim_mu(self, verbose=False, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
         """
         Optimisation de mu par Adam.
         lr : float : Taux d'apprentissage
@@ -94,11 +103,18 @@ class OptimizationModel:
         eps : float : Petit nombre pour éviter la division par zéro
         max_iter : int : Nombre maximum d'itérations
         """
-        self.adam_optimizer(self.gradient, lr, beta1, beta2, eps, max_iter)
+        self.adam_optimizer(self.gradient, lr, beta1, beta2, eps, max_iter, verbose)
     
     def get_X0(self):
-        self.X[0], _ = solve_kn1d(self.c, self.mu, self.weight[0], self.capacity[0], self.num_item, principal=True)
+        self.X[0], _ = solve_kn1d(self.c, self.mu, np.expand_dims(self.weight[0], axis = 0), [self.capacity[0]], self.num_item, principal=True)
         return self.X[0]
+    
+    def get_X(self):
+        self.X[0], _ = solve_kn1d(self.c, self.mu, np.expand_dims(self.weight[0], axis = 0), [self.capacity[0]], self.num_item, principal=True)
+        for i in range(1, self.dim, 1):
+            X_i, _ = solve_kn1d(self.c, self.mu[i-1], np.expand_dims(self.weight[i], axis = 0), [self.capacity[i]], self.num_item)
+            self.X[i] = X_i
+        return self.X
     
     def get_value(self, refresh=False):
         """
