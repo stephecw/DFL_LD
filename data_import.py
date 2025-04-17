@@ -11,7 +11,9 @@ class ImportDataset:
         
         self.Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
         self.c_tensor = torch.tensor(self.c, dtype=torch.int32)
-        self.opt_dataset = dataset.optDataset(self.model, self.Z_tensor, self.c_tensor)
+        self.X_tensor = torch.tensor(self.X, dtype=torch.int32)
+        self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
+        self.opt_dataset = dataset.optDataset(self.model, self.Z_tensor, self.c_tensor, self.X_tensor, self.mu_tensor)
     
     def read_file(self,fname):
         """
@@ -33,9 +35,13 @@ class ImportDataset:
             for i in range(self.num_data):
                 line = lines[self.dim+1+i].split(",")
                 self.Z.append(list(map(float, line[:self.num_feat])))
-                self.c.append(list(map(int, line[self.num_feat:])))
+                self.c.append(list(map(int, line[self.num_feat:self.num_feat+self.num_item])))
+                self.X.append(list(map(int, line[self.num_feat+self.num_item:self.num_feat+self.num_item+self.num_item])))
+                self.mu.append(list(map(float, line[self.num_feat+self.num_item+self.num_item:])))
             self.Z = np.array(self.Z)
             self.c = np.array(self.c)
+            self.X = np.array(self.X)
+            self.mu = np.array(self.mu).reshape(self.num_data, self.dim-1, self.num_item)
 
     def get_sizes(self):
         """
@@ -62,13 +68,13 @@ class ImportDataset:
     
     def get_dataset(self):
         """
-        Retourne le dataset PyTorch.
+        Retourne le dataset PyEPO.
         """
         return self.opt_dataset
     
     def get_dataloader(self, batch_size=32, shuffle=True):
         """
-        Retourne le DataLoader PyTorch.
+        Retourne le DataLoader PyTorch, avec des batchs de (Z, c, X°, [mu_2, mu_3, ...]).
         batch_size : int : Taille du batch.
         shuffle : bool : Si True, mélange les données.
         """
