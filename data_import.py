@@ -5,15 +5,17 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 class ImportDataset:
-    def __init__(self, fname, model):
+    def __init__(self, fname, model=None):
         self.read_file(fname)
-        self.model = model
         
         self.Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
         self.c_tensor = torch.tensor(self.c, dtype=torch.int32)
         self.X_tensor = torch.tensor(self.X, dtype=torch.int32)
         self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
-        self.opt_dataset = dataset.optDataset(self.model, self.Z_tensor, self.c_tensor, self.X_tensor, self.mu_tensor)
+        if self.model is not None:
+            self.model = model
+            self.dataset = dataset.optDataset(self.model, self.Z_tensor, self.c_tensor, self.X_tensor, self.mu_tensor)
+        self.dataset = TensorDataset(self.Z_tensor, self.c_tensor, self.X_tensor, self.mu_tensor)
     
     def read_file(self,fname):
         """
@@ -70,7 +72,7 @@ class ImportDataset:
         """
         Retourne le dataset PyEPO.
         """
-        return self.opt_dataset
+        return self.dataset
     
     def get_dataloader(self, batch_size=32, shuffle=True):
         """
@@ -78,6 +80,6 @@ class ImportDataset:
         batch_size : int : Taille du batch.
         shuffle : bool : Si True, mélange les données.
         """
-        dataloader = DataLoader(self.opt_datasetdataset, batch_size=batch_size, shuffle=shuffle)
+        dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=shuffle)
         return dataloader
 
