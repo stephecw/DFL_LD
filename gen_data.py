@@ -1,6 +1,7 @@
 import numpy as np
 import pyepo
 import pyepo.data as data
+from pyepo.model.grb import multiKPModel
 
 def find_X_mu(c, num_item, dim):
     """
@@ -31,6 +32,17 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None):
     '''
     weights, Z, c = pyepo.data.knapsack.genData(num_data, num_feat, num_item, dim, deg=4, noise_width=0, seed=135)
     capacities = np.random.random()*0.2+0.2*np.sum(weights,axis=1)
+
+    # Résolution exacte du problème pour chaque instance (x*)
+    x_star_list = []
+    for i in range(num_data):
+        model = multiKPModel(n=num_item, m=dim, budget=capacities, weight=weights)
+        model.setObj(c[i])
+        x_star, _ = model.solve()
+        x_star_list.append(x_star)
+
+    x_star_array = np.array(x_star_list)
+
     X, mu = find_X_mu(c, num_item, dim)
     
     if fname is None:
@@ -50,6 +62,8 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None):
                 line+= str(Z[i][j]) + ","
             for j in range(num_item):
                 line+= str(int(c[i][j])) + ","
+            for j in range(num_item):
+                line += str(int(x_star_array[i][j])) + ","
             for j in range(num_item):
                 line+= str(int(X[i][j])) + ","
             for j in range(num_item*(dim-1)-1):   
