@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 from pyepo.model.grb import knapsackModel
+import gurobipy as gp
 
 def solve_main_problem(c, mu, weights, capacity):
     """
@@ -17,7 +18,7 @@ def solve_main_problem(c, mu, weights, capacity):
     n_items = len(profit)
     
     # Création d’un modèle knapsack
-    model = knapsackModel(n=n_items, budget=capacity[0], weight=weights[0])
+    model = knapsackModel(weight=weights[0], capacity =capacity[0])
 
     model.set_objective(profit.detach().cpu().numpy(), sense="max")  # pyEPO attend un numpy
 
@@ -35,7 +36,7 @@ def solve_dual_subproblem(mu_i, weights_i, capacity_i):
     profit = -mu_i
     n_items = len(profit)
 
-    model = knapsackModel(n=n_items, budget=capacity_i, weight=weights_i)
+    model = knapsackModel(capacity=capacity_i, weight=weights_i)
 
     model.set_objective(profit.detach().cpu().numpy(), sense="max")  # pyEPO attend un numpy
 

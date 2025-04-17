@@ -1,7 +1,8 @@
 import numpy as np
 import pyepo
 import pyepo.data as data
-from pyepo.model.grb import multiKPModel
+from pyepo.model.grb import knapsackModel
+import gurobipy as gp
 
 def find_X_mu(c, num_item, dim):
     """
@@ -36,14 +37,14 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None):
     # Résolution exacte du problème pour chaque instance (x*)
     x_star_list = []
     for i in range(num_data):
-        model = multiKPModel(n=num_item, m=dim, budget=capacities, weight=weights)
+        model = knapsackModel(weights=weights, capacity=capacities)
         model.setObj(c[i])
         x_star, _ = model.solve()
         x_star_list.append(x_star)
 
     x_star_array = np.array(x_star_list)
 
-    X, mu = find_X_mu(c, num_item, dim)
+    #X, mu = find_X_mu(c, num_item, dim)
     
     if fname is None:
         fname = f"datasets/train_{dim}_{num_feat}_{num_item}_{num_data}.txt"
@@ -65,14 +66,17 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None):
             for j in range(num_item):
                 line += str(int(x_star_array[i][j])) + ","
             for j in range(num_item):
-                line+= str(int(X[i][j])) + ","
+                #line+= str(int(X[i][j])) + ","
+                line+= str(0) + ","
             for j in range(num_item*(dim-1)-1):   
-                line+= str(mu[i][j]) + ","
-            line += str(mu[i][-1]) + "\n"
+                #line+= str(mu[i][j]) + ","
+                line+= str(0) + ","
+            #line += str(mu[i][-1]) + "\n" 
+            line += str(0) + "\n"
             f.write(line)
 
 
-num_data = 1000 # Taille du dataset
+num_data = 500 # Taille du dataset
 num_feat = 20 # Nombre de features en entrée du NN
 num_item = 30 # Nombre d'items
 dim = 5 # Nombre de contraintes
