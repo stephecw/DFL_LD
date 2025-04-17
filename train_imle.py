@@ -9,11 +9,9 @@ from pyepo.func import implicitMLE
 from data_import import ImportDataset
 from my_solver import get_imle_solver_with_mu
 
-optmodel = None ## A CHANGER
-
 # Importer le dataset
 fname = "datasets/train_5_20_30_1000.txt"
-train_set = ImportDataset(fname, optmodel)
+train_set = ImportDataset(fname)
 
 # Charger la taille du dataset
 dim, num_feat, num_item, num_data = train_set.get_sizes()
