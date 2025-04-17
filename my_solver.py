@@ -22,7 +22,7 @@ def solve_main_problem(c, mu, weights, capacity):
     model.set_objective(profit.detach().cpu().numpy(), sense="max")  # pyEPO attend un numpy
 
     # Résolution
-    x_opt = model.solve()  # pyEPO attend un numpy
+    x_opt, _ = model.solve()  # pyEPO attend un numpy
 
     return torch.tensor(x_opt, dtype=torch.float32)
 
@@ -39,7 +39,7 @@ def solve_dual_subproblem(mu_i, weights_i, capacity_i):
 
     model.set_objective(profit.detach().cpu().numpy(), sense="max")  # pyEPO attend un numpy
 
-    x_opt = model.solve()
+    x_opt, _ = model.solve()
     return torch.tensor(x_opt, dtype=torch.float32)
 
 
