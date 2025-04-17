@@ -4,27 +4,14 @@ from torch import nn
 from torch.utils.data import DataLoader
 import pyepo
 from pyepo.metric import regret
+from pyepo.model.grb import multiKPModel
+from pyepo.func import implicitMLE
 from data_import import ImportDataset
-
-optmodel = None ## A CHANGER
-
-# Importer le dataset
-fname = "datasets/train_5_20_30_1000.txt"
-train_set = ImportDataset(fname, optmodel)
-
-# Charger la taille du dataset
-dim, num_feat, num_item, num_data = train_set.get_sizes()
-
-# Charger les contraintes
-capacities = train_set.get_capacities()
-weights = train_set.get_weights()
-
-# Charger le dataloader d'entrainement
-train_loader = train_set.get_dataloader()
+from my_solver import get_imle_solver_with_mu
 
 # Modèle prédictif (régression linéaire)
 class LinearRegression(nn.Module):
-    def __init__(self):
+    def __init__(self, num_feat, num_item):
         super().__init__()
         self.linear = nn.Linear(num_feat, num_item)
 
@@ -33,27 +20,26 @@ class LinearRegression(nn.Module):
 
 model = LinearRegression()
 
-# Optimiseur et fonction de perte
-optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
-criterion = nn.L1Loss()
+def train(model, dataloader, optimizer, weights, capacities, epochs=20):
 
-# i-MLE
-imle = pyepo.func.implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=2)
+    m, n = weights.shape
 
-# Entraînement
-epochs = 20
+    # multiKPModel prend en charge plusieurs contraintes
+    optmodel = multiKPModel(n=n, m=m, budget=capacities, weight=weights)
 
-def train(model, dataloader, optimizer, imle, epochs=20):
+    # i-MLE avec solveur exact multi-contrainte
+    imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=2)
+
     for epoch in range(epochs):
         model.train()
         total_loss = 0
 
-        for x, c, w, z in dataloader:
-            cp = model(x)
-            wp = imle(cp)
+        for z, c, x, X1, mu in dataloader:
+            cp = model(z)
+            xp = imle(cp)
 
             # Regret = c · (w - wp)
-            loss = torch.sum(c * (w - wp), dim=1).mean()
+            loss = torch.sum(c * (x - xp), dim=1).mean()
 
             optimizer.zero_grad()
             loss.backward()
@@ -63,18 +49,85 @@ def train(model, dataloader, optimizer, imle, epochs=20):
 
         print(f"Epoch {epoch+1} | Regret (loss): {total_loss:.4f}")
 
-train(model, train_loader, optimizer, imle, epochs)
+
+def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
+    """
+        Entraînement du modèle avec la décomposition lagrangienne
+        dataloader: DataLoader avec (x, c, X1*(c), mu(c))
+        optimizer: optimiseur PyTorch
+        weights: matrice [m, n] des poids
+        capacities: vecteur [m] des capacités
+        epochs: nombre d’époques d'entraînement
+    """
+    for epoch in range(epochs):
+        model.train()
+        total_loss = 0
+
+        for z, c, x, X1, mu in dataloader: # x vrai solution et X1 solution avec mu(c)
+            c_hat = model(z)  # prédiction des profits ĉ
+
+            # Créer un solveur i-MLE avec les mu du batch
+            solver = get_imle_solver_with_mu(weights, capacities, mu)
+            imle = pyepo.func.implicitMLE(solver, n_samples=10, sigma=1.0, lambd=10)
+
+            # Résolution avec i-MLE
+            X1p = imle(c_hat)  # x̂ obtenu avec solve_main_problem
+
+            # (c + sum mu_i for i ≥ 2) · (w - x̂)
+            mu_sum = mu.sum(dim=1)  # shape [batch, n]
+            profit_modified = c + mu_sum     # shape [batch, n]
+            loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+        print(f"Epoch {epoch+1} | Loss = (c + ∑μ)·(X1 - X1^) : {total_loss:.4f}")
 
 
-# Évaluation
-model.eval()
-with torch.no_grad():
-    Xtest = torch.tensor(data["Xtest"], dtype=torch.float)
-    ctest = torch.tensor(data["ctest"], dtype=torch.float)
+def test_regret(model, dataloader, weights, capacities):
+    """
+    Évaluation du modèle avec résolution exacte :
+    regret = c · (x - x̂)
 
-    # Prédiction des coûts
-    c_pred = model(Xtest)
+    Args:
+        model: modèle prédictif des profits
+        dataloader: retourne (z, c, x, _, _)
+        weights: contraintes [m, n]
+        capacities: RHS [m]
+    """
+    model.eval()
+    total_regret = 0
+    total_count = 0
 
-    # Calcul du regret
-    reg = regret(c_pred, ctest, dataset.sol)
-    print(f"\nRegret moyen sur le test : {reg.mean():.4f}")
+    m, n = weights.shape
+
+    with torch.no_grad():
+        for z, c, x, _, _ in dataloader:
+            c_hat = model(z)  # prédiction des coûts [batch, n]
+            batch_regrets = []
+
+            for i in range(z.size(0)):
+                model_i = multiKPModel(n=n, m=m, budget=capacities, weight=weights)
+                c_numpy = c_hat[i].detach().cpu().numpy()
+                model_i.setObj(c_numpy)
+                x_hat, _ = model_i.solve()
+
+                x_true = x[i]
+                c_true = c[i]
+                x_hat_tensor = torch.tensor(x_hat, dtype=torch.float32)
+
+                regret = torch.dot(c_true, x_true - x_hat_tensor)
+                batch_regrets.append(regret)
+
+            batch_regrets = torch.stack(batch_regrets)
+            total_regret += batch_regrets.sum().item()
+            total_count += z.size(0)
+
+    mean_regret = total_regret / total_count
+    print(f"\n Regret moyen exact (c · (x - x̂)) : {mean_regret:.4f}")
+    return mean_regret
+
+
