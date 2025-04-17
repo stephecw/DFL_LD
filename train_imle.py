@@ -4,7 +4,8 @@ from torch import nn
 from torch.utils.data import DataLoader
 import pyepo
 from pyepo.metric import regret
-from pyepo.model.grb import multiKPModel
+from pyepo.model.grb import knapsackModel
+import gurobipy as gp
 from pyepo.func import implicitMLE
 from data_import import ImportDataset
 from my_solver import get_imle_solver_with_mu
@@ -18,14 +19,12 @@ class LinearRegression(nn.Module):
     def forward(self, x):
         return self.linear(x)
 
-model = LinearRegression()
-
 def train(model, dataloader, optimizer, weights, capacities, epochs=20):
 
     m, n = weights.shape
 
     # multiKPModel prend en charge plusieurs contraintes
-    optmodel = multiKPModel(n=n, m=m, budget=capacities, weight=weights)
+    optmodel = knapsackModel(weights=weights, capacity=capacities)
 
     # i-MLE avec solveur exact multi-contrainte
     imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=2)
@@ -110,7 +109,7 @@ def test_regret(model, dataloader, weights, capacities):
             batch_regrets = []
 
             for i in range(z.size(0)):
-                model_i = multiKPModel(n=n, m=m, budget=capacities, weight=weights)
+                model_i = knapsackModel(weights=weights, capacity=capacities)
                 c_numpy = c_hat[i].detach().cpu().numpy()
                 model_i.setObj(c_numpy)
                 x_hat, _ = model_i.solve()

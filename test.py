@@ -4,14 +4,14 @@ from data_import import ImportDataset
 from train_imle import LinearRegression, train, test_regret
 
 # Chargement du dataset
-fname_train = "datasets/train_5_20_30_1000.txt"
-fname_test = "datasets/test_5_20_30_100.txt"
+fname_train = "datasets/train_5_20_30_500.txt"
+#fname_test = "datasets/test_5_20_30_100.txt"
 
 train_set = ImportDataset(fname_train)
-test_set = ImportDataset(fname_test)
+#test_set = ImportDataset(fname_test)
 
 train_loader = train_set.get_dataloader()
-test_loader = test_set.get_dataloader()
+#test_loader = test_set.get_dataloader()
 
 # Paramètres du modèle
 dim, num_feat, num_item, _ = train_set.get_sizes()
@@ -26,4 +26,4 @@ optimizer = optim.Adam(model.parameters(), lr=1e-3)
 train(model, train_loader, optimizer, weights, capacities, epochs=20)
 
 # Test
-test_regret(model, test_loader, weights, capacities)
+#test_regret(model, test_loader, weights, capacities)

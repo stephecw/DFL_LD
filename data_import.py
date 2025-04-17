@@ -10,12 +10,13 @@ class ImportDataset:
         
         self.Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
         self.c_tensor = torch.tensor(self.c, dtype=torch.int32)
+        self.x_tensor = torch.tensor(self.x, dtype=torch.int32)
         self.X_tensor = torch.tensor(self.X, dtype=torch.int32)
         self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
-        if self.model is not None:
+        if model is not None:
             self.model = model
-            self.dataset = dataset.optDataset(self.model, self.Z_tensor, self.c_tensor, self.X_tensor, self.mu_tensor)
-        self.dataset = TensorDataset(self.Z_tensor, self.c_tensor, self.X_tensor, self.mu_tensor)
+            self.dataset = dataset.optDataset(self.model, self.Z_tensor, self.c_tensor, self.x_tensor, self.X_tensor, self.mu_tensor)
+        self.dataset = TensorDataset(self.Z_tensor, self.c_tensor, self.x_tensor, self.X_tensor, self.mu_tensor)
     
     def read_file(self,fname):
         """
@@ -34,14 +35,19 @@ class ImportDataset:
             self.weights = np.array(self.weights)
             self.Z = []
             self.c = []
+            self.x = []
+            self.X = []
+            self.mu = []
             for i in range(self.num_data):
                 line = lines[self.dim+1+i].split(",")
                 self.Z.append(list(map(float, line[:self.num_feat])))
                 self.c.append(list(map(int, line[self.num_feat:self.num_feat+self.num_item])))
-                self.X.append(list(map(int, line[self.num_feat+self.num_item:self.num_feat+self.num_item+self.num_item])))
-                self.mu.append(list(map(float, line[self.num_feat+self.num_item+self.num_item:])))
+                self.x.append(list(map(int, line[self.num_feat+self.num_item:self.num_feat+self.num_item+self.num_item])))
+                self.X.append(list(map(int, line[self.num_feat+self.num_item+self.num_item:self.num_feat+self.num_item+self.num_item+self.num_item])))
+                self.mu.append(list(map(float, line[self.num_feat+self.num_item+self.num_item+self.num_item:])))
             self.Z = np.array(self.Z)
             self.c = np.array(self.c)
+            self.x = np.array(self.x)
             self.X = np.array(self.X)
             self.mu = np.array(self.mu).reshape(self.num_data, self.dim-1, self.num_item)
 
