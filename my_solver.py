@@ -19,8 +19,10 @@ def solve_main_problem(c, mu, weights, capacity):
     # Création d’un modèle knapsack
     model = knapsackModel(n=n_items, budget=capacity[0], weight=weights[0])
 
+    model.set_objective(profit.detach().cpu().numpy(), sense="max")  # pyEPO attend un numpy
+
     # Résolution
-    x_opt = model.solve(profit.detach().cpu().numpy())  # pyEPO attend un numpy
+    x_opt = model.solve()  # pyEPO attend un numpy
 
     return torch.tensor(x_opt, dtype=torch.float32)
 
@@ -34,7 +36,10 @@ def solve_dual_subproblem(mu_i, weights_i, capacity_i):
     n_items = len(profit)
 
     model = knapsackModel(n=n_items, budget=capacity_i, weight=weights_i)
-    x_opt = model.solve(profit.detach().cpu().numpy())
+
+    model.set_objective(profit.detach().cpu().numpy(), sense="max")  # pyEPO attend un numpy
+
+    x_opt = model.solve()
     return torch.tensor(x_opt, dtype=torch.float32)
 
 
