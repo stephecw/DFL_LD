@@ -4,6 +4,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 import pyepo
 from pyepo.metric import regret
+from my_solver import solve_main_problem
 
 # Charger les données
 with open("data_knapsack.pkl", "rb") as f:
@@ -60,6 +61,44 @@ def train(model, dataloader, optimizer, imle, epochs=20):
             total_loss += loss.item()
 
         print(f"Epoch {epoch+1} | Regret (loss): {total_loss:.4f}")
+
+
+def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
+    """
+        Entraînement du modèle avec la décomposition lagrangienne
+        dataloader: DataLoader avec (x, c, X1*(c), mu(c))
+        optimizer: optimiseur PyTorch
+        weights: matrice [m, n] des poids
+        capacities: vecteur [m] des capacités
+        epochs: nombre d’époques d'entraînement
+    """
+    for epoch in range(epochs):
+        model.train()
+        total_loss = 0
+
+        for x, c, w, mu in dataloader:
+            c_hat = model(x)  # prédiction des coûts ĉ
+
+            wp_batch = []
+            for i in range(x.size(0)):
+                mu_i = mu[i]
+                x_opt = solve_main_problem(c_hat, mu, weights, capacities)
+                wp_batch.append(x_opt)
+
+            wp = torch.stack(wp_batch)
+
+            # Regret = c · (w - wp)
+            loss = torch.sum(c * (w - wp), dim=1).mean()
+
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+
+            total_loss += loss.item()
+
+        print(f"Epoch {epoch+1} | Regret (loss): {total_loss:.4f}")
+
+
 
 train(model, dataloader, optimizer, imle, epochs)
 
