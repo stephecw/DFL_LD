@@ -4,28 +4,29 @@ from torch import nn
 from torch.utils.data import DataLoader
 import pyepo
 from pyepo.metric import regret
-from my_solver import solve_main_problem
+from data_import import ImportDataset
 
-# Charger les données
-with open("data_knapsack.pkl", "rb") as f:
-    data = pickle.load(f)
+optmodel = None ## A CHANGER
 
-Xtrain = data["Xtrain"]
-ctrain = data["ctrain"]
-dataset = data["dataset"]
+# Importer le dataset
+fname = "datasets/train_5_20_30_1000.txt"
+train_set = ImportDataset(fname, optmodel)
 
-# Modèle d'optimisation (knapsack multi-dim)
-optmodel = dataset.model
+# Charger la taille du dataset
+dim, num_feat, num_item, num_data = train_set.get_sizes()
 
-# Dataset pour pyepo
-opt_dataset = pyepo.data.dataset.optDataset(optmodel, Xtrain, ctrain)
-dataloader = DataLoader(opt_dataset, batch_size=32, shuffle=True)
+# Charger les contraintes
+capacities = train_set.get_capacities()
+weights = train_set.get_weights()
+
+# Charger le dataloader d'entrainement
+train_loader = train_set.get_dataloader()
 
 # Modèle prédictif (régression linéaire)
 class LinearRegression(nn.Module):
     def __init__(self):
         super().__init__()
-        self.linear = nn.Linear(Xtrain.shape[1], ctrain.shape[1])
+        self.linear = nn.Linear(num_feat, num_item)
 
     def forward(self, x):
         return self.linear(x)
@@ -62,6 +63,7 @@ def train(model, dataloader, optimizer, imle, epochs=20):
 
         print(f"Epoch {epoch+1} | Regret (loss): {total_loss:.4f}")
 
+<<<<<<< HEAD
 
 def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
     """
@@ -101,6 +103,9 @@ def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
 
 
 train(model, dataloader, optimizer, imle, epochs)
+=======
+train(model, train_loader, optimizer, imle, epochs)
+>>>>>>> origin/Import-Class
 
 
 # Évaluation
