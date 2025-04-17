@@ -1,2 +1,2 @@
 # DFL_LD
-we use Lagrangian Decomposition for Decision Focused Learning
+We use Lagrangian Decomposition for Decision Focused Learning
