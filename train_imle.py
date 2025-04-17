@@ -4,7 +4,10 @@ from torch import nn
 from torch.utils.data import DataLoader
 import pyepo
 from pyepo.metric import regret
+from pyepo.model.grb import multiKPModel
+from pyepo.func import implicitMLE
 from data_import import ImportDataset
+from my_solver import get_imle_solver_with_mu
 
 optmodel = None ## A CHANGER
 
@@ -15,9 +18,7 @@ train_set = ImportDataset(fname, optmodel)
 # Charger la taille du dataset
 dim, num_feat, num_item, num_data = train_set.get_sizes()
 
-# Charger les contraintes
-capacities = train_set.get_capacities()
-weights = train_set.get_weights()
+
 
 # Charger le dataloader d'entrainement
 train_loader = train_set.get_dataloader()
@@ -37,13 +38,20 @@ model = LinearRegression()
 optimizer = torch.optim.Adam(model.parameters(), lr=1e-3)
 criterion = nn.L1Loss()
 
-# i-MLE
-imle = pyepo.func.implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=2)
 
 # Entraînement
 epochs = 20
 
-def train(model, dataloader, optimizer, imle, epochs=20):
+def train(model, dataloader, optimizer, weights, capacities, epochs=20):
+
+    m, n = weights.shape
+
+    # multiKPModel prend en charge plusieurs contraintes
+    optmodel = multiKPModel(n=n, m=m, budget=capacities, weight=weights)
+
+    # i-MLE avec solveur exact multi-contrainte
+    imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=2)
+
     for epoch in range(epochs):
         model.train()
         total_loss = 0
@@ -63,7 +71,6 @@ def train(model, dataloader, optimizer, imle, epochs=20):
 
         print(f"Epoch {epoch+1} | Regret (loss): {total_loss:.4f}")
 
-<<<<<<< HEAD
 
 def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
     """
@@ -79,18 +86,19 @@ def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
         total_loss = 0
 
         for x, c, w, mu in dataloader:
-            c_hat = model(x)  # prédiction des coûts ĉ
+            c_hat = model(x)  # prédiction des profits ĉ
 
-            wp_batch = []
-            for i in range(x.size(0)):
-                mu_i = mu[i]
-                x_opt = solve_main_problem(c_hat, mu, weights, capacities)
-                wp_batch.append(x_opt)
+            # Créer un solveur i-MLE avec les mu du batch
+            solver = get_imle_solver_with_mu(weights, capacities, mu)
+            imle = pyepo.func.implicitMLE(solver, n_samples=10, sigma=1.0, lambd=10)
 
-            wp = torch.stack(wp_batch)
+            # Résolution avec i-MLE
+            wp = imle(c_hat)  # x̂ obtenu avec solve_main_problem
 
-            # Regret = c · (w - wp)
-            loss = torch.sum(c * (w - wp), dim=1).mean()
+            # (c + sum mu_i for i ≥ 2) · (w - x̂)
+            mu_sum = mu.sum(dim=1)  # shape [batch, n]
+            profit_modified = c + mu_sum     # shape [batch, n]
+            loss = torch.sum(profit_modified * (w - wp), dim=1).mean()
 
             optimizer.zero_grad()
             loss.backward()
@@ -98,14 +106,11 @@ def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
 
             total_loss += loss.item()
 
-        print(f"Epoch {epoch+1} | Regret (loss): {total_loss:.4f}")
+        print(f"Epoch {epoch+1} | Loss = (c + ∑μ)·(w - ŵ) : {total_loss:.4f}")
 
 
 
 train(model, dataloader, optimizer, imle, epochs)
-=======
-train(model, train_loader, optimizer, imle, epochs)
->>>>>>> origin/Import-Class
 
 
 # Évaluation
