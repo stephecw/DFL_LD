@@ -1,6 +1,8 @@
 import numpy as np
 import pyepo
 import pyepo.data as data
+from pyepo.model.grb import knapsackModel
+import gurobipy as gp
 from opti_X_mu import OptimizationModel
 def f(x,c):
     return np.sum(c*x)
@@ -43,7 +45,19 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
     if verbose:
         print(f"Generating {num_data} data with {num_feat} features, {num_item} items and {dim} constraints :")
     weights, Z, c = pyepo.data.knapsack.genData(num_data, num_feat, num_item, dim, deg=4, noise_width=0, seed=135)
+
     capacities = np.random.random()*0.1+0.2*np.sum(weights,axis=1)
+  
+    # Résolution exacte du problème pour chaque instance (x*)
+    x_star_list = []
+    for i in range(num_data):
+        model = knapsackModel(weights=weights, capacity=capacities)
+        model.setObj(c[i])
+        x_star, _ = model.solve()
+        x_star_list.append(x_star)
+
+    x_star_array = np.array(x_star_list)
+    
     if verbose:
         print("Start searching for optimal X and mu for the data :\n")
     X = np.zeros((num_data, num_item), dtype=int)
@@ -71,14 +85,18 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
             for j in range(num_item):
                 line+= str(int(c[i][j])) + ","
             for j in range(num_item):
+                line += str(int(x_star_array[i][j])) + ","
+            for j in range(num_item):
                 line+= str(int(X[i][j])) + ","
+                line+= str(0) + ","
             for j in range(num_item*(dim-1)-1):   
                 line+= str(mu[i][j]) + ","
-            line += str(mu[i][-1]) + "\n"
+            line += str(mu[i][-1]) + "\n" 
             f.write(line)
 
 
-num_data = 1 # Taille du dataset
+
+num_data = 500 # Taille du dataset
 num_feat = 20 # Nombre de features en entrée du NN
 num_item = 30 # Nombre d'items
 dim = 5 # Nombre de contraintes
