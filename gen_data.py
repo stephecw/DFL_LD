@@ -3,14 +3,24 @@ import pyepo
 import pyepo.data as data
 from pyepo.model.grb import knapsackModel
 import gurobipy as gp
+from opti_X_mu import OptimizationModel
 
-def find_X_mu(c, num_item, dim):
+def f(x,c):
+    return np.sum(c*x)
+
+def find_X_mu(num_item, dim, c, weight, capacity):
     """
-    Trouve la valeur de X et mu pour le problème du sac à dos multi-dimensionnel.
+    Trouve la valeur de X°_1 et mu pour le problème du sac à dos multi-dimensionnel.
     c : np.array : Coûts des items
     num_item : int : Nombre d'items
     dim : int : Nombre de contraintes
     """
+    optimizer = OptimizationModel(num_item, dim, c, weight, capacity, f)
+    optimizer.optim_mu()
+    mu = optimizer.get_mu().flatten()
+    X0 = optimizer.get_X0()
+    return X0, mu
+    
 
 def gen_datafile(num_data, num_feat, num_item, dim, fname=None):
     '''
