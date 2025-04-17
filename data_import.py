@@ -22,13 +22,13 @@ def read_file(fname):
             weights.append(list(map(int, line[1:])))
         capacities = np.array(capacities)
         weights = np.array(weights)
-        x = []
+        Z = []
         c = []
         for i in range(num_data):
             line = lines[dim+1+i].split(",")
-            x.append(list(map(float, line[:num_feat])))
+            Z.append(list(map(float, line[:num_feat])))
             c.append(list(map(int, line[num_feat:])))
-        x = np.array(x)
+        Z = np.array(Z)
         c = np.array(c)
     return {
         'dim': dim,
@@ -37,7 +37,7 @@ def read_file(fname):
         'num_data': num_data,
         'capacities': capacities,
         'weights': weights,
-        'x': x,
+        'Z': Z,
         'c': c
     }
 
@@ -47,20 +47,20 @@ def data_to_tensor(data):
     """
     capacities = torch.tensor(data['capacities'], dtype=torch.int32)
     weights = torch.tensor(data['weights'], dtype=torch.int32)
-    x = torch.tensor(data['x'], dtype=torch.float32)
+    Z = torch.tensor(data['Z'], dtype=torch.float32)
     c = torch.tensor(data['c'], dtype=torch.int32)
-    return capacities, weights, x, c
+    return capacities, weights, Z, c
 
-def create_dataloader(x, c, batch_size=32, shuffle=True):
+def create_dataloader(z, c, batch_size=32, shuffle=True):
     """
-    Crée un DataLoader à partir des tenseurs x et c.
+    Crée un DataLoader à partir des tenseurs Z et c.
     """
-    dataset = TensorDataset(x, c)
+    dataset = TensorDataset(Z, c)
     dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
     return dataloader
 
 fname = "datasets/train_5_20_30_1000.txt"
 data = read_file(fname)
-capacities, weights, x, c = data_to_tensor(data)
-train_loader = create_dataloader(x, c)
+capacities, weights, Z, c = data_to_tensor(data)
+train_loader = create_dataloader(Z, c)
 
