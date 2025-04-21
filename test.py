@@ -2,7 +2,8 @@ import torch
 from torch import optim
 import wandb
 from data_import import ImportDataset
-from train_imle import LinearRegression, train, test_regret
+from train_imle import LinearRegression, train, test_regret, train_LD
+
 
 def run_train(dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbose=False, wandbarg=None):
     """
@@ -33,6 +34,9 @@ def run_train(dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbo
    
     # Construction du dataloader
     train_loader = train_set.get_dataloader()
+
+    # Chargement du dataset
+    fname_train = "datasets/train_5_20_20_5.txt"
 
     # Paramètres du problème
     weights = train_set.get_weights(tensor=True)
