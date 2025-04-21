@@ -19,7 +19,19 @@ class LinearRegression(nn.Module):
     def forward(self, x):
         return self.linear(x)
 
-def train(model, dataloader, optimizer, scheduler, weights, capacities, epochs=20):
+def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epochs=20, verbose=False):
+    """
+        Entraînement du modèle avec i-MLE classique
+        model: modèle prédictif des profits
+        run: wandb.run pour l'enregistrement des résultats
+        dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
+        optimizer: optimiseur PyTorch
+        scheduler: planificateur d'apprentissage
+        weights: matrice [m, n] des poids
+        capacities: vecteur [m] des capacités
+        epochs: nombre d’époques d'entraînement
+        verbose: bool : Si True, affiche les détails de l'entraînement
+    """
 
     m, n = weights.shape
 
@@ -46,18 +58,27 @@ def train(model, dataloader, optimizer, scheduler, weights, capacities, epochs=2
             scheduler.step()
 
             total_loss += loss.item()
+        
+        mean_loss = total_loss / len(dataloader)
+        if run is not None:
+            # Enregistrement des résultats dans wandb
+            run.log({"loss": mean_loss})
+        if verbose:
+            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
-        print(f"Epoch {epoch+1} | Regret (loss): {total_loss:.4f}")
 
-
-def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
+def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, epochs=20, verbose=False):
     """
         Entraînement du modèle avec la décomposition lagrangienne
-        dataloader: DataLoader avec (x, c, X1*(c), mu(c))
+        model: modèle prédictif des profits
+        run: wandb.run pour l'enregistrement des résultats
+        dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
         optimizer: optimiseur PyTorch
+        scheduler: planificateur d'apprentissage
         weights: matrice [m, n] des poids
         capacities: vecteur [m] des capacités
         epochs: nombre d’époques d'entraînement
+        verbose: bool : Si True, affiche les détails de l'entraînement
     """
     for epoch in range(epochs):
         model.train()
@@ -84,19 +105,23 @@ def train_LD(model, dataloader, optimizer, weights, capacities, epochs=20):
 
             total_loss += loss.item()
 
-        print(f"Epoch {epoch+1} | Loss = (c + ∑μ)·(X1 - X1^) : {total_loss:.4f}")
+        mean_loss = total_loss / len(dataloader)
+        if run is not None:
+            # Enregistrement des résultats dans wandb
+            run.log({"loss": mean_loss})
+        if verbose:
+            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
 
-def test_regret(model, dataloader, weights, capacities):
+def test_regret(model, run, dataloader, weights, capacities, verbose=False):
     """
-    Évaluation du modèle avec résolution exacte :
-    regret = c · (x - x̂)
-
-    Args:
-        model: modèle prédictif des profits
-        dataloader: retourne (z, c, x, _, _)
-        weights: contraintes [m, n]
-        capacities: RHS [m]
+    Évaluation du modèle avec résolution exacte : regret = c · (x - x̂)
+    model: modèle prédictif des profits
+    run: wandb.run pour l'enregistrement des résultats
+    dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
+    weights: matrice [m, n] des poids
+    capacities: vecteur [m] des capacités
+    verbose: bool : Si True, affiche les détails de l'évaluation
     """
     model.eval()
     total_regret = 0
@@ -127,7 +152,11 @@ def test_regret(model, dataloader, weights, capacities):
             total_count += z.size(0)
 
     mean_regret = total_regret / total_count
-    print(f"\n Regret moyen exact (c · (x - x̂)) : {mean_regret:.4f}")
+    if run is not None:
+        # Enregistrement des résultats dans wandb
+        run.log({"regret": mean_regret})
+    if verbose:
+        print(f"\n Regret moyen exact (c · (x - x̂)) : {mean_regret:.4f}")
     return mean_regret
 
 
