@@ -19,7 +19,7 @@ class LinearRegression(nn.Module):
     def forward(self, x):
         return self.linear(x)
 
-def train(model, dataloader, optimizer, weights, capacities, epochs=20):
+def train(model, dataloader, optimizer, scheduler, weights, capacities, epochs=20):
 
     m, n = weights.shape
 
@@ -43,6 +43,7 @@ def train(model, dataloader, optimizer, weights, capacities, epochs=20):
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            scheduler.step()
 
             total_loss += loss.item()
 
