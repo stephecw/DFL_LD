@@ -218,11 +218,11 @@ class OptimizationBatchModel:
                 primal_val = self.f(x1, c_i)
                 self.vals[i] = primal_val + dual_term
 
-        if verbose:
-            for i in range(self.batch_size):
-                print(f"[{i}] B(mu) = {self.vals[i].item():.4f}")
-                for j in range(self.dim):
-                    print(f"  X_{j+1} = {self.X[i, j].tolist()}")
+        # if verbose:
+        #     for i in range(self.batch_size):
+        #         print(f"[{i}] B(mu) = {self.vals[i].item():.4f}")
+        #         for j in range(self.dim):
+        #             print(f"  X_{j+1} = {self.X[i, j].tolist()}")
 
         # Retourne le gradient : [B, m-1, n]
         return self.X[:, 0].unsqueeze(1) - self.X[:, 1:]
@@ -237,6 +237,8 @@ class OptimizationBatchModel:
 
         for t in range(1, max_iter + 1):
             grad = self.gradient(mu, verbose)
+            if verbose:
+                print(f"    Iteration {t}/{max_iter} :")
 
             m = beta1 * m + (1 - beta1) * grad
             v = beta2 * v + (1 - beta2) * (grad ** 2)
