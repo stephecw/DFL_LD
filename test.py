@@ -1,10 +1,10 @@
 import torch
 from torch import optim
 from data_import import ImportDataset
-from train_imle import LinearRegression, train, test_regret
+from train_imle import LinearRegression, train, test_regret, train_LD
 
 # Chargement du dataset
-fname_train = "datasets/train_5_20_30_500.txt"
+fname_train = "datasets/train_5_20_20_5.txt"
 #fname_test = "datasets/test_5_20_30_100.txt"
 
 train_set = ImportDataset(fname_train)
