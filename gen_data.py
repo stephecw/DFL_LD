@@ -38,6 +38,8 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
     capacities = np.random.random()*0.1+0.2*np.sum(weights,axis=1)
   
     # Résolution exacte du problème pour chaque instance (x*)
+    if verbose:
+        print("Solving exact knapsack problem for each instance...")
     x_star_list = []
     for i in range(num_data):
         model = knapsackModel(weights=weights, capacity=capacities)
@@ -61,7 +63,7 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
     )
 
     # Optimisation des mu sur GPU
-    optimizer.optim_mu(verbose=verbose, max_iter=1000)
+    optimizer.optim_mu(verbose=verbose, max_iter=500)
 
     # Récupération
     X_tensor = optimizer.get_X()  # [num_data, dim, num_item]
@@ -72,7 +74,6 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
 
     if verbose:
         print(f"→ Optimisation µ sur GPU : {torch.cuda.get_device_name()}")
-        print(f"→ X : {X} | mu : {mu}")
     
     if fname is None:
         fname = f"datasets/train_{dim}_{num_feat}_{num_item}_{num_data}.txt"
@@ -102,9 +103,11 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
 
 
 
-num_data = 2# 500 # Taille du dataset
+num_data = 500 # Taille du dataset
 num_feat = 200 # Nombre de features en entrée du NN
 num_item = 50 # Nombre d'items
 dim = 10 # Nombre de contraintes
 
-gen_datafile(num_data, num_feat, num_item, dim, None) # Génération du fichier de données
+print("Generating dataset...")
+
+gen_datafile(num_data, num_feat, num_item, dim, None, verbose=True) # Génération du fichier de données

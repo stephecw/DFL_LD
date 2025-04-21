@@ -64,7 +64,7 @@ def solve_knapsack_gpu_batch(problems, u):
         for i in range(n):
             temp = 0
             for j in range(1, m):
-                temp += u[compteur_n_m + j * n + i].item()  # Convert to scalar
+                temp += u[compteur_n_m + (j-1) * n + i].item()  # Convert to scalar
             u_1.append(temp)
 
         for idx_constraint in range(m):
@@ -75,7 +75,7 @@ def solve_knapsack_gpu_batch(problems, u):
                     if idx_constraint == 0:
                         val.append(u_1[i] + problems[idx_batch][2 + i])
                     else:
-                        val.append(-u[compteur_n_m + idx_constraint * n + i].item())  # Convert to scalar
+                        val.append(-u[compteur_n_m + (idx_constraint-1) * n + i].item())  # Convert to scalar
                 else:
                     val.append(0)
 
@@ -88,7 +88,7 @@ def solve_knapsack_gpu_batch(problems, u):
             Lweights[compteur_m + idx_constraint] = weights
             Lval[compteur_m + idx_constraint] = val
             capacities.append(capacity)
-        compteur_n_m += N[idx_batch] * M[idx_batch]
+        compteur_n_m += N[idx_batch] * (M[idx_batch]-1)
         compteur_m += M[idx_batch]
 
     # Convert lists to PyTorch tensors and then to GPU
@@ -103,7 +103,7 @@ def solve_knapsack_gpu_batch(problems, u):
     N_tensor = torch.tensor(N, dtype=torch.int32, device=device)
     M_tensor = torch.tensor(M, dtype=torch.int32, device=device)
 
-    dp_knapsack_gpu_batch[compteur_m.item(), 1](Lglobal_bound, 
+    dp_knapsack_gpu_batch[compteur_m, 1](Lglobal_bound, 
                                                   capacities_tensor, 
                                                   Lweights_tensor, 
                                                   Lval_tensor, 
