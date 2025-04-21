@@ -1,26 +1,15 @@
 import numpy as np
+import torch
 import pyepo
 import pyepo.data as data
 from pyepo.model.grb import knapsackModel
 import gurobipy as gp
-from opti_X_mu import OptimizationModel
+from opti_X_mu import OptimizationBatchModel
+from multiprocessing import Pool
+
+
 def f(x,c):
     return np.sum(c*x)
-
-def find_X_mu(num_item, dim, c, weights, capacities, verbose=False):
-    """
-    Trouve la valeur de X°_1 et mu pour le problème du sac à dos multi-dimensionnel.
-    c : np.array : Coûts des items
-    num_item : int : Nombre d'items
-    dim : int : Nombre de contraintes
-    """
-    optimizer = OptimizationModel(num_item, dim, c, weights, capacities, f)
-    optimizer.optim_mu(verbose, max_iter=10000)
-    mu = optimizer.get_mu().flatten()
-    X0 = optimizer.get_X0()
-    X = optimizer.get_X()
-    print(X)
-    return X0, mu
     
 
 def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
@@ -49,6 +38,8 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
     capacities = np.random.random()*0.1+0.2*np.sum(weights,axis=1)
   
     # Résolution exacte du problème pour chaque instance (x*)
+    if verbose:
+        print("Solving exact knapsack problem for each instance...")
     x_star_list = []
     for i in range(num_data):
         model = knapsackModel(weights=weights, capacity=capacities)
@@ -60,12 +51,29 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
     
     if verbose:
         print("Start searching for optimal X and mu for the data :\n")
-    X = np.zeros((num_data, num_item), dtype=int)
-    mu = np.zeros((num_data, (dim-1) * num_item), dtype=float)
-    for i in range(num_data):
-        if verbose:
-            print(f"    Data {i+1}/{num_data} :")
-        X[i], mu[i] = find_X_mu(num_item, dim, c[i], weights, capacities, verbose)
+
+    c_tensor = torch.tensor(c, dtype=torch.float32)
+    optimizer = OptimizationBatchModel(
+        num_item=num_item,
+        dim=dim,
+        c_batch=c_tensor,
+        weights=weights,
+        capacities=capacities,
+        f=lambda x, c: torch.dot(c, x)
+    )
+
+    # Optimisation des mu sur GPU
+    optimizer.optim_mu(verbose=verbose, max_iter=500)
+
+    # Récupération
+    X_tensor = optimizer.get_X()  # [num_data, dim, num_item]
+    mu_tensor = optimizer.get_mu()  # [num_data, dim-1, num_item]
+
+    X = X_tensor[:, 0, :].cpu().numpy().astype(int)  # Prend X₁ uniquement
+    mu = mu_tensor.view(num_data, -1).cpu().numpy()  # Aplatit mu
+
+    if verbose:
+        print(f"→ Optimisation µ sur GPU : {torch.cuda.get_device_name()}")
     
     if fname is None:
         fname = f"datasets/train_{dim}_{num_feat}_{num_item}_{num_data}.txt"
@@ -88,7 +96,6 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
                 line += str(int(x_star_array[i][j])) + ","
             for j in range(num_item):
                 line+= str(int(X[i][j])) + ","
-                line+= str(0) + ","
             for j in range(num_item*(dim-1)-1):   
                 line+= str(mu[i][j]) + ","
             line += str(mu[i][-1]) + "\n" 
@@ -97,8 +104,10 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
 
 
 num_data = 500 # Taille du dataset
-num_feat = 20 # Nombre de features en entrée du NN
-num_item = 30 # Nombre d'items
-dim = 5 # Nombre de contraintes
+num_feat = 200 # Nombre de features en entrée du NN
+num_item = 50 # Nombre d'items
+dim = 10 # Nombre de contraintes
 
-gen_datafile(num_data, num_feat, num_item, dim, None) # Génération du fichier de données
+print("Generating dataset...")
+
+gen_datafile(num_data, num_feat, num_item, dim, None, verbose=True) # Génération du fichier de données
