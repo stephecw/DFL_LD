@@ -53,7 +53,11 @@ class ImportDataset:
 
     def get_sizes(self):
         """
-        Retourne les tailles du dataset.
+        Retourne les tailles du dataset sous la forme (dim, num_feat, num_item, num_data).
+        dim : int : Nombre de dimensions.
+        num_feat : int : Nombre de features.
+        num_item : int : Nombre d'items.
+        num_data : int : Nombre de données.
         """
         return self.dim, self.num_feat, self.num_item, self.num_data
     def get_capacities(self, tensor=False):
