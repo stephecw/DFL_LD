@@ -76,7 +76,7 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
         print(f"→ Optimisation µ sur GPU : {torch.cuda.get_device_name()}")
     
     if fname is None:
-        fname = f"datasets/train_{dim}_{num_feat}_{num_item}_{num_data}.txt"
+        fname = f"datasets/test_{dim}_{num_feat}_{num_item}_{num_data}.txt"
     with open(fname,'w') as f:
         line = f"{dim},{num_feat},{num_item},{num_data}\n"
         f.write(line)
@@ -103,7 +103,7 @@ def gen_datafile(num_data, num_feat, num_item, dim, fname=None, verbose=False):
 
 
 
-num_data = 500 # Taille du dataset
+num_data = 100 # Taille du dataset
 num_feat = 200 # Nombre de features en entrée du NN
 num_item = 50 # Nombre d'items
 dim = 10 # Nombre de contraintes
