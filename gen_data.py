@@ -88,14 +88,3 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, dim, verbose
     write_dataset_file(f"datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt",
                        dim, num_feat, num_item, num_data_test,
                        capacities, weights, Z_test, c_test, x_star_test, X_test, mu_test)
-
-
-
-if __name__ == "__main__":
-    num_data_train = 500
-    num_data_test = 100
-    num_feat = 200
-    num_item = 50
-    dim = 10
-
-    gen_datafile(num_data_train, num_data_test, num_feat, num_item, dim, verbose=True)
