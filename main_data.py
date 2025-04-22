@@ -7,17 +7,10 @@ if __name__ == "__main__":
     num_feat = 200
     num_item = [30, 50, 100]
     dim = [5,10]
+    param = [[10,30],[5,50],[10,100]]
 
-    for d in dim:
-        for n in num_item:
-            # Génération du dataset
-            if d != 10 and n != 50:
-                gen_datafile(
-                    num_data_train=num_data_train,
-                    num_data_test=num_data_test,
-                    num_feat=num_feat,
-                    num_item=n,
-                    dim=d,
-                    verbose=True
-                )
-                
+    for P in param:
+        d = P[0]
+        n = P[1]
+        # Génération du dataset d'entraînement
+        gen_datafile(num_data_train, num_data_test, num_feat, n, d, verbose=True)
