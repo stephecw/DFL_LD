@@ -2,6 +2,7 @@ import torch
 import numpy as np
 from pyepo.model.grb import knapsackModel
 import gurobipy as gp
+from pyepo.model.opt import optModel
 
 def solve_main_problem(c, mu, weights, capacity):
     """
@@ -13,14 +14,15 @@ def solve_main_problem(c, mu, weights, capacity):
     weights : Poids des items sur toute les dimensions
     capacity : Capacités des items sur toute les dimensions
     """
-    mu_sum = mu.sum(dim=1)
+    mu_sum = mu.sum(dim=0)
     profit = c + mu_sum
     n_items = len(profit)
+    profit = list(profit)
     
     # Création d’un modèle knapsack
-    model = knapsackModel(weight=weights[0], capacity =capacity[0])
+    model = knapsackModel(weights=np.expand_dims(weights[0], axis = 0), capacity =[capacity[0]])
 
-    model.set_objective(profit.detach().cpu().numpy(), sense="max")  # pyEPO attend un numpy
+    model.setObj(profit)  # pyEPO attend un numpy
 
     # Résolution
     x_opt, _ = model.solve()  # pyEPO attend un numpy
@@ -44,26 +46,39 @@ def solve_dual_subproblem(mu_i, weights_i, capacity_i):
     return torch.tensor(x_opt, dtype=torch.float32)
 
 
-def get_imle_solver_with_mu(weights, capacities, mu_batch):
-    """
-    Crée un solveur batch-compatible pour i-MLE,
-    qui intègre solve_main_problem avec les mu donnés (non appris).
-    """
-    def solver(profit_batch):
-        # profit_batch : [batch_size, n_items]
-        # mu_batch : [batch_size, m-1, n_items]
-        batch = profit_batch.size(0)
+class CustomOptModel(optModel):
+    def __init__(self, weights, capacities, mu_batch):
+        self.weights = weights
+        self.capacities = capacities
+        self.mu_batch = mu_batch
+        self.batch_size = mu_batch.shape[0]
+        self.n_items = mu_batch.shape[2]
+        self.profit_batch = None
+
+        super().__init__()
+
+    def setObj(self, profit_batch):
+        self.profit_batch = profit_batch
+
+    def _getModel(self):
+        """
+        Renvoie un *dummy* Gurobi model + variables binaires juste pour
+        satisfaire l’interface requise par optModel.  
+        Le solveur réel est dans self.solve().
+        """
+        # petit modèle bidon
+        m = gp.Model()               # nécessite « import gurobipy as gp »
+        x = [m.addVar(vtype=gp.GRB.BINARY, name=f"x{i}")
+             for i in range(self.n_items)]
+        m.update()
+        return m, x                  # ⬅️ deux objets non‑None obligatoires
+
+    def solve(self):
         sol = []
-        for i in range(batch):
-            c_i = profit_batch[i]
-            mu_i = mu_batch[i]
-            x_opt = solve_main_problem(c_i, mu_i, weights, capacities)
+        print("profit_batch : ", self.profit_batch)
+        for i in range(self.batch_size):
+            c_i = self.profit_batch[i]
+            mu_i = self.mu_batch[i]
+            x_opt = solve_main_problem(c_i, mu_i, self.weights, self.capacities)
             sol.append(x_opt)
         return torch.stack(sol)
-    
-    return solver
-
-
-
-
-
