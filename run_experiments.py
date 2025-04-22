@@ -1,12 +1,14 @@
 import torch
 from torch import optim
-import wandb
 from data_import import ImportDataset
-from train_imle import LinearRegression, train, test_regret, train_LD
+from train_imle import train, test_regret, train_LD
+import train_imle
+from train_imle import LinearRegression, CustomMLP
 
-def run_train(LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbose=False, wandbarg=None, save_model=True):
+def run_train(model, LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbose=False, wandbarg=None, save_model=True):
     """
-    Fonction principale pour charger le dataset, créer le modèle et l'entraîner.
+    Fonction principale pour charger le dataset et entraîner le modèle.
+    model : nn.Module : Modèle à entraîner.
     LD : bool : Si True, utilise la décomposition lagrangienne.
     dim : int : Nombre de dimensions.
     num_feat : int : Nombre de features.
@@ -41,7 +43,6 @@ def run_train(LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, v
     capacities = train_set.get_capacities(tensor=True)
 
     # Modèle, optimiseur et scheduleur
-    model = LinearRegression(num_feat, num_item) ## A CHANGER
     optimizer = optim.Adam(model.parameters(), lr)
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
@@ -69,9 +70,6 @@ def run_train(LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, v
     # Fin de l'exécution
     if run is not None:
         run.finish()
-    
-    return model
-    
     
 def run_test(dim, num_feat, num_item, num_data_test, model, verbose=False, wandbarg=None):
     """
@@ -113,39 +111,83 @@ def run_test(dim, num_feat, num_item, num_data_test, model, verbose=False, wandb
         run.finish()
     
 
+
+### EXÉCUTION DES EXPÉRIENCES ###
+
 #Choix des dimensions du problème
-dim = 5
-num_feat = 20
-num_item = 30
+num_feat = 50
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 lr = 0.001
-epochs = 20
+epochs = 50
 
-# Paramètres pour wandb, mettre à None si pas d'utilisation de wandb
-wandbarg_train = {
-        'entity': "hugoper-polytechnique-montr-al",
-        'project': "test_imle_1",
-        'name': f"train_{dim}_{num_feat}_{num_item}_{num_data_train}",
-        'config': {
-            "learning_rate": lr,
-            "architecture": "LinearRegression", # A changer si nécéssaire
-            "dataset": f"train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt",
-            "epochs": epochs,
+# Choix dimension modèle
+hidden_layer = 100
+
+dim = [5, 10]
+num_item = [30, 50, 100]
+for d in dim:
+    for n in num_item:
+        ### AVEC LD ###
+        model = CustomMLP([num_feat, hidden_layer, num_item])
+        wandbarg_train = {
+                'entity': "hugoper-polytechnique-montr-al",
+                'project': "DFL_LD",
+                'dir': "./wandb/LD_vs_classic_with_IMLE_1/LD",
+                'name': f"LD_train_{d}_{num_feat}_{n}_{num_data_train}",
+                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'job_type': "train_LD",
+                'config': {
+                    "learning_rate": lr,
+                    "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
+                    "dataset": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
+                    "epochs": epochs,
+                }
         }
-}
+        run_train(model, True, d, num_feat, n, num_data_train, epochs, lr, True, wandbarg_train)
 
-model = run_train(dim, num_feat, num_item, num_data_train, num_data_test, 20, 0.001, True, wandbarg_train)
-
-# Paramètres pour wandb, mettre à None si pas d'utilisation de wandb
-wandbarg_test = {
-        'entity': "hugoper-polytechnique-montr-al",
-        'project': "test_imle_1",
-        'name': f"test_{dim}_{num_feat}_{num_item}_{num_data_test}",
-        'config': {
-            "dataset": f"test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt",
+        # Paramètres pour wandb, mettre à None si pas d'utilisation de wandb
+        wandbarg_test = {
+                'entity': "hugoper-polytechnique-montr-al",
+                'project': "DFL_LD",
+                'dir': "./wandb/LD_vs_classic_with_IMLE_1/LD",
+                'name': f"LD_test_{d}_{num_feat}_{n}_{num_data_train}",
+                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'job_type': "test_LD",
+                'config': {
+                    "dataset": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
+                }
         }
-}
+        run_test(d, num_feat, n, num_data_test, model, True, wandbarg_test)
+        
+        ### SANS LD ###
+        model = CustomMLP([num_feat, hidden_layer, num_item])
+        wandbarg_train = {
+                'entity': "hugoper-polytechnique-montr-al",
+                'project': "DFL_LD",
+                'dir': "./wandb/LD_vs_classic_with_IMLE_1/classic",
+                'name': f"classic_train_{d}_{num_feat}_{n}_{num_data_train}",
+                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'job_type': "train_classic",
+                'config': {
+                    "learning_rate": lr,
+                    "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}", # A changer si nécéssaire
+                    "dataset": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
+                    "epochs": epochs,
+                }
+        }
+        run_train(model, True, d, num_feat, n, num_data_train, epochs, lr, True, wandbarg_train)
 
-run_test(dim, num_feat, num_item, num_data_test, model, True, wandbarg_test)
-
+        # Paramètres pour wandb, mettre à None si pas d'utilisation de wandb
+        wandbarg_test = {
+                'entity': "hugoper-polytechnique-montr-al",
+                'project': "DFL_LD",
+                'dir': "./wandb/LD_vs_classic_with_IMLE_1/classic",
+                'name': f"classic_test_{d}_{num_feat}_{n}_{num_data_train}",
+                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'job_type': "test_classic",
+                'config': {
+                    "dataset": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
+                }
+        }
+        run_test(d, num_feat, n, num_data_test, model, True, wandbarg_test)
