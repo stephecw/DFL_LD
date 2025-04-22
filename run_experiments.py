@@ -24,6 +24,7 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=
     if wandb is not None:
         from wandb import wandb
         # Initialisation de wandb
+        wandb.login(key="4d8beaee3bf206ffd0bf1f361c5476c286f0afb9") # Remplacez par votre clé API
         run = wandb.init(wandbarg)
     
     # Chargement du train dataset
@@ -86,6 +87,7 @@ def run_test(dim, num_feat, num_item, num_data_test, model, verbose=False, wandb
     if wandb is not None:
         from wandb import wandb
         # Initialisation de wandb
+        wandb.login(key="4d8beaee3bf206ffd0bf1f361c5476c286f0afb9") # Remplacez par votre clé API
         run = wandb.init(wandbarg)
     
     if verbose:
