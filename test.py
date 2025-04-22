@@ -4,10 +4,10 @@ import wandb
 from data_import import ImportDataset
 from train_imle import LinearRegression, train, test_regret, train_LD
 
-
-def run_train(dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbose=False, wandbarg=None):
+def run_train(LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbose=False, wandbarg=None, save_model=True):
     """
     Fonction principale pour charger le dataset, créer le modèle et l'entraîner.
+    LD : bool : Si True, utilise la décomposition lagrangienne.
     dim : int : Nombre de dimensions.
     num_feat : int : Nombre de features.
     num_item : int : Nombre d'items.
@@ -16,6 +16,7 @@ def run_train(dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbo
     lr : float : Taux d'apprentissage.
     verbose : bool : Si True, affiche des informations sur le chargement du dataset.
     wandbarg : dict : Arguments pour wandb.init() si wandb est utilisé.
+    save_model : bool : Si True, enregistre le modèle après l'entraînement.
     """
     run = None
     if wandb is not None:
@@ -35,9 +36,6 @@ def run_train(dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbo
     # Construction du dataloader
     train_loader = train_set.get_dataloader()
 
-    # Chargement du dataset
-    fname_train = "datasets/train_5_20_20_5.txt"
-
     # Paramètres du problème
     weights = train_set.get_weights(tensor=True)
     capacities = train_set.get_capacities(tensor=True)
@@ -48,12 +46,25 @@ def run_train(dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbo
     scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.1)
 
     # Entraînement
-    if verbose:
-        print("Training the model...")
-    train(model, run, train_loader, optimizer, scheduler, weights, capacities, epochs, verbose)
+    if LD:
+        if verbose:
+            print("Training the model with LD bound as loss...")
+        train_LD(model, run, train_loader, optimizer, scheduler, weights, capacities, epochs, verbose)
+    else:
+        if verbose:
+            print("Training the model with regret as loss...")
+        train(model, run, train_loader, optimizer, scheduler, weights, capacities, epochs, verbose) 
     
     # Enregistrement du modèle
-    torch.save(model.state_dict(), f'{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+    if save_model:
+        if LD:
+            if verbose:
+                print("Saving the model to models/LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'models/LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+        else:
+            if verbose:
+                print("Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
     
     # Fin de l'exécution
     if run is not None:
@@ -96,7 +107,11 @@ def run_test(dim, num_feat, num_item, num_data_test, model, verbose=False, wandb
     
     if verbose:
         print("Testing the model...")
-    test_regret(model, test_loader, weights, capacities)
+    test_regret(model, run, test_loader, weights, capacities, verbose)
+    
+    if run is not None:
+        run.finish()
+    
 
 #Choix des dimensions du problème
 dim = 5
