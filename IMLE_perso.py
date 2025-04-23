@@ -106,7 +106,6 @@ class CustomIMLEFunc(Function):
         device = pred_cost.device
         cp = pred_cost.detach() # Shape: (batch_size, n_items)
         dl = grad_output.detach() # dB/dX1 (à propager) # Shape: (batch_size, n_items)
-        print(dl.shape)
         
         # Cout perturbé d'un seul côté
         ptb_cp_pos = cp + module.lambd * dl + noises # Shape: (n_samples, batch_size, n_items) (broadcasting)
