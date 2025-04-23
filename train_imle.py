@@ -111,7 +111,7 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
     # Créer un solveur i-MLE pour le problème
     solver = knapsackModel(weights, capacities)
     imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
-    
+
     for epoch in range(epochs):
         if run is not None:
             epoch_start_time = time.time()
