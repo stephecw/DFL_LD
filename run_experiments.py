@@ -119,7 +119,7 @@ num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 lr = 0.001
-epochs = 50
+epochs = 30
 
 # Choix dimension modèle
 hidden_layer = 100

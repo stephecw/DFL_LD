@@ -9,6 +9,7 @@ import gurobipy as gp
 from pyepo.func import implicitMLE
 from data_import import ImportDataset
 from my_solver import CustomOptModel
+from IMLE_perso import CustomIMLE
 
 # Modèle prédictif (régression linéaire)
 class LinearRegression(nn.Module):
@@ -101,11 +102,11 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
             c_hat = model(z)  # prédiction des profits ĉ
 
             # Créer un solveur i-MLE avec les mu du batch
-            solver = CustomOptModel(weights, capacities, mu)
-            imle = implicitMLE(solver, n_samples=10, sigma=1.0, lambd=10)
+            solver = knapsackModel(weights, capacities)
+            imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
 
             # Résolution avec i-MLE
-            X1p = imle(c_hat)  # x̂ obtenu avec solve_main_problem
+            X1p = imle(c_hat, mu)  # x̂ obtenu avec solve_main_problem
 
             # (c + sum mu_i for i ≥ 2) · (w - x̂)
             mu_sum = mu.sum(dim=1)  # shape [batch, n]
