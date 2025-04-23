@@ -21,11 +21,10 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=
     save_model : bool : Si True, enregistre le modèle après l'entraînement.
     """
     run = None
-    if wandb is not None:
-        from wandb import wandb
-        # Initialisation de wandb
-        wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9") # Remplacez par votre clé API
-        run = wandb.init(wandbarg)
+    if wandbarg is not None:
+        import wandb
+        wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9")  # Remplacez par votre clé API
+        run = wandb.init(**wandbarg)
     
     # Chargement du train dataset
     if verbose:
@@ -84,11 +83,10 @@ def run_test(dim, num_feat, num_item, num_data_test, model, verbose=False, wandb
     wandbarg : dict : Arguments pour wandb.init() si wandb est utilisé.
     """
     run = None
-    if wandb is not None:
-        from wandb import wandb
-        # Initialisation de wandb
-        wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9") # Remplacez par votre clé API
-        run = wandb.init(wandbarg)
+    if wandbarg is not None:
+        import wandb
+        wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9")  # Remplacez par votre clé API
+        run = wandb.init(**wandbarg)
     
     if verbose:
         print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
@@ -117,27 +115,27 @@ def run_test(dim, num_feat, num_item, num_data_test, model, verbose=False, wandb
 ### EXÉCUTION DES EXPÉRIENCES ###
 
 #Choix des dimensions du problème
-num_feat = 50
+num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 lr = 0.001
-epochs = 50
+epochs = 30
 
 # Choix dimension modèle
 hidden_layer = 100
 
-dim = [5, 10]
-num_item = [30, 50, 100]
+dim = [5]#, 10]
+num_item = [30] #, 50, 100]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###
-        model = CustomMLP([num_feat, hidden_layer, num_item])
+        model = CustomMLP([num_feat, hidden_layer, n])
         wandbarg_train = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
                 'dir': "./wandb/LD_vs_classic_with_IMLE_1/LD",
                 'name': f"LD_train_{d}_{num_feat}_{n}_{num_data_train}",
-                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "train_LD",
                 'config': {
                     "learning_rate": lr,
@@ -154,7 +152,7 @@ for d in dim:
                 'project': "DFL_LD",
                 'dir': "./wandb/LD_vs_classic_with_IMLE_1/LD",
                 'name': f"LD_test_{d}_{num_feat}_{n}_{num_data_train}",
-                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "test_LD",
                 'config': {
                     "dataset": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
@@ -169,7 +167,7 @@ for d in dim:
                 'project': "DFL_LD",
                 'dir': "./wandb/LD_vs_classic_with_IMLE_1/classic",
                 'name': f"classic_train_{d}_{num_feat}_{n}_{num_data_train}",
-                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "train_classic",
                 'config': {
                     "learning_rate": lr,
@@ -186,7 +184,7 @@ for d in dim:
                 'project': "DFL_LD",
                 'dir': "./wandb/LD_vs_classic_with_IMLE_1/classic",
                 'name': f"classic_test_{d}_{num_feat}_{n}_{num_data_train}",
-                'groupe': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "test_classic",
                 'config': {
                     "dataset": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
