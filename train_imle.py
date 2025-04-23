@@ -1,4 +1,5 @@
 import pickle
+from tracemalloc import start
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -48,8 +49,9 @@ def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epo
         epochs: nombre d’époques d'entraînement
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
-
-    m, n = weights.shape
+    if run is not None:
+        import time
+        start_time = time.time()
 
     # multiKPModel prend en charge plusieurs contraintes
     optmodel = knapsackModel(weights=weights.cpu(), capacity=capacities.cpu())
@@ -58,6 +60,8 @@ def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epo
     imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=1)
 
     for epoch in range(epochs):
+        if run is not None:
+            epoch_start_time = time.time()
         model.train()
         total_loss = 0
 
@@ -78,10 +82,16 @@ def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epo
         
         mean_loss = total_loss / len(dataloader)
         if run is not None:
+            epoch_end_time = time.time()
+            epoch_duration = epoch_end_time - epoch_start_time
             # Enregistrement des résultats dans wandb
-            run.log({"loss": mean_loss})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+    if run is not None:   
+        end_time = time.time()
+        total_duration = end_time - start_time
+        run.log({"total_duration": total_duration})
 
 
 def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, epochs=20, verbose=False):
@@ -97,7 +107,17 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
         epochs: nombre d’époques d'entraînement
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
+    if run is not None:
+        import time
+        start_time = time.time()
+    
+    # Créer un solveur i-MLE pour le problème
+    solver = knapsackModel(weights, capacities)
+    imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
+
     for epoch in range(epochs):
+        if run is not None:
+            epoch_start_time = time.time()
         model.train()
         total_loss = 0
 
@@ -126,10 +146,16 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
 
         mean_loss = total_loss / len(dataloader)
         if run is not None:
+            epoch_end_time = time.time()
+            epoch_duration = epoch_end_time - epoch_start_time
             # Enregistrement des résultats dans wandb
-            run.log({"loss": mean_loss})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+    if run is not None:   
+        end_time = time.time()
+        total_duration = end_time - start_time
+        run.log({"total_duration": total_duration})
 
 
 def test_regret(model, run, dataloader, weights, capacities, verbose=False):
@@ -146,8 +172,6 @@ def test_regret(model, run, dataloader, weights, capacities, verbose=False):
     model.eval()
     total_regret = 0
     total_count = 0
-
-    m, n = weights.shape
 
     with torch.no_grad():
         for z, c, x, _, _ in dataloader:
