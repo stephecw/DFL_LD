@@ -122,13 +122,14 @@ num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 lr = 0.001
-epochs = 2
+epochs_LD = 200
+epochs_classic = 20
 
 # Choix dimension modèle
 hidden_layer = 100
 
-dim = [5]#, 10]
-num_item = [30] #, 50, 100]
+dim = [10]# [5, 10]
+num_item = [30] #[30, 50, 100]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###
@@ -136,7 +137,7 @@ for d in dim:
         wandbarg_train = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
-                'dir': "./wandb/LD_vs_classic_with_IMLE_1/LD",
+                'dir': "./",
                 'name': f"LD_train_{d}_{num_feat}_{n}_{num_data_train}",
                 'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "train_LD",
@@ -144,16 +145,16 @@ for d in dim:
                     "learning_rate": lr,
                     "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
                     "dataset": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
-                    "epochs": epochs,
+                    "epochs": epochs_LD,
                 }
         }
-        run_train(model, True, d, num_feat, n, num_data_train, epochs, lr, True, wandbarg_train)
+        run_train(model, True, d, num_feat, n, num_data_train, epochs_LD, lr, True, wandbarg_train)
 
         # Paramètres pour wandb, mettre à None si pas d'utilisation de wandb
         wandbarg_test = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
-                'dir': "./wandb/LD_vs_classic_with_IMLE_1/LD",
+                'dir': "./",
                 'name': f"LD_test_{d}_{num_feat}_{n}_{num_data_train}",
                 'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "test_LD",
@@ -168,7 +169,7 @@ for d in dim:
         wandbarg_train = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
-                'dir': "./wandb/LD_vs_classic_with_IMLE_1/classic",
+                'dir': "./",
                 'name': f"classic_train_{d}_{num_feat}_{n}_{num_data_train}",
                 'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "train_classic",
@@ -176,16 +177,16 @@ for d in dim:
                     "learning_rate": lr,
                     "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}", # A changer si nécéssaire
                     "dataset": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
-                    "epochs": epochs,
+                    "epochs": epochs_classic,
                 }
         }
-        run_train(model, False, d, num_feat, n, num_data_train, epochs, lr, True, wandbarg_train)
+        run_train(model, False, d, num_feat, n, num_data_train, epochs_classic, lr, True, wandbarg_train)
 
         # Paramètres pour wandb, mettre à None si pas d'utilisation de wandb
         wandbarg_test = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
-                'dir': "./wandb/LD_vs_classic_with_IMLE_1/classic",
+                'dir': "./",
                 'name': f"classic_test_{d}_{num_feat}_{n}_{num_data_train}",
                 'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "test_classic",
