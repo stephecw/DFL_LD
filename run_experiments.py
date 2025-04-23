@@ -5,6 +5,9 @@ from train_imle import train, test_regret, train_LD
 import train_imle
 from train_imle import LinearRegression, CustomMLP
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("→ Entraînement sur :", device)
+
 def run_train(model, LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=1e-3, verbose=False, wandbarg=None, save_model=True):
     """
     Fonction principale pour charger le dataset et entraîner le modèle.
@@ -24,7 +27,7 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=
     if wandbarg is not None:
         import wandb
         wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9")  # Remplacez par votre clé API
-        run = wandb.init(**wandbarg)
+        run = wandb.init(mode = "offline", **wandbarg)
     
     # Chargement du train dataset
     if verbose:
@@ -39,8 +42,8 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, epochs=20, lr=
     train_loader = train_set.get_dataloader()
 
     # Paramètres du problème
-    weights = train_set.get_weights(tensor=True)
-    capacities = train_set.get_capacities(tensor=True)
+    weights = train_set.get_weights(tensor=True).to(device)
+    capacities = train_set.get_capacities(tensor=True).to(device)
 
     # Modèle, optimiseur et scheduleur
     optimizer = optim.Adam(model.parameters(), lr)
@@ -86,7 +89,7 @@ def run_test(dim, num_feat, num_item, num_data_test, model, verbose=False, wandb
     if wandbarg is not None:
         import wandb
         wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9")  # Remplacez par votre clé API
-        run = wandb.init(**wandbarg)
+        run = wandb.init(mode = "offline",**wandbarg)
     
     if verbose:
         print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
@@ -119,7 +122,7 @@ num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 lr = 0.001
-epochs = 50
+epochs = 2
 
 # Choix dimension modèle
 hidden_layer = 100
@@ -129,7 +132,7 @@ num_item = [30] #, 50, 100]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###
-        model = CustomMLP([num_feat, hidden_layer, n])
+        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
         wandbarg_train = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -161,7 +164,7 @@ for d in dim:
         run_test(d, num_feat, n, num_data_test, model, True, wandbarg_test)
         
         ### SANS LD ###
-        model = CustomMLP([num_feat, hidden_layer, num_item])
+        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
         wandbarg_train = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -176,7 +179,7 @@ for d in dim:
                     "epochs": epochs,
                 }
         }
-        run_train(model, True, d, num_feat, n, num_data_train, epochs, lr, True, wandbarg_train)
+        run_train(model, False, d, num_feat, n, num_data_train, epochs, lr, True, wandbarg_train)
 
         # Paramètres pour wandb, mettre à None si pas d'utilisation de wandb
         wandbarg_test = {

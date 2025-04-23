@@ -1,4 +1,5 @@
 import pickle
+from tracemalloc import start
 import torch
 from torch import nn
 from torch.utils.data import DataLoader
@@ -9,6 +10,9 @@ import gurobipy as gp
 from pyepo.func import implicitMLE
 from data_import import ImportDataset
 from my_solver import CustomOptModel
+from IMLE_perso import CustomIMLE
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Modèle prédictif (régression linéaire)
 class LinearRegression(nn.Module):
@@ -45,22 +49,26 @@ def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epo
         epochs: nombre d’époques d'entraînement
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
-
-    m, n = weights.shape
+    if run is not None:
+        import time
+        start_time = time.time()
 
     # multiKPModel prend en charge plusieurs contraintes
-    optmodel = knapsackModel(weights=weights, capacity=capacities)
+    optmodel = knapsackModel(weights=weights.cpu(), capacity=capacities.cpu())
 
     # i-MLE avec solveur exact multi-contrainte
-    imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=2)
+    imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=1)
 
     for epoch in range(epochs):
+        if run is not None:
+            epoch_start_time = time.time()
         model.train()
         total_loss = 0
 
         for z, c, x, X1, mu in dataloader:
+            z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             cp = model(z)
-            xp = imle(cp)
+            xp = imle(cp).to(device)
 
             # Regret = c · (w - wp)
             loss = torch.sum(c * (x - xp), dim=1).mean()
@@ -74,10 +82,16 @@ def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epo
         
         mean_loss = total_loss / len(dataloader)
         if run is not None:
+            epoch_end_time = time.time()
+            epoch_duration = epoch_end_time - epoch_start_time
             # Enregistrement des résultats dans wandb
-            run.log({"loss": mean_loss})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+    if run is not None:   
+        end_time = time.time()
+        total_duration = end_time - start_time
+        run.log({"total_duration": total_duration})
 
 
 def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, epochs=20, verbose=False):
@@ -93,24 +107,31 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
         epochs: nombre d’époques d'entraînement
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
-    n_samples = 10
+    if run is not None:
+        import time
+        start_time = time.time()
+    
+    # Créer un solveur i-MLE pour le problème
+    solver = knapsackModel(weights, capacities)
+    imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
 
     for epoch in range(epochs):
+        if run is not None:
+            epoch_start_time = time.time()
         model.train()
         total_loss = 0
 
+        # Créer un solveur i-MLE avec les mu du batch
+        solver = knapsackModel(weights[0].unsqueeze(0).cpu(), capacities[0].unsqueeze(0).cpu())
+        imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
+
         for z, c, x, X1, mu in dataloader: # x vrai solution et X1 solution avec mu(c)
+            z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prédiction des profits ĉ
 
-            # µ_exp shape : [B*n_samples, m-1, n]
-            mu_exp = mu.repeat_interleave(n_samples, dim=0)
-
-            # Créer un solveur i-MLE avec les mu du batch
-            solver = CustomOptModel(weights, capacities, mu_exp)
-            imle = implicitMLE(solver, n_samples=n_samples, sigma=1.0, lambd=10)
 
             # Résolution avec i-MLE
-            X1p = imle(c_hat)  # x̂ obtenu avec solve_main_problem
+            X1p = imle(c_hat, mu).to(device)   # x̂ obtenu avec solve_main_problem
 
             # (c + sum mu_i for i ≥ 2) · (w - x̂)
             mu_sum = mu.sum(dim=1)  # shape [batch, n]
@@ -125,10 +146,16 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
 
         mean_loss = total_loss / len(dataloader)
         if run is not None:
+            epoch_end_time = time.time()
+            epoch_duration = epoch_end_time - epoch_start_time
             # Enregistrement des résultats dans wandb
-            run.log({"loss": mean_loss})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+    if run is not None:   
+        end_time = time.time()
+        total_duration = end_time - start_time
+        run.log({"total_duration": total_duration})
 
 
 def test_regret(model, run, dataloader, weights, capacities, verbose=False):
@@ -141,14 +168,14 @@ def test_regret(model, run, dataloader, weights, capacities, verbose=False):
     capacities: vecteur [m] des capacités
     verbose: bool : Si True, affiche les détails de l'évaluation
     """
+    
     model.eval()
     total_regret = 0
     total_count = 0
 
-    m, n = weights.shape
-
     with torch.no_grad():
         for z, c, x, _, _ in dataloader:
+            z, c, x = [t.to(device) for t in (z, c, x)]
             c_hat = model(z)  # prédiction des coûts [batch, n]
             batch_regrets = []
 
@@ -156,11 +183,13 @@ def test_regret(model, run, dataloader, weights, capacities, verbose=False):
                 model_i = knapsackModel(weights=weights, capacity=capacities)
                 c_numpy = c_hat[i].detach().cpu().numpy()
                 model_i.setObj(c_numpy)
-                x_hat, _ = model_i.solve()
+                x_hat_np, _ = model_i.solve()
 
-                x_true = x[i]
-                c_true = c[i]
-                x_hat_tensor = torch.tensor(x_hat, dtype=torch.float32)
+                x_true = x[i].to(dtype=torch.float32, device=device)
+                c_true = c[i].to(dtype=torch.float32, device=device)
+
+                x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                                     device=device)
 
                 regret = torch.dot(c_true, x_true - x_hat_tensor)
                 batch_regrets.append(regret)
