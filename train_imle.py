@@ -137,6 +137,7 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            scheduler.step()
 
             total_loss += loss.item()
 
