@@ -57,8 +57,8 @@ class CustomOptModel(optModel):
 
         super().__init__()
 
-    def setObj(self, profit_batch):
-        self.profit_batch = profit_batch
+    def setObj(self, profit):
+        self.profit = profit
 
     def _getModel(self):
         """
@@ -79,6 +79,6 @@ class CustomOptModel(optModel):
         for i in range(self.batch_size):
             c_i = self.profit_batch[i]
             mu_i = self.mu_batch[i]
-            x_opt = solve_main_problem(c_i, mu_i, self.weights, self.capacities)
+            x_opt = solve_main_problem(profit, mu_i, self.weights, self.capacities)
             sol.append(x_opt)
         return torch.stack(sol)
