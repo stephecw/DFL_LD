@@ -93,6 +93,8 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
         epochs: nombre d’époques d'entraînement
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
+    n_samples = 10
+
     for epoch in range(epochs):
         model.train()
         total_loss = 0
@@ -100,9 +102,12 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
         for z, c, x, X1, mu in dataloader: # x vrai solution et X1 solution avec mu(c)
             c_hat = model(z)  # prédiction des profits ĉ
 
+            # µ_exp shape : [B*n_samples, m-1, n]
+            mu_exp = mu.repeat_interleave(n_samples, dim=0)
+
             # Créer un solveur i-MLE avec les mu du batch
-            solver = CustomOptModel(weights, capacities, mu)
-            imle = implicitMLE(solver, n_samples=10, sigma=1.0, lambd=10)
+            solver = CustomOptModel(weights, capacities, mu_exp)
+            imle = implicitMLE(solver, n_samples=n_samples, sigma=1.0, lambd=10)
 
             # Résolution avec i-MLE
             X1p = imle(c_hat)  # x̂ obtenu avec solve_main_problem
