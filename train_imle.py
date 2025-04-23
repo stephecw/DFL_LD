@@ -111,8 +111,8 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
         import time
         start_time = time.time()
     
-    # Créer un solveur i-MLE pour le problème
-    solver = knapsackModel(weights, capacities)
+    # Créer un solveur i-MLE avec les mu du batch
+    solver = knapsackModel(weights[0].unsqueeze(0).cpu(), capacities[0].unsqueeze(0).cpu())
     imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
 
     for epoch in range(epochs):
@@ -120,10 +120,6 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
             epoch_start_time = time.time()
         model.train()
         total_loss = 0
-
-        # Créer un solveur i-MLE avec les mu du batch
-        solver = knapsackModel(weights[0].unsqueeze(0).cpu(), capacities[0].unsqueeze(0).cpu())
-        imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
 
         for z, c, x, X1, mu in dataloader: # x vrai solution et X1 solution avec mu(c)
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
@@ -141,6 +137,7 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
+            scheduler.step()
 
             total_loss += loss.item()
 
