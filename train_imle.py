@@ -12,6 +12,8 @@ from data_import import ImportDataset
 from my_solver import CustomOptModel
 from IMLE_perso import CustomIMLE
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
 # Modèle prédictif (régression linéaire)
 class LinearRegression(nn.Module):
     def __init__(self, num_feat, num_item):
@@ -52,10 +54,10 @@ def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epo
         start_time = time.time()
 
     # multiKPModel prend en charge plusieurs contraintes
-    optmodel = knapsackModel(weights=weights, capacity=capacities)
+    optmodel = knapsackModel(weights=weights.cpu(), capacity=capacities.cpu())
 
     # i-MLE avec solveur exact multi-contrainte
-    imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=2)
+    imle = implicitMLE(optmodel, n_samples=10, sigma=1.0, lambd=10, two_sides=False, processes=1)
 
     for epoch in range(epochs):
         if run is not None:
@@ -64,8 +66,9 @@ def train(model, run, dataloader, optimizer, scheduler, weights, capacities, epo
         total_loss = 0
 
         for z, c, x, X1, mu in dataloader:
+            z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             cp = model(z)
-            xp = imle(cp)
+            xp = imle(cp).to(device)
 
             # Regret = c · (w - wp)
             loss = torch.sum(c * (x - xp), dim=1).mean()
@@ -118,11 +121,17 @@ def train_LD(model, run, dataloader, optimizer, scheduler, weights, capacities, 
         model.train()
         total_loss = 0
 
+        # Créer un solveur i-MLE avec les mu du batch
+        solver = knapsackModel(weights[0].unsqueeze(0).cpu(), capacities[0].unsqueeze(0).cpu())
+        imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
+
         for z, c, x, X1, mu in dataloader: # x vrai solution et X1 solution avec mu(c)
+            z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prédiction des profits ĉ
 
+
             # Résolution avec i-MLE
-            X1p = imle(c_hat, mu)  # x̂ obtenu avec solve_main_problem
+            X1p = imle(c_hat, mu).to(device)   # x̂ obtenu avec solve_main_problem
 
             # (c + sum mu_i for i ≥ 2) · (w - x̂)
             mu_sum = mu.sum(dim=1)  # shape [batch, n]
@@ -159,12 +168,14 @@ def test_regret(model, run, dataloader, weights, capacities, verbose=False):
     capacities: vecteur [m] des capacités
     verbose: bool : Si True, affiche les détails de l'évaluation
     """
+    
     model.eval()
     total_regret = 0
     total_count = 0
 
     with torch.no_grad():
         for z, c, x, _, _ in dataloader:
+            z, c, x = [t.to(device) for t in (z, c, x)]
             c_hat = model(z)  # prédiction des coûts [batch, n]
             batch_regrets = []
 
@@ -172,11 +183,13 @@ def test_regret(model, run, dataloader, weights, capacities, verbose=False):
                 model_i = knapsackModel(weights=weights, capacity=capacities)
                 c_numpy = c_hat[i].detach().cpu().numpy()
                 model_i.setObj(c_numpy)
-                x_hat, _ = model_i.solve()
+                x_hat_np, _ = model_i.solve()
 
-                x_true = x[i]
-                c_true = c[i]
-                x_hat_tensor = torch.tensor(x_hat, dtype=torch.float32)
+                x_true = x[i].to(dtype=torch.float32, device=device)
+                c_true = c[i].to(dtype=torch.float32, device=device)
+
+                x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                                     device=device)
 
                 regret = torch.dot(c_true, x_true - x_hat_tensor)
                 batch_regrets.append(regret)
