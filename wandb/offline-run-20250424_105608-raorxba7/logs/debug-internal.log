@@ -5,3 +5,11 @@
 {"time":"2025-04-24T10:56:08.715746841-04:00","level":"INFO","msg":"handler: started","stream_id":"raorxba7"}
 {"time":"2025-04-24T10:56:08.715795822-04:00","level":"INFO","msg":"sender: started","stream_id":"raorxba7"}
 {"time":"2025-04-24T10:56:08.753411362-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-24T12:08:56.503750836-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-24T12:08:57.584970273-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-24T12:08:57.587498365-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-04-24T12:08:58.848574709-04:00","level":"INFO","msg":"stream: closing","id":"raorxba7"}
+{"time":"2025-04-24T12:08:58.84882857-04:00","level":"INFO","msg":"handler: closed","stream_id":"raorxba7"}
+{"time":"2025-04-24T12:08:58.848825477-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"raorxba7"}
+{"time":"2025-04-24T12:08:58.850381957-04:00","level":"INFO","msg":"sender: closed","stream_id":"raorxba7"}
+{"time":"2025-04-24T12:08:58.85092025-04:00","level":"INFO","msg":"stream: closed","id":"raorxba7"}
