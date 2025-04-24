@@ -1,3 +1,4 @@
+import sched
 import torch
 from torch import optim
 from data_import import ImportDataset
@@ -68,9 +69,17 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
 
     # Modèle, optimiseur et scheduleur
     optimizer = optim.Adam(model.parameters(), lr)
-    scheduler = None
+    if schedulerType == "None":
+        scheduler = None
     if schedulerType == "StepLR":
         scheduler = optim.lr_scheduler.StepLR(optimizer, sched_step_size, sched_gamma)
+    if schedulerType == "ReduceLROnPlateau":
+        if LD: patience = 5
+        else: patience = 5
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=patience, verbose=True)
+    if schedulerType == "OneCycleLR":
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, steps_per_epoch=len(train_loader), epochs=epochs)
+    
 
     # Entraînement
     if LD:
@@ -111,14 +120,15 @@ num_data_test = 100 # Taille du dataset de test
 
 epochs_LD = 150
 epochs_classic = 15
-lr_LD = 0.001
-lr_classic = 0.001
-IMLE_n_samples_LD = 10
+lr_LD = 0.00241
+lr_classic = 0.01666
+IMLE_n_samples_LD = 17
 IMLE_n_samples_classic = 10
-IMLE_sigma_LD = 1.0
-IMLE_sigma_classic = 1.0
-IMLE_lambd_LD = 10
-IMLE_lambd_classic = 10
+IMLE_sigma_LD = 4.57178
+IMLE_sigma_classic = 1.8395
+IMLE_lambd_LD = 1.51036
+IMLE_lambd_classic = 2.326466
+schedulerType = "OneCycleLR"
 
 # Choix dimension modèle
 hidden_layer = 100
@@ -143,7 +153,7 @@ for d in dim:
                     "batch_size": 32,
                     "epochs": epochs_LD,
                     "learning_rate": lr_LD,
-                    "schedulerType": "None",
+                    "schedulerType": schedulerType,
                     "sched_step_size": 10,
                     "sched_gamma": 0.1,
                     "IMLE_n_samples": IMLE_n_samples_LD,
@@ -153,7 +163,7 @@ for d in dim:
                     "IMLE_processes": 1,
                 }
         }
-        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=None, verbose=True, wandbarg=wandbarg,
+        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType, verbose=True, wandbarg=wandbarg,
                   IMLE_n_samples=IMLE_n_samples_LD, IMLE_sigma=IMLE_sigma_LD, IMLE_lambd=IMLE_lambd_LD)
         
         ### SANS LD ###
@@ -172,7 +182,7 @@ for d in dim:
                     "batch_size": 32,
                     "epochs": epochs_classic,
                     "learning_rate": lr_classic,
-                    "schedulerType": "None",
+                    "schedulerType": schedulerType,
                     "sched_step_size": 10,
                     "sched_gamma": 0.1,
                     "IMLE_n_samples": IMLE_n_samples_classic,
@@ -182,5 +192,5 @@ for d in dim:
                     "IMLE_processes": 1,
                 }
         }
-        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=None, verbose=True, wandbarg=wandbarg,
+        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType, verbose=True, wandbarg=wandbarg,
                   IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic)

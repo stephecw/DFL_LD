@@ -87,7 +87,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
 
             total_loss += loss.item()
         
-        if scheduler is not None:
+            if scheduler is not None:
                 scheduler.step()
         
         mean_loss = total_loss / len(dataloader_train)
@@ -197,7 +197,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             total_loss += loss.item()
 
-        if scheduler is not None:
+            if scheduler is not None:
                 scheduler.step()
 
         mean_loss = total_loss / len(dataloader_train)
