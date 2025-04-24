@@ -1,0 +1,2 @@
+study,lr,IMLE_n_samples,IMLE_sigma,IMLE_lambd,dim,num_feat,num_item,num_data_train
+classic,0.016662977230852426,10,1.8395641864673637,2.3264661869031724,5,200,50,500
