@@ -1,9 +1,15 @@
 import torch
 from torch import optim
 from data_import import ImportDataset
-from train_imle import train, test_regret, train_LD
-import train_imle
-from train_imle import LinearRegression, CustomMLP
+from train_imle import train, train_LD
+from train_imle import CustomMLP
+
+import argparse
+
+# Définir les arguments de ligne de commande
+parser = argparse.ArgumentParser(description="Script d'entraînement avec des dimensions spécifiées.")
+parser.add_argument('--dim', type=int, nargs='+', required=True, help='Nombre de contraintes.')
+parser.add_argument('--n', type=int, nargs='+', required=True, help='Nombre d\'item.')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Entraînement sur :", device)
@@ -110,68 +116,68 @@ num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 lr = 0.001
-epochs_LD = 200
-epochs = 20
+epochs_LD = 50
+epochs = 30
 
 # Choix dimension modèle
 hidden_layer = 100
 
-dim = [5]#, 10]
-num_item = [30] #, 50, 100]
-for d in dim:
-    for n in num_item:
-        ### AVEC LD ###
-        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
-        wandbarg = {
-                'entity': "hugoper-polytechnique-montr-al",
-                'project': "DFL_LD",
-                'dir': "./",
-                'name': f"LD_{d}_{num_feat}_{n}_{num_data_train}",
-                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
-                'job_type': "LD",
-                'config': {
-                    "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
-                    "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
-                    "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
-                    "batch_size": 32,
-                    "epochs": epochs_LD,
-                    "learning_rate": lr,
-                    "schedulerType": "StepLR",
-                    "sched_step_size": 10,
-                    "sched_gamma": 0.1,
-                    "IMLE_n_samples": 10,
-                    "IMLE_sigma": 1.0,
-                    "IMLE_lambd": 10,
-                    "IMLE_two_sides": False,
-                    "IMLE_processes": 1,
-                }
+# Analyser les arguments
+args = parser.parse_args()
+d = args.dim[0]
+n = args.n[0]
+
+model = CustomMLP([num_feat, hidden_layer, n]).to(device)
+wandbarg = {
+        'entity': "hugoper-polytechnique-montr-al",
+        'project': "DFL_LD",
+        'dir': "./",
+        'name': f"LD_{d}_{num_feat}_{n}_{num_data_train}",
+        'group': f"{d}_{num_feat}_{n}_{num_data_train}",
+        'job_type': "LD",
+        'config': {
+            "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
+            "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
+            "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
+            "batch_size": 32,
+            "epochs": epochs_LD,
+            "learning_rate": lr,
+            "schedulerType": "None",
+            "sched_step_size": 10,
+            "sched_gamma": 0.1,
+            "IMLE_n_samples": 10,
+            "IMLE_sigma": 1.0,
+            "IMLE_lambd": 10,
+            "IMLE_two_sides": False,
+            "IMLE_processes": 1,
         }
-        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr, verbose=True, wandbarg=wandbarg)
-        
-        ### SANS LD ###
-        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
-        wandbarg = {
-                'entity': "hugoper-polytechnique-montr-al",
-                'project': "DFL_LD",
-                'dir': "./",
-                'name': f"classic_{d}_{num_feat}_{n}_{num_data_train}",
-                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
-                'job_type': "classic",
-                'config': {
-                    "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
-                    "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
-                    "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
-                    "batch_size": 32,
-                    "epochs": epochs,
-                    "learning_rate": lr,
-                    "schedulerType": "StepLR",
-                    "sched_step_size": 10,
-                    "sched_gamma": 0.1,
-                    "IMLE_n_samples": 10,
-                    "IMLE_sigma": 1.0,
-                    "IMLE_lambd": 10,
-                    "IMLE_two_sides": False,
-                    "IMLE_processes": 1,
-                }
+}
+run_train(model, True, d, num_feat, n, num_data_train, num_data_test, schedulerType=None, epochs=epochs_LD, lr=lr, verbose=True, wandbarg=wandbarg)
+
+### SANS LD ###
+model = CustomMLP([num_feat, hidden_layer, n]).to(device)
+wandbarg = {
+        'entity': "hugoper-polytechnique-montr-al",
+        'project': "DFL_LD",
+        'dir': "./",
+        'name': f"classic_{d}_{num_feat}_{n}_{num_data_train}",
+        'group': f"{d}_{num_feat}_{n}_{num_data_train}",
+        'job_type': "classic",
+        'config': {
+            "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
+            "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
+            "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
+            "batch_size": 32,
+            "epochs": epochs,
+            "learning_rate": lr,
+            "schedulerType": "None",
+            "sched_step_size": 10,
+            "sched_gamma": 0.1,
+            "IMLE_n_samples": 10,
+            "IMLE_sigma": 1.0,
+            "IMLE_lambd": 10,
+            "IMLE_two_sides": False,
+            "IMLE_processes": 1,
         }
-        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr, verbose=True, wandbarg=wandbarg)
+}
+run_train(model, False, d, num_feat, n, num_data_train, num_data_test, schedulerType=None, epochs=epochs, lr=lr, verbose=True, wandbarg=wandbarg)
