@@ -1,7 +1,7 @@
 import torch
 from torch import optim
 from data_import import ImportDataset
-from train_imle import train, test_regret, train_LD
+from train_imle import train, train_LD
 import train_imle
 from train_imle import LinearRegression, CustomMLP
 
@@ -146,7 +146,7 @@ for d in dim:
                     "IMLE_processes": 1,
                 }
         }
-        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr, verbose=True, wandbarg=wandbarg)
+        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr,schedulerType=None, verbose=True, wandbarg=wandbarg)
         
         ### SANS LD ###
         model = CustomMLP([num_feat, hidden_layer, n]).to(device)
@@ -174,4 +174,4 @@ for d in dim:
                     "IMLE_processes": 1,
                 }
         }
-        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr, verbose=True, wandbarg=wandbarg)
+        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs, lr=lr,schedulerType=None, verbose=True, wandbarg=wandbarg)
