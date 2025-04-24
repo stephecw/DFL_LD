@@ -246,3 +246,53 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
 
+def test_regret(model, dataloader, weights, capacities, run = None,verbose=False):
+    """
+    Évaluation du modèle avec résolution exacte : regret = c · (x - x̂)
+    model: modèle prédictif des profits
+    run: wandb.run pour l'enregistrement des résultats
+    dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
+    weights: matrice [m, n] des poids
+    capacities: vecteur [m] des capacités
+    verbose: bool : Si True, affiche les détails de l'évaluation
+    """
+    model.eval()
+    total_regret = 0
+    total_count = 0
+
+    with torch.no_grad():
+        model.eval()
+        total_regret = 0
+        total_count = 0
+        for z, c, x, _, _ in dataloader:
+            z, c, x = [t.to(device) for t in (z, c, x)]
+            c_hat = model(z)  # prédiction des coûts [batch, n]
+            batch_regrets = []
+
+            for i in range(z.size(0)):
+                model_i = knapsackModel(weights=weights, capacity=capacities)
+                c_numpy = c_hat[i].detach().cpu().numpy()
+                model_i.setObj(c_numpy)
+                x_hat_np, _ = model_i.solve()
+
+                x_true = x[i].to(dtype=torch.float32, device=device)
+                c_true = c[i].to(dtype=torch.float32, device=device)
+
+                x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                                        device=device)
+
+                regret = torch.dot(c_true, x_true - x_hat_tensor)
+                batch_regrets.append(regret)
+
+            batch_regrets = torch.stack(batch_regrets)
+            total_regret += batch_regrets.sum().item()
+            total_count += z.size(0)
+                
+    mean_regret = total_regret / total_count
+    if run is not None:
+        # Enregistrement des résultats dans wandb
+        run.log({"regret": mean_regret})
+    if verbose:
+        print(f"\n Regret moyen exact (c · (x - x̂)) : {mean_regret:.4f}")
+    return mean_regret
+

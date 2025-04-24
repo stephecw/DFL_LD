@@ -1,3 +1,4 @@
+from math import log
 import optuna
 import torch
 from torch import optim
@@ -7,6 +8,7 @@ from train_imle import train, train_LD, test_regret, CustomMLP
 
 # Device setup
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print("→ Entraînement sur :", device)
 
 # Static problem parameters
 DIM = 5
@@ -16,7 +18,7 @@ NUM_DATA_TRAIN = 500
 NUM_DATA_TEST = 100
 HIDDEN_LAYER = 100
 BATCH_SIZE = 32
-EPOCHS_LD = 30
+EPOCHS_LD = 50
 EPOCHS_classic = 3
 SCHED_STEP_SIZE = 10
 SCHED_GAMMA = 0.1
@@ -26,10 +28,10 @@ IMLE_PROCESSES = 1
 # Objective for classic i-MLE
 def objective_classic(trial):
     # Suggest hyperparameters
-    lr = trial.suggest_loguniform('lr', 1e-5, 1e-1)
-    n_samples = trial.suggest_int('IMLE_n_samples', 1, 50)
-    sigma = trial.suggest_loguniform('IMLE_sigma', 0.01, 10)
-    lambd = trial.suggest_loguniform('IMLE_lambd', 0.1, 100)
+    lr = trial.suggest_float('lr', 1e-4, 1e-1, log=True)
+    n_samples = trial.suggest_int('IMLE_n_samples', 1, 20)
+    sigma = trial.suggest_float('IMLE_sigma', 0.01, 10, log=True)
+    lambd = trial.suggest_float('IMLE_lambd', 0.1, 100, log=True)
 
     # Load data
     train_set = ImportDataset(f"datasets/train_{DIM}_{NUM_FEAT}_{NUM_ITEM}_{NUM_DATA_TRAIN}.txt")
@@ -70,10 +72,10 @@ def objective_classic(trial):
 # Objective for LD
 def objective_LD(trial):
     # Suggest hyperparameters
-    lr = trial.suggest_loguniform('lr', 1e-5, 1e-1)
-    n_samples = trial.suggest_int('IMLE_n_samples', 1, 50)
-    sigma = trial.suggest_loguniform('IMLE_sigma', 0.01, 10)
-    lambd = trial.suggest_loguniform('IMLE_lambd', 0.1, 100)
+    lr = trial.suggest_float('lr', 1e-4, 1e-1, log=True)
+    n_samples = trial.suggest_int('IMLE_n_samples', 1, 20)
+    sigma = trial.suggest_float('IMLE_sigma', 0.01, 10, log=True)
+    lambd = trial.suggest_float('IMLE_lambd', 0.1, 100, log=True)
 
     # Load data
     train_set = ImportDataset(f"datasets/train_{DIM}_{NUM_FEAT}_{NUM_ITEM}_{NUM_DATA_TRAIN}.txt")
@@ -113,21 +115,35 @@ def objective_LD(trial):
 
 
 def main():
-    # Study for classic i-MLE
-    study_classic = optuna.create_study(direction='minimize', study_name='classic_iMLE')
-    study_classic.optimize(objective_classic, n_trials=20)
-
-    # Study for LD
+        # Study for LD
     study_ld = optuna.create_study(direction='minimize', study_name='LD_iMLE')
-    study_ld.optimize(objective_LD, n_trials=20)
-
-    # Retrieve best hyperparameters
-    best_classic = study_classic.best_params
+    study_ld.optimize(objective_LD, n_trials=20) # 20
     best_ld = study_ld.best_params
-
+    
     # Save to CSV
     import csv
-    with open('best_hyperparams.csv', 'w', newline='') as f:
+    with open('best_hyperparams_LD.csv', 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['study', 'lr', 'IMLE_n_samples', 'IMLE_sigma', 'IMLE_lambd','dim', 'num_feat', 'num_item', 'num_data_train'])
+        writer.writerow([
+            'LD',
+            best_ld['lr'],
+            best_ld['IMLE_n_samples'],
+            best_ld['IMLE_sigma'],
+            best_ld['IMLE_lambd'],
+            DIM, NUM_FEAT, NUM_ITEM, NUM_DATA_TRAIN
+        ])
+    
+    print("Best hyperparameters saved to best_hyperparams_LD.csv")
+
+
+    # Study for classic i-MLE
+    study_classic = optuna.create_study(direction='minimize', study_name='classic_iMLE')
+    study_classic.optimize(objective_classic, n_trials=20) #20
+    best_classic = study_classic.best_params
+
+    # Save to CSV
+    with open('best_hyperparams_classic.csv', 'w', newline='') as f:
         writer = csv.writer(f)
         writer.writerow(['study', 'lr', 'IMLE_n_samples', 'IMLE_sigma', 'IMLE_lambd','dim', 'num_feat', 'num_item', 'num_data_train'])
         writer.writerow([
@@ -138,16 +154,8 @@ def main():
             best_classic['IMLE_lambd'],
             DIM, NUM_FEAT, NUM_ITEM, NUM_DATA_TRAIN
         ])
-        writer.writerow([
-            'LD',
-            best_ld['lr'],
-            best_ld['IMLE_n_samples'],
-            best_ld['IMLE_sigma'],
-            best_ld['IMLE_lambd'],
-            DIM, NUM_FEAT, NUM_ITEM, NUM_DATA_TRAIN
-        ])
-
-    print("Best hyperparameters saved to best_hyperparams.csv")
+    print("Best hyperparameters saved to best_hyperparams_classic.csv")
+    
 
 if __name__ == '__main__':
     main()
