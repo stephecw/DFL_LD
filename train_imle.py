@@ -83,10 +83,11 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if scheduler is not None:
-                scheduler.step()
 
             total_loss += loss.item()
+        
+        if scheduler is not None:
+                scheduler.step()
         
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
@@ -164,7 +165,8 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
     
     # Créer un solveur i-MLE avec les mu du batch
     solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
-    imle = CustomIMLE(solver, n_samples=10, sigma=1.0, lambd=10)
+    imle = CustomIMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
+                       two_sides=IMLE_two_sides, processes=IMLE_processes)
 
     for epoch in range(epochs):
         if run is not None:
@@ -188,10 +190,12 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            if scheduler is not None:
-                scheduler.step()
+            
 
             total_loss += loss.item()
+
+        if scheduler is not None:
+                scheduler.step()
 
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
