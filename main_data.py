@@ -7,7 +7,7 @@ if __name__ == "__main__":
     num_feat = 200
     num_item = [30, 50, 100]
     dim = [5,10]
-    param = [[5,30], [5,50], [5,100]]
+    param = [[10,100]]
 
     for P in param:
         d = P[0]
