@@ -78,7 +78,7 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
         else: patience = 10
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=patience, verbose=True)
     if schedulerType == "OneCycleLR":
-        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, final_div_factor=1e5,steps_per_epoch=len(train_loader), epochs=epochs)
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, final_div_factor=1e6,steps_per_epoch=len(train_loader), epochs=epochs)
     
 
     # Entraînement
