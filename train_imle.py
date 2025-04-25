@@ -36,6 +36,10 @@ class CustomMLP(nn.Module):
     def forward(self, x):
         return self.network(x)
 
+def get_learning_rate(optimizer):
+    for param_group in optimizer.param_groups:
+        return param_group['lr']
+
 def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, epochs=20, 
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           verbose=False):
@@ -92,14 +96,15 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
             
         if scheduler is not None:
             scheduler.step()
-            
+        
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
             total_grad_norm = total_grad_norm ** 0.5
+            current_lr = get_learning_rate(optimizer)
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "grad_norm": total_grad_norm})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
             
@@ -209,8 +214,9 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
             total_grad_norm = total_grad_norm ** 0.5
+            current_lr = get_learning_rate(optimizer)
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "grad_norm": total_grad_norm})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
         
