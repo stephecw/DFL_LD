@@ -1,0 +1,158 @@
+Loading train_5_200_50_500.txt
+Loaded test_5_200_50_500.txt
+Training the model with LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 22.3585
+Eval Epoch 1 | Regret moyen : 27.7500
+Epoch 2 | loss: 20.9277
+Eval Epoch 2 | Regret moyen : 27.0300
+Epoch 3 | loss: 20.1951
+Eval Epoch 3 | Regret moyen : 24.5300
+Epoch 4 | loss: 19.6240
+Eval Epoch 4 | Regret moyen : 24.4400
+Epoch 5 | loss: 19.2422
+Eval Epoch 5 | Regret moyen : 23.7500
+Epoch 6 | loss: 18.7345
+Eval Epoch 6 | Regret moyen : 23.7200
+Epoch 7 | loss: 18.4953
+Eval Epoch 7 | Regret moyen : 23.2700
+Epoch 8 | loss: 18.2282
+Eval Epoch 8 | Regret moyen : 23.0600
+Epoch 9 | loss: 17.7890
+Eval Epoch 9 | Regret moyen : 22.8100
+Epoch 10 | loss: 17.3070
+Eval Epoch 10 | Regret moyen : 22.4000
+Epoch 11 | loss: 16.3271
+Eval Epoch 11 | Regret moyen : 23.2900
+Epoch 12 | loss: 14.3260
+Eval Epoch 12 | Regret moyen : 26.7900
+Epoch 13 | loss: 12.2613
+Eval Epoch 13 | Regret moyen : 27.3100
+Epoch 14 | loss: 10.9266
+Eval Epoch 14 | Regret moyen : 26.8900
+Epoch 15 | loss: 10.2656
+Eval Epoch 15 | Regret moyen : 26.7000
+Epoch 16 | loss: 9.9038
+Eval Epoch 16 | Regret moyen : 26.3700
+Epoch 17 | loss: 9.7474
+Eval Epoch 17 | Regret moyen : 25.9600
+Epoch 18 | loss: 9.4118
+Eval Epoch 18 | Regret moyen : 26.0700
+Epoch 19 | loss: 9.2663
+Eval Epoch 19 | Regret moyen : 26.1800
+Epoch 20 | loss: 9.2064
+Eval Epoch 20 | Regret moyen : 26.2200
+Epoch 21 | loss: 9.3206
+Eval Epoch 21 | Regret moyen : 26.0600
+Epoch 22 | loss: 9.2885
+Eval Epoch 22 | Regret moyen : 26.0900
+Epoch 23 | loss: 9.1406
+Eval Epoch 23 | Regret moyen : 25.9600
+Epoch 24 | loss: 9.1218
+Eval Epoch 24 | Regret moyen : 25.9000
+Epoch 25 | loss: 9.2086
+Eval Epoch 25 | Regret moyen : 25.9200
+Epoch 26 | loss: 9.1306
+Eval Epoch 26 | Regret moyen : 25.8800
+Epoch 27 | loss: 9.1184
+Eval Epoch 27 | Regret moyen : 25.6600
+Epoch 28 | loss: 9.0894
+Eval Epoch 28 | Regret moyen : 25.6800
+Epoch 29 | loss: 9.2176
+Eval Epoch 29 | Regret moyen : 25.6300
+Epoch 30 | loss: 9.2137
+Eval Epoch 30 | Regret moyen : 25.6000
+Epoch 31 | loss: 9.0771
+Eval Epoch 31 | Regret moyen : 25.6100
+Epoch 32 | loss: 9.0589
+Eval Epoch 32 | Regret moyen : 25.7300
+Epoch 33 | loss: 9.1313
+Eval Epoch 33 | Regret moyen : 25.6400
+Epoch 34 | loss: 9.0473
+Eval Epoch 34 | Regret moyen : 25.6800
+Epoch 35 | loss: 9.1523
+Eval Epoch 35 | Regret moyen : 25.7200
+Epoch 36 | loss: 9.0474
+Eval Epoch 36 | Regret moyen : 25.7400
+Epoch 37 | loss: 9.1489
+Eval Epoch 37 | Regret moyen : 25.6100
+Epoch 38 | loss: 9.0961
+Eval Epoch 38 | Regret moyen : 25.6400
+Epoch 39 | loss: 9.0354
+Eval Epoch 39 | Regret moyen : 25.6200
+Epoch 40 | loss: 9.0862
+Eval Epoch 40 | Regret moyen : 25.7700
+Epoch 41 | loss: 9.0801
+Eval Epoch 41 | Regret moyen : 25.7700
+Epoch 42 | loss: 9.0217
+Eval Epoch 42 | Regret moyen : 25.9000
+Epoch 43 | loss: 9.0258
+Eval Epoch 43 | Regret moyen : 25.8100
+Epoch 44 | loss: 9.0372
+Eval Epoch 44 | Regret moyen : 25.7300
+Epoch 45 | loss: 8.9031
+Eval Epoch 45 | Regret moyen : 25.6800
+Epoch 46 | loss: 9.1584
+Eval Epoch 46 | Regret moyen : 25.7700
+Epoch 47 | loss: 9.0118
+Eval Epoch 47 | Regret moyen : 25.6700
+Epoch 48 | loss: 9.0129
+Eval Epoch 48 | Regret moyen : 25.6100
+Epoch 49 | loss: 8.9455
+Eval Epoch 49 | Regret moyen : 25.6600
+Epoch 50 | loss: 8.9550
+Eval Epoch 50 | Regret moyen : 25.7300
+Epoch 51 | loss: 8.9417
+Eval Epoch 51 | Regret moyen : 25.8200
+Epoch 52 | loss: 9.0488
+Eval Epoch 52 | Regret moyen : 25.9200
+Epoch 53 | loss: 8.9938
+Eval Epoch 53 | Regret moyen : 25.9200
+Epoch 54 | loss: 8.9455
+Eval Epoch 54 | Regret moyen : 25.8200
+Epoch 55 | loss: 8.9436
+Eval Epoch 55 | Regret moyen : 25.7500
+Epoch 56 | loss: 8.8897
+Eval Epoch 56 | Regret moyen : 25.7400
+Epoch 57 | loss: 8.9888
+Eval Epoch 57 | Regret moyen : 25.7300
+Epoch 58 | loss: 8.9309
+Eval Epoch 58 | Regret moyen : 25.7900
+Epoch 59 | loss: 8.9880
+Eval Epoch 59 | Regret moyen : 25.7600
+Epoch 60 | loss: 8.9841
+Eval Epoch 60 | Regret moyen : 25.7600
+Traceback (most recent call last):
+  File "/home/stephecw/projet/DFL_LD/run_experiments.py", line 156, in <module>
+    run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=None, verbose=True, wandbarg=wandbarg,
+  File "/home/stephecw/projet/DFL_LD/run_experiments.py", line 79, in run_train
+    train_LD(model, run, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs,
+  File "/home/stephecw/projet/DFL_LD/train_imle.py", line 183, in train_LD
+    X1p = imle(c_hat, mu).to(device)   # x̂ obtenu avec solve_main_problem
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/stephecw/projet/DFL_LD/IMLE_perso.py", line 47, in forward
+    sols = self.imle.apply(pred_cost, mu, self) # Retourne les solutions optimales moyennées sur les perturbations
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/autograd/function.py", line 575, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+  File "/home/stephecw/projet/DFL_LD/IMLE_perso.py", line 80, in forward
+    ptb_sols = _solve(ptb_c, mu, module) # Shape: (batch_size, n_samples, n_items)
+  File "/home/stephecw/projet/DFL_LD/IMLE_perso.py", line 148, in _solve
+    optmodel.setObj(ptb_c[j,i]+ mu[i].sum(axis=0)) # Coût bruité + somme des mu (borne LD)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/pyepo/model/grb/grbmodel.py", line 71, in setObj
+    obj = c @ self.x
+  File "src/gurobipy/mvar.pxi", line 422, in gurobipy._matrixapi.MVar.__rmatmul__
+  File "src/gurobipy/mlinexpr.pxi", line 333, in gurobipy._matrixapi.MLinExpr._from_matmul_right
+  File "src/gurobipy/mlinexpr.pxi", line 256, in gurobipy._matrixapi.MLinExpr._from_compact_affine_expr
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/scipy/sparse/_compressed.py", line 94, in __init__
+    coo = self._coo_container(arg1, dtype=dtype)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/scipy/sparse/_coo.py", line 101, in __init__
+    self._check()
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/scipy/sparse/_coo.py", line 221, in _check
+    if idx.max() >= self.shape[i]:
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/numpy/core/_methods.py", line 39, in _amax
+    def _amax(a, axis=None, out=None, keepdims=False,
+KeyboardInterrupt

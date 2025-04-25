@@ -59,6 +59,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
     if run is not None:
         import time
         start_time = time.time()
+        train_time = 0
 
     # multiKPModel prend en charge plusieurs contraintes
     optmodel = knapsackModel(weights=weights, capacity=capacities)
@@ -86,15 +87,19 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
 
             total_loss += loss.item()
         
-        if scheduler is not None:
-                scheduler.step()
+            if scheduler is not None:
+                if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                    scheduler.step(loss)
+                else:
+                    scheduler.step()
         
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
+            train_time += epoch_duration
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
             
@@ -117,7 +122,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
                     c_true = c[i].to(dtype=torch.float32, device=device)
 
                     x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
-                                        device=device)
+                                            device=device)
 
                     regret = torch.dot(c_true, x_true - x_hat_tensor)
                     batch_regrets.append(regret)
@@ -129,7 +134,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
         mean_regret = total_regret / total_count
         if run is not None:
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "regret": mean_regret})
+            run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
         if verbose:
             print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
             
@@ -162,6 +167,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
     if run is not None:
         import time
         start_time = time.time()
+        train_time = 0
     
     # Créer un solveur i-MLE avec les mu du batch
     solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
@@ -194,52 +200,58 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             total_loss += loss.item()
 
-        if scheduler is not None:
-                scheduler.step()
+            if scheduler is not None:
+                if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                    scheduler.step(loss)
+                else:
+                    scheduler.step()
 
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
+            train_time += epoch_duration
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+
         
-        with torch.no_grad():
-            model.eval()
-            total_regret = 0
-            total_count = 0
-            for z, c, x, _, _ in dataloader_test:
-                z, c, x = [t.to(device) for t in (z, c, x)]
-                c_hat = model(z)  # prédiction des coûts [batch, n]
-                batch_regrets = []
+        if epoch % 5 == 0:
+            with torch.no_grad():
+                model.eval()
+                total_regret = 0
+                total_count = 0
+                for z, c, x, _, _ in dataloader_test:
+                    z, c, x = [t.to(device) for t in (z, c, x)]
+                    c_hat = model(z)  # prédiction des coûts [batch, n]
+                    batch_regrets = []
 
-                for i in range(z.size(0)):
-                    model_i = knapsackModel(weights=weights, capacity=capacities)
-                    c_numpy = c_hat[i].detach().cpu().numpy()
-                    model_i.setObj(c_numpy)
-                    x_hat_np, _ = model_i.solve()
+                    for i in range(z.size(0)):
+                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        c_numpy = c_hat[i].detach().cpu().numpy()
+                        model_i.setObj(c_numpy)
+                        x_hat_np, _ = model_i.solve()
 
-                    x_true = x[i].to(dtype=torch.float32, device=device)
-                    c_true = c[i].to(dtype=torch.float32, device=device)
+                        x_true = x[i].to(dtype=torch.float32, device=device)
+                        c_true = c[i].to(dtype=torch.float32, device=device)
 
-                    x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                         device=device)
 
-                    regret = torch.dot(c_true, x_true - x_hat_tensor)
-                    batch_regrets.append(regret)
+                        regret = torch.dot(c_true, x_true - x_hat_tensor)
+                        batch_regrets.append(regret)
 
-                batch_regrets = torch.stack(batch_regrets)
-                total_regret += batch_regrets.sum().item()
-                total_count += z.size(0)
+                    batch_regrets = torch.stack(batch_regrets)
+                    total_regret += batch_regrets.sum().item()
+                    total_count += z.size(0)
                 
-        mean_regret = total_regret / total_count
-        if run is not None:
-            # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "regret": mean_regret})
-        if verbose:
-            print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
+            mean_regret = total_regret / total_count
+            if run is not None:
+                # Enregistrement des résultats dans wandb
+                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
+            if verbose:
+                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
             
     if run is not None:   
         end_time = time.time()
