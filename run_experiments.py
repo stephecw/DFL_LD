@@ -3,7 +3,18 @@ import torch
 from torch import optim
 from data_import import ImportDataset
 from train_imle import train, train_LD
-from train_imle import LinearRegression, CustomMLP
+
+from train_imle import CustomMLP
+
+import argparse
+
+# Définir les arguments de ligne de commande
+parser = argparse.ArgumentParser(description="Script d'entraînement avec des dimensions spécifiées.")
+parser.add_argument('--dim', type=int, default=5, help='Nombre de contraintes.')
+parser.add_argument('--n', type=int, default=30, help='Nombre d\'item.')
+parser.add_argument('--ep_cla', type=int, default=0, help='Nombre d\'epochs pour l\'entraînement classique. (0 pour ne pas l\'exécuter)')
+parser.add_argument('--ep_ld', type=int, default=0, help='Nombre d\'epochs pour l\'entraînement LD. (0 pour ne pas l\'exécuter)')
+
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Entraînement sur :", device)
@@ -118,8 +129,8 @@ num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 
-epochs_LD = 150
-epochs_classic = 15
+epochs_LD = args.ep_ld
+epochs_classic = args.ep_cla
 lr_LD = 0.00241
 lr_classic = 0.01666
 IMLE_n_samples_LD = 17
@@ -130,11 +141,17 @@ IMLE_lambd_LD = 1.51036
 IMLE_lambd_classic = 2.326466
 schedulerType = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 
+d = args.dim
+n = args.n
+
 # Choix dimension modèle
 hidden_layer = 100
 
-dim = [5]# [5, 10]
-num_item = [50] #[30, 50, 100]
+print(f"Entrainement sur {epochs_cla} epochs pour le modèle classique et {epochs_LD} epochs pour le modèle LD sur {d} contraintes et {n} items.")
+
+
+dim = args.dim
+num_item = args.n
 for d in dim:
     for n in num_item:
         ### AVEC LD ###

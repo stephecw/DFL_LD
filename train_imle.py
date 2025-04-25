@@ -36,6 +36,10 @@ class CustomMLP(nn.Module):
     def forward(self, x):
         return self.network(x)
 
+def get_learning_rate(optimizer):
+    for param_group in optimizer.param_groups:
+        return param_group['lr']
+
 def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, epochs=20, 
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           verbose=False):
@@ -72,7 +76,8 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
             epoch_start_time = time.time()
         model.train()
         total_loss = 0
-
+        total_grad_norm = 0.0
+        
         for z, c, x, X1, mu in dataloader_train:
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             cp = model(z)
@@ -85,7 +90,15 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
             loss.backward()
             optimizer.step()
 
+            
+            for param in model.parameters():
+                if param.grad is not None:
+                    total_grad_norm += param.grad.norm().item() ** 2
+
             total_loss += loss.item()
+            
+        if scheduler is not None:
+            scheduler.step()
         
             if scheduler is not None:
                 if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
@@ -97,9 +110,15 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
         if run is not None:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
+
+            total_grad_norm = total_grad_norm ** 0.5
+            current_lr = get_learning_rate(optimizer)
             train_time += epoch_duration
+            
+            
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
+
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
             
@@ -179,6 +198,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             epoch_start_time = time.time()
         model.train()
         total_loss = 0
+        total_grad_norm = 0.0
 
         for z, c, x, X1, mu in dataloader_train: # x vrai solution et X1 solution avec mu(c)
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
@@ -197,6 +217,9 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             loss.backward()
             optimizer.step()
             
+            for param in model.parameters():
+                if param.grad is not None:
+                    total_grad_norm += param.grad.norm().item() ** 2
 
             total_loss += loss.item()
 
@@ -206,13 +229,19 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                 else:
                     scheduler.step()
 
+
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
+
+            total_grad_norm = total_grad_norm ** 0.5
+            current_lr = get_learning_rate(optimizer)
+
             train_time += epoch_duration
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
+        
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
@@ -258,7 +287,9 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
 
+
 def test_regret(model, dataloader, weights, capacities, run = None,verbose=False):
+
     """
     Évaluation du modèle avec résolution exacte : regret = c · (x - x̂)
     model: modèle prédictif des profits
@@ -268,6 +299,7 @@ def test_regret(model, dataloader, weights, capacities, run = None,verbose=False
     capacities: vecteur [m] des capacités
     verbose: bool : Si True, affiche les détails de l'évaluation
     """
+
     model.eval()
     total_regret = 0
     total_count = 0
@@ -289,6 +321,7 @@ def test_regret(model, dataloader, weights, capacities, run = None,verbose=False
 
                 x_true = x[i].to(dtype=torch.float32, device=device)
                 c_true = c[i].to(dtype=torch.float32, device=device)
+
 
                 x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                         device=device)
