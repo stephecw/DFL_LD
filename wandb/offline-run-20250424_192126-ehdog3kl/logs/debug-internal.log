@@ -1,0 +1,15 @@
+{"time":"2025-04-24T19:21:26.794852536-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250424_192126-ehdog3kl/logs/debug-core.log"}
+{"time":"2025-04-24T19:21:26.907823612-04:00","level":"INFO","msg":"created new stream","id":"ehdog3kl"}
+{"time":"2025-04-24T19:21:26.907894782-04:00","level":"INFO","msg":"stream: started","id":"ehdog3kl"}
+{"time":"2025-04-24T19:21:26.907907684-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"ehdog3kl"}
+{"time":"2025-04-24T19:21:26.907915947-04:00","level":"INFO","msg":"sender: started","stream_id":"ehdog3kl"}
+{"time":"2025-04-24T19:21:26.907923903-04:00","level":"INFO","msg":"handler: started","stream_id":"ehdog3kl"}
+{"time":"2025-04-24T19:21:26.926944425-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-24T19:36:13.356945401-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-24T19:36:13.357651911-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-24T19:36:13.358291168-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-04-24T19:36:14.362745572-04:00","level":"INFO","msg":"stream: closing","id":"ehdog3kl"}
+{"time":"2025-04-24T19:36:14.362783886-04:00","level":"INFO","msg":"handler: closed","stream_id":"ehdog3kl"}
+{"time":"2025-04-24T19:36:14.362805812-04:00","level":"INFO","msg":"sender: closed","stream_id":"ehdog3kl"}
+{"time":"2025-04-24T19:36:14.362805232-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ehdog3kl"}
+{"time":"2025-04-24T19:36:14.363210814-04:00","level":"INFO","msg":"stream: closed","id":"ehdog3kl"}

@@ -74,11 +74,11 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
     if schedulerType == "StepLR":
         scheduler = optim.lr_scheduler.StepLR(optimizer, sched_step_size, sched_gamma)
     if schedulerType == "ReduceLROnPlateau":
-        if LD: patience = 5
-        else: patience = 5
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.1, patience=patience, verbose=True)
+        if LD: patience = 10
+        else: patience = 10
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=patience, verbose=True)
     if schedulerType == "OneCycleLR":
-        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, steps_per_epoch=len(train_loader), epochs=epochs)
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, final_div_factor=1e5,steps_per_epoch=len(train_loader), epochs=epochs)
     
 
     # Entraînement
@@ -128,7 +128,7 @@ IMLE_sigma_LD = 4.57178
 IMLE_sigma_classic = 1.8395
 IMLE_lambd_LD = 1.51036
 IMLE_lambd_classic = 2.326466
-schedulerType = "OneCycleLR"
+schedulerType = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 
 # Choix dimension modèle
 hidden_layer = 100
@@ -138,7 +138,7 @@ num_item = [50] #[30, 50, 100]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###
-        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat, hidden_layer,hidden_layer, n]).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -167,7 +167,7 @@ for d in dim:
                   IMLE_n_samples=IMLE_n_samples_LD, IMLE_sigma=IMLE_sigma_LD, IMLE_lambd=IMLE_lambd_LD)
         
         ### SANS LD ###
-        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat, hidden_layer, hidden_layer, n]).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
