@@ -71,7 +71,8 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
             epoch_start_time = time.time()
         model.train()
         total_loss = 0
-
+        total_grad_norm = 0.0
+        
         for z, c, x, X1, mu in dataloader_train:
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             cp = model(z)
@@ -84,16 +85,21 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
             loss.backward()
             optimizer.step()
             
+            for param in model.parameters():
+                if param.grad is not None:
+                    total_grad_norm += param.grad.norm().item() ** 2
             total_loss += loss.item()
             
         if scheduler is not None:
             scheduler.step()
+            
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
+            total_grad_norm = total_grad_norm ** 0.5
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "grad_norm": total_grad_norm})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
             
@@ -172,6 +178,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             epoch_start_time = time.time()
         model.train()
         total_loss = 0
+        total_grad_norm = 0.0
 
         for z, c, x, X1, mu in dataloader_train: # x vrai solution et X1 solution avec mu(c)
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
@@ -190,7 +197,9 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             loss.backward()
             optimizer.step()
             
-
+            for param in model.parameters():
+                if param.grad is not None:
+                    total_grad_norm += param.grad.norm().item() ** 2
             total_loss += loss.item()
 
         if scheduler is not None:
@@ -199,8 +208,9 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         if run is not None:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
+            total_grad_norm = total_grad_norm ** 0.5
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "grad_norm": total_grad_norm})
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
         
@@ -244,3 +254,41 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
 
+def test_regret(model, dataloader, weights, capacities, verbose=False):
+    """
+    Évaluation du modèle avec résolution exacte : regret = c · (x - x̂)
+    model: modèle prédictif des profits
+    run: wandb.run pour l'enregistrement des résultats
+    dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
+    weights: matrice [m, n] des poids
+    capacities: vecteur [m] des capacités
+    verbose: bool : Si True, affiche les détails de l'évaluation
+    """
+
+    model.eval()
+    actual_regrets = []
+    diffs_x_X = []
+    with torch.no_grad():
+        for z, c, x, X1, mu in dataloader:
+            z, c, x = [t.to(device) for t in (z, c, x)]
+            c_hat = model(z)  # prédiction des coûts [batch, n]
+            
+
+            for i in range(z.size(0)):
+                model_i = knapsackModel(weights=weights, capacity=capacities)
+                c_numpy = c_hat[i].detach().cpu().numpy()
+                model_i.setObj(c_numpy)
+                x_hat_np, _ = model_i.solve()
+
+                x_true = x[i].to(dtype=torch.float32, device=device)
+                c_true = c[i].to(dtype=torch.float32, device=device)
+                
+                x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                                    device=device)
+
+                actual_regret = torch.dot(c_true, x_true - x_hat_tensor)
+                diff_x_X = torch.sum((x_true - X1[i])**2)
+                actual_regrets.append(actual_regret.item())
+                diffs_x_X.append(diff_x_X.item())
+
+    return actual_regrets, diffs_x_X
