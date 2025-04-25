@@ -123,6 +123,7 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
 
 
 ### EXÉCUTION DES EXPÉRIENCES ###
+args = parser.parse_args()
 
 #Choix des dimensions du problème
 num_feat = 200
@@ -147,11 +148,11 @@ n = args.n
 # Choix dimension modèle
 hidden_layer = 100
 
-print(f"Entrainement sur {epochs_cla} epochs pour le modèle classique et {epochs_LD} epochs pour le modèle LD sur {d} contraintes et {n} items.")
+print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique et {epochs_LD} epochs pour le modèle LD sur {d} contraintes et {n} items.")
 
 
-dim = args.dim
-num_item = args.n
+dim = [args.dim]
+num_item = [args.n]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###

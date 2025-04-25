@@ -1,0 +1,53 @@
+{
+  "os":  "macOS-15.1-arm64-arm-64bit",
+  "python":  "CPython 3.12.9",
+  "startedAt":  "2025-04-25T16:37:17.329982Z",
+  "args":  [
+    "--dim",
+    "5",
+    "--n",
+    "50",
+    "--ep_cla",
+    "1",
+    "--ep_ld",
+    "1"
+  ],
+  "program":  "/Users/steph/Desktop/Stage_3A/recherche/DFL_LD/run_experiments.py",
+  "codePath":  "run_experiments.py",
+  "git":  {
+    "remote":  "git@github.com:stephecw/DFL_LD.git",
+    "commit":  "dbdb446555025a0cedc17ef4c2ad44ca06830a87"
+  },
+  "root":  "./",
+  "host":  "Sansfil-Eduroam-Externe-212-201.polymtl.ca",
+  "executable":  "/Users/steph/miniforge3/envs/projet/bin/python",
+  "codePathLocal":  "run_experiments.py",
+  "cpu_count":  8,
+  "cpu_count_logical":  8,
+  "disk":  {
+    "/":  {
+      "total":  "245107195904",
+      "used":  "165802217472"
+    },
+    "/System/Volumes/Data":  {
+      "total":  "245107195904",
+      "used":  "165802217472"
+    }
+  },
+  "memory":  {
+    "total":  "8589934592"
+  },
+  "cpu":  {
+    "count":  8,
+    "countLogical":  8
+  },
+  "apple":  {
+    "name":  "Apple M2",
+    "ecpuCores":  4,
+    "pcpuCores":  4,
+    "gpuCores":  10,
+    "memoryGb":  8,
+    "swapTotalBytes":  "3221225472",
+    "ramTotalBytes":  "8589934592"
+  }
+}
