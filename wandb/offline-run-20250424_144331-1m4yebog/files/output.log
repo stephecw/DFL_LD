@@ -1,0 +1,35 @@
+Loading train_5_200_50_500.txt
+Loaded test_5_200_50_500.txt
+Training the model with regret as loss...
+Num of cores: 1
+Epoch 1 | loss: 30.7934
+Eval Epoch 1 | Regret moyen : 23.8400
+Epoch 2 | loss: 24.4638
+Eval Epoch 2 | Regret moyen : 17.9300
+Epoch 3 | loss: 19.5358
+Eval Epoch 3 | Regret moyen : 17.8900
+Epoch 4 | loss: 18.8847
+Eval Epoch 4 | Regret moyen : 17.5000
+Epoch 5 | loss: 18.8047
+Eval Epoch 5 | Regret moyen : 17.4800
+Epoch 6 | loss: 18.7911
+Eval Epoch 6 | Regret moyen : 17.5400
+Epoch 7 | loss: 18.7408
+Eval Epoch 7 | Regret moyen : 17.4500
+Epoch 8 | loss: 18.7927
+Eval Epoch 8 | Regret moyen : 17.5500
+Epoch 9 | loss: 18.7400
+Eval Epoch 9 | Regret moyen : 17.5900
+Epoch 10 | loss: 18.7154
+Eval Epoch 10 | Regret moyen : 17.5300
+Epoch 11 | loss: 18.6830
+Eval Epoch 11 | Regret moyen : 17.4600
+Epoch 12 | loss: 18.7213
+Eval Epoch 12 | Regret moyen : 17.4500
+Epoch 13 | loss: 18.6756
+Eval Epoch 13 | Regret moyen : 17.4500
+Epoch 14 | loss: 18.6422
+Eval Epoch 14 | Regret moyen : 17.4500
+Epoch 15 | loss: 18.6854
+Eval Epoch 15 | Regret moyen : 17.4500
+Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth

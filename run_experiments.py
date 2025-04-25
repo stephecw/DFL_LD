@@ -1,8 +1,8 @@
+import sched
 import torch
 from torch import optim
 from data_import import ImportDataset
 from train_imle import train, train_LD
-import train_imle
 from train_imle import LinearRegression, CustomMLP
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -69,9 +69,17 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
 
     # Modèle, optimiseur et scheduleur
     optimizer = optim.Adam(model.parameters(), lr)
-    scheduler = None
+    if schedulerType == "None":
+        scheduler = None
     if schedulerType == "StepLR":
         scheduler = optim.lr_scheduler.StepLR(optimizer, sched_step_size, sched_gamma)
+    if schedulerType == "ReduceLROnPlateau":
+        if LD: patience = 10
+        else: patience = 10
+        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=patience, verbose=True)
+    if schedulerType == "OneCycleLR":
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, final_div_factor=1e5,steps_per_epoch=len(train_loader), epochs=epochs)
+    
 
     # Entraînement
     if LD:
@@ -109,19 +117,28 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
 num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
-lr = 0.001
-epochs_LD = 200
-epochs = 20
+
+epochs_LD = 150
+epochs_classic = 15
+lr_LD = 0.00241
+lr_classic = 0.01666
+IMLE_n_samples_LD = 17
+IMLE_n_samples_classic = 10
+IMLE_sigma_LD = 4.57178
+IMLE_sigma_classic = 1.8395
+IMLE_lambd_LD = 1.51036
+IMLE_lambd_classic = 2.326466
+schedulerType = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 
 # Choix dimension modèle
 hidden_layer = 100
 
-dim = [10]# [5, 10]
-num_item = [30] #[30, 50, 100]
+dim = [5]# [5, 10]
+num_item = [50] #[30, 50, 100]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###
-        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat, hidden_layer,hidden_layer, n]).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -135,21 +152,22 @@ for d in dim:
                     "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
                     "batch_size": 32,
                     "epochs": epochs_LD,
-                    "learning_rate": lr,
-                    "schedulerType": "None",
+                    "learning_rate": lr_LD,
+                    "schedulerType": schedulerType,
                     "sched_step_size": 10,
                     "sched_gamma": 0.1,
-                    "IMLE_n_samples": 10,
-                    "IMLE_sigma": 1.0,
-                    "IMLE_lambd": 10,
+                    "IMLE_n_samples": IMLE_n_samples_LD,
+                    "IMLE_sigma": IMLE_sigma_LD,
+                    "IMLE_lambd": IMLE_lambd_LD,
                     "IMLE_two_sides": False,
                     "IMLE_processes": 1,
                 }
         }
-        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr,schedulerType=None, verbose=True, wandbarg=wandbarg)
+        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType, verbose=True, wandbarg=wandbarg,
+                  IMLE_n_samples=IMLE_n_samples_LD, IMLE_sigma=IMLE_sigma_LD, IMLE_lambd=IMLE_lambd_LD)
         
         ### SANS LD ###
-        model = CustomMLP([num_feat, hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat, hidden_layer, hidden_layer, n]).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -162,16 +180,17 @@ for d in dim:
                     "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
                     "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
                     "batch_size": 32,
-                    "epochs": epochs,
-                    "learning_rate": lr,
-                    "schedulerType": "None",
+                    "epochs": epochs_classic,
+                    "learning_rate": lr_classic,
+                    "schedulerType": schedulerType,
                     "sched_step_size": 10,
                     "sched_gamma": 0.1,
-                    "IMLE_n_samples": 10,
-                    "IMLE_sigma": 1.0,
-                    "IMLE_lambd": 10,
+                    "IMLE_n_samples": IMLE_n_samples_classic,
+                    "IMLE_sigma": IMLE_sigma_classic,
+                    "IMLE_lambd": IMLE_lambd_classic,
                     "IMLE_two_sides": False,
                     "IMLE_processes": 1,
                 }
         }
-        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs, lr=lr,schedulerType=None, verbose=True, wandbarg=wandbarg)
+        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType, verbose=True, wandbarg=wandbarg,
+                  IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic)
