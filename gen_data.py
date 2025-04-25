@@ -62,7 +62,7 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, dim, verbose
         capacities=capacities,
         f=f
     )
-    optimizer.optim_mu(verbose=verbose, max_iter=500)
+    optimizer.optim_mu(verbose=verbose, max_iter=1000)
 
     X_tensor = optimizer.get_X()
     mu_tensor = optimizer.get_mu()
@@ -81,10 +81,10 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, dim, verbose
     mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
 
     # Sauvegarde
-    write_dataset_file(f"datasets/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt",
+    write_dataset_file(f"datasets1000/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt",
                        dim, num_feat, num_item, num_data_train,
                        capacities, weights, Z_train, c_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt",
+    write_dataset_file(f"datasets1000/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt",
                        dim, num_feat, num_item, num_data_test,
                        capacities, weights, Z_test, c_test, x_star_test, X_test, mu_test)

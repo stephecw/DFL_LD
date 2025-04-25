@@ -1,0 +1,24 @@
+Loading train_10_200_30_500.txt
+Training the model with regret as loss...
+Num of cores: 1
+Epoch 1 | loss: 16.0495
+Epoch 2 | loss: 15.2596
+Epoch 3 | loss: 15.3822
+Epoch 4 | loss: 15.5262
+Epoch 5 | loss: 15.2818
+Epoch 6 | loss: 15.5055
+Epoch 7 | loss: 15.4033
+Epoch 8 | loss: 15.4625
+Epoch 9 | loss: 15.4582
+Epoch 10 | loss: 15.3779
+Epoch 11 | loss: 15.4756
+Epoch 12 | loss: 15.5008
+Epoch 13 | loss: 15.3639
+Epoch 14 | loss: 15.5620
+Epoch 15 | loss: 15.4493
+Epoch 16 | loss: 15.3562
+Epoch 17 | loss: 15.3205
+Epoch 18 | loss: 15.4754
+Epoch 19 | loss: 15.2729
+Epoch 20 | loss: 15.5644
+Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth
