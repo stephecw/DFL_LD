@@ -1,0 +1,16 @@
+{"time":"2025-04-29T10:10:15.897342-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.9","symlink path":"wandb/offline-run-20250429_101015-lnh0nss1/logs/debug-core.log"}
+{"time":"2025-04-29T10:10:16.00376-04:00","level":"WARN","msg":"GraphQL client is nil, skipping feature loading"}
+{"time":"2025-04-29T10:10:16.00391-04:00","level":"INFO","msg":"created new stream","id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:16.003934-04:00","level":"INFO","msg":"stream: started","id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:16.003943-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:16.003966-04:00","level":"INFO","msg":"handler: started","stream_id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:16.003945-04:00","level":"INFO","msg":"sender: started","stream_id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:16.006669-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-29T10:10:22.083585-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-29T10:10:22.083617-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-29T10:10:22.083928-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-04-29T10:10:22.084955-04:00","level":"INFO","msg":"stream: closing","id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:22.084962-04:00","level":"INFO","msg":"handler: closed","stream_id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:22.084966-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:22.084968-04:00","level":"INFO","msg":"sender: closed","stream_id":"lnh0nss1"}
+{"time":"2025-04-29T10:10:22.085155-04:00","level":"INFO","msg":"stream: closed","id":"lnh0nss1"}

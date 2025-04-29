@@ -1,0 +1,24 @@
+Loading train_5_200_50_500.txt
+Loaded test_5_200_50_500.txt
+Training the model with LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 21.6854
+Eval Epoch 1 | Regret moyen : 27.0200
+Epoch 2 | loss: 21.2428
+Epoch 3 | loss: 18.1672
+Epoch 4 | loss: 13.8478
+Epoch 5 | loss: 8.2710
+Epoch 6 | loss: 7.4400
+Eval Epoch 6 | Regret moyen : 27.1800
+Epoch 7 | loss: 7.3036
+Epoch 8 | loss: 7.2309
+Epoch 9 | loss: 7.3164
+Epoch 10 | loss: 7.2368
+Epoch 11 | loss: 7.2686
+Eval Epoch 11 | Regret moyen : 22.3600
+Epoch 12 | loss: 7.2848
+Epoch 13 | loss: 7.3457
+Epoch 14 | loss: 7.2749
+Epoch 15 | loss: 7.3068
+Saving the model to models/LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth

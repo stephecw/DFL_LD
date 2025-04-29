@@ -1,0 +1,36 @@
+Loading train_5_200_30_500.txt
+Loaded test_5_200_30_500.txt
+Training the model with regret as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 17.8939
+Eval Epoch 1 | Regret moyen : 13.8900
+Epoch 2 | loss: 16.0606
+Eval Epoch 2 | Regret moyen : 11.6000
+Epoch 3 | loss: 13.2498
+Eval Epoch 3 | Regret moyen : 11.2500
+Epoch 4 | loss: 12.0503
+Eval Epoch 4 | Regret moyen : 10.4800
+Epoch 5 | loss: 11.8421
+Eval Epoch 5 | Regret moyen : 10.5200
+Epoch 6 | loss: 11.8377
+Eval Epoch 6 | Regret moyen : 10.4300
+Epoch 7 | loss: 11.6841
+Eval Epoch 7 | Regret moyen : 10.2200
+Epoch 8 | loss: 11.2419
+Eval Epoch 8 | Regret moyen : 10.1100
+Epoch 9 | loss: 10.7559
+Eval Epoch 9 | Regret moyen : 9.6200
+Epoch 10 | loss: 10.3922
+Eval Epoch 10 | Regret moyen : 9.3800
+Epoch 11 | loss: 10.0218
+Eval Epoch 11 | Regret moyen : 9.1600
+Epoch 12 | loss: 9.7613
+Eval Epoch 12 | Regret moyen : 9.0800
+Epoch 13 | loss: 9.4285
+Eval Epoch 13 | Regret moyen : 8.7900
+Epoch 14 | loss: 8.9370
+Eval Epoch 14 | Regret moyen : 8.6800
+Epoch 15 | loss: 8.3989
+Eval Epoch 15 | Regret moyen : 8.4300
+Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth
