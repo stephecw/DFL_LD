@@ -1,4 +1,3 @@
-from re import I
 import sched
 import torch
 from torch import optim
@@ -83,14 +82,14 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
     optimizer = optim.Adam(model.parameters(), lr)
     if schedulerType == "None":
         scheduler = None
-    if schedulerType == "StepLR":
+    elif schedulerType == "StepLR":
         scheduler = optim.lr_scheduler.StepLR(optimizer, sched_step_size, sched_gamma)
-    if schedulerType == "ReduceLROnPlateau":
+    elif schedulerType == "ReduceLROnPlateau":
         if LD: patience = 10
         else: patience = 10
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=patience, verbose=True)
-    if schedulerType == "OneCycleLR":
-        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, div_factor= 10,final_div_factor=1e2,steps_per_epoch=len(train_loader), epochs=epochs)
+    elif schedulerType == "OneCycleLR":
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, div_factor= 10,final_div_factor=1e1,steps_per_epoch=len(train_loader), epochs=epochs)
     
 
     # Entraînement
@@ -135,7 +134,7 @@ epochs_LD = args.ep_ld
 epochs_classic = args.ep_cla
 lr_LD = 0.001
 lr_classic = 0.001
-IMLE_n_samples_LD = 17
+IMLE_n_samples_LD = 10
 IMLE_n_samples_classic = 10
 IMLE_sigma_LD = 1
 IMLE_sigma_classic = 1
@@ -145,6 +144,7 @@ schedulerType_LD = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "
 schedulerType_classic = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 IMLE_processes_LD = 1
 IMLE_processes_classic = 1
+dropout = 0.2
 
 
 d = args.dim
@@ -161,7 +161,7 @@ num_item = [args.n]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###
-        model = CustomMLP([num_feat, hidden_layer,hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat,hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -171,6 +171,7 @@ for d in dim:
                 'job_type': "LD",
                 'config': {
                     "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
+                    "dropout": dropout,
                     "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
                     "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
                     "batch_size": 32,
@@ -191,7 +192,7 @@ for d in dim:
                     IMLE_n_samples=IMLE_n_samples_LD, IMLE_sigma=IMLE_sigma_LD, IMLE_lambd=IMLE_lambd_LD, IMLE_processes=IMLE_processes_LD)
         
         ### SANS LD ###
-        model = CustomMLP([num_feat, hidden_layer, hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -201,6 +202,7 @@ for d in dim:
                 'job_type': "classic",
                 'config': {
                     "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
+                    "dropout": dropout,
                     "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
                     "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
                     "batch_size": 32,
