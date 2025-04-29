@@ -364,6 +364,11 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         import time
         start_time = time.time()
         train_time = 0
+
+    dim = weights.shape[0]
+    n_items = weights.shape[1]
+
+    mu_global = torch.ones(len(dataloader_train.dataset), dim - 1, n_items, device=device, dtype = torch.float32)
     
     # Créer un solveur i-MLE avec les mu du batch
     solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
