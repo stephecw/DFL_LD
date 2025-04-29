@@ -171,7 +171,6 @@ class OptimizationBatchModel:
         self.c = c_batch.to(device)  # [B, n]
         self.weights = torch.tensor(weights, dtype=torch.int32, device=device)  # [m, n]
         self.capacity = torch.tensor(capacities, dtype=torch.int32, device=device)  # [m]
-        self.f = f  # objectif principal
 
         # Variables
         if mu_init is None:
