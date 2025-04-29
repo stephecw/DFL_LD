@@ -21,7 +21,7 @@ print("→ Entraînement sur :", device)
 
 def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test, 
               batch_size=32, epochs=20, lr=1e-3, 
-              schedulerType="StepLR", sched_step_size=10, sched_gamma=0.1,
+              schedulerType="StepLR", sched_step_size=500, sched_gamma=0.5,
               IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
               verbose=False, wandbarg=None, save_model=True):
     """
@@ -57,7 +57,7 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
     if verbose:
         print(f"Loading train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
     try:
-        train_set = ImportDataset(f"datasets/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"datasets1000/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
     except FileNotFoundError:
         print(f"File not found. Generating dataset with {num_data_train} data.")
         return
@@ -65,7 +65,7 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
     if verbose:
         print(f"Loaded test_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
     try:
-        test_set = ImportDataset(f"datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
+        test_set = ImportDataset(f"datasets1000/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     except FileNotFoundError:
         print(f"File not found. Generating dataset with {num_data_train} data.")
         return
@@ -82,14 +82,14 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
     optimizer = optim.Adam(model.parameters(), lr)
     if schedulerType == "None":
         scheduler = None
-    if schedulerType == "StepLR":
+    elif schedulerType == "StepLR":
         scheduler = optim.lr_scheduler.StepLR(optimizer, sched_step_size, sched_gamma)
-    if schedulerType == "ReduceLROnPlateau":
+    elif schedulerType == "ReduceLROnPlateau":
         if LD: patience = 10
         else: patience = 10
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=patience, verbose=True)
-    if schedulerType == "OneCycleLR":
-        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, final_div_factor=1e6,steps_per_epoch=len(train_loader), epochs=epochs)
+    elif schedulerType == "OneCycleLR":
+        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, max_lr=lr, div_factor= 10,final_div_factor=1e1,steps_per_epoch=len(train_loader), epochs=epochs)
     
 
     # Entraînement
@@ -97,13 +97,13 @@ def run_train(model, LD, dim, num_feat, num_item, num_data_train, num_data_test,
         if verbose:
             print("Training the model with LD bound as loss...")
         train_LD(model, run, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs,
-                 IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
+                 IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                  verbose=verbose)
     else:
         if verbose:
             print("Training the model with regret as loss...")
         train(model, run, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs, 
-                    IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
+                    IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                     verbose=verbose)
     
     # Enregistrement du modèle
@@ -132,15 +132,20 @@ num_data_test = 100 # Taille du dataset de test
 
 epochs_LD = args.ep_ld
 epochs_classic = args.ep_cla
-lr_LD = 0.00241
-lr_classic = 0.01666
-IMLE_n_samples_LD = 17
+lr_LD = 0.001
+lr_classic = 0.001
+IMLE_n_samples_LD = 10
 IMLE_n_samples_classic = 10
-IMLE_sigma_LD = 4.57178
-IMLE_sigma_classic = 1.8395
-IMLE_lambd_LD = 1.51036
-IMLE_lambd_classic = 2.326466
-schedulerType = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
+IMLE_sigma_LD = 1
+IMLE_sigma_classic = 1
+IMLE_lambd_LD = 10
+IMLE_lambd_classic = 10
+schedulerType_LD = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
+schedulerType_classic = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
+IMLE_processes_LD = 1
+IMLE_processes_classic = 1
+dropout = 0.2
+
 
 d = args.dim
 n = args.n
@@ -156,7 +161,7 @@ num_item = [args.n]
 for d in dim:
     for n in num_item:
         ### AVEC LD ###
-        model = CustomMLP([num_feat, hidden_layer,hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat,hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -166,26 +171,28 @@ for d in dim:
                 'job_type': "LD",
                 'config': {
                     "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
+                    "dropout": dropout,
                     "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
                     "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
                     "batch_size": 32,
                     "epochs": epochs_LD,
                     "learning_rate": lr_LD,
-                    "schedulerType": schedulerType,
+                    "schedulerType": schedulerType_LD,
                     "sched_step_size": 10,
                     "sched_gamma": 0.1,
                     "IMLE_n_samples": IMLE_n_samples_LD,
                     "IMLE_sigma": IMLE_sigma_LD,
                     "IMLE_lambd": IMLE_lambd_LD,
                     "IMLE_two_sides": False,
-                    "IMLE_processes": 1,
+                    "IMLE_processes": IMLE_processes_LD,
                 }
         }
-        run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType, verbose=True, wandbarg=wandbarg,
-                  IMLE_n_samples=IMLE_n_samples_LD, IMLE_sigma=IMLE_sigma_LD, IMLE_lambd=IMLE_lambd_LD)
+        if epochs_LD > 0:
+            run_train(model, True, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType_LD, verbose=True, wandbarg=wandbarg,
+                    IMLE_n_samples=IMLE_n_samples_LD, IMLE_sigma=IMLE_sigma_LD, IMLE_lambd=IMLE_lambd_LD, IMLE_processes=IMLE_processes_LD)
         
         ### SANS LD ###
-        model = CustomMLP([num_feat, hidden_layer, hidden_layer, n]).to(device)
+        model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
@@ -195,20 +202,22 @@ for d in dim:
                 'job_type': "classic",
                 'config': {
                     "architecture": f"MLP_{[num_feat, hidden_layer, num_item]}",
+                    "dropout": dropout,
                     "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
                     "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
                     "batch_size": 32,
                     "epochs": epochs_classic,
                     "learning_rate": lr_classic,
-                    "schedulerType": schedulerType,
+                    "schedulerType": schedulerType_classic,
                     "sched_step_size": 10,
                     "sched_gamma": 0.1,
                     "IMLE_n_samples": IMLE_n_samples_classic,
                     "IMLE_sigma": IMLE_sigma_classic,
                     "IMLE_lambd": IMLE_lambd_classic,
                     "IMLE_two_sides": False,
-                    "IMLE_processes": 1,
+                    "IMLE_processes": IMLE_processes_classic,
                 }
         }
-        run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType, verbose=True, wandbarg=wandbarg,
-                  IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic)
+        if epochs_classic > 0:
+            run_train(model, False, d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
+                    IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic)
