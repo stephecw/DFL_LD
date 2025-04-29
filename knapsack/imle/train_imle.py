@@ -1,15 +1,10 @@
-from networkx import core_number
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
-import pyepo
-from pyepo.metric import regret
 from pyepo.model.grb import knapsackModel
 import gurobipy as gp
 from pyepo.func import implicitMLE
-from data_import import ImportDataset
-from my_solver import CustomOptModel
 from imle.IMLE_perso import CustomIMLE
+from opti_X_mu import OptimizationBatchModel
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -382,13 +377,31 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_loss = 0
         total_grad_norm = 0.0
 
-        for z, c, x, X1, _ in dataloader_train: # x vrai solution et X1 solution avec mu(c)
-            z, c, x, X1, _ = [t.to(device) for t in (z, c, x, X1, _)]
+        for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train): # x vrai solution et X1 solution avec mu(c)
+            z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prédiction des profits ĉ
+
+            idx = (batch_idx * dataloader_train.batch_size + torch.arange(z.size(0), device=device))
+            mu_tilde = mu_global[idx]
+
+            # Mise à jour de mu_global
+            if epoch % step_mu == 0:
+                optimizer_mu = OptimizationBatchModel(
+                    mu_init=mu_tilde.clone(),
+                    num_item=n_items,
+                    dim=dim,
+                    c_batch=c_hat.detach(),
+                    weights=weights,
+                    capacities=capacities
+                )
+                optimizer_mu.optim_mu(verbose=verbose, max_iter=n_iter_mu)
+
+                mu_tilde = optimizer_mu.get_mu().detach()
+                mu_global[idx] = mu_tilde
 
 
             # Résolution avec i-MLE
-            X1p = imle(c_hat, mu).to(device)   # x̂ obtenu avec solve_main_problem
+            X1p = imle(c_hat, mu_tilde).to(device)   # x̂ obtenu avec solve_main_problem
 
             # (c + sum mu_i for i ≥ 2) · (w - x̂)
             mu_sum = mu.sum(dim=1)  # shape [batch, n]
@@ -405,11 +418,12 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             total_loss += loss.item()
 
-            if scheduler is not None:
-                if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
-                    scheduler.step(loss)
-                else:
+            if isinstance(scheduler, torch.optim.lr_scheduler.OneCycleLR):
                     scheduler.step()
+
+        if scheduler is not None:
+            if not(isinstance(scheduler, torch.optim.lr_scheduler.OneCycleLR)):
+                scheduler.step(loss)
 
 
         mean_loss = total_loss / len(dataloader_train)
@@ -427,7 +441,7 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
-        
+                
         if epoch % 5 == 0:
             with torch.no_grad():
                 model.eval()
