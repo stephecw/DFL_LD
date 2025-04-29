@@ -1,0 +1,15 @@
+{"time":"2025-04-24T14:12:31.07701153-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250424_141228-4dohkra2/logs/debug-core.log"}
+{"time":"2025-04-24T14:12:31.229310702-04:00","level":"INFO","msg":"created new stream","id":"4dohkra2"}
+{"time":"2025-04-24T14:12:31.229386972-04:00","level":"INFO","msg":"stream: started","id":"4dohkra2"}
+{"time":"2025-04-24T14:12:31.229438886-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"4dohkra2"}
+{"time":"2025-04-24T14:12:31.229443294-04:00","level":"INFO","msg":"handler: started","stream_id":"4dohkra2"}
+{"time":"2025-04-24T14:12:31.229448495-04:00","level":"INFO","msg":"sender: started","stream_id":"4dohkra2"}
+{"time":"2025-04-24T14:12:31.256855134-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-24T14:43:30.473379669-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-24T14:43:30.535776462-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-24T14:43:30.536525059-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-04-24T14:43:31.751101213-04:00","level":"INFO","msg":"stream: closing","id":"4dohkra2"}
+{"time":"2025-04-24T14:43:31.751150427-04:00","level":"INFO","msg":"handler: closed","stream_id":"4dohkra2"}
+{"time":"2025-04-24T14:43:31.751169303-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"4dohkra2"}
+{"time":"2025-04-24T14:43:31.751177792-04:00","level":"INFO","msg":"sender: closed","stream_id":"4dohkra2"}
+{"time":"2025-04-24T14:43:31.751667704-04:00","level":"INFO","msg":"stream: closed","id":"4dohkra2"}

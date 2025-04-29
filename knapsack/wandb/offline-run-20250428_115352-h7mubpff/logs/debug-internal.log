@@ -1,0 +1,7 @@
+{"time":"2025-04-28T11:53:52.7728336-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250428_115352-h7mubpff/logs/debug-core.log"}
+{"time":"2025-04-28T11:53:52.88632518-04:00","level":"INFO","msg":"created new stream","id":"h7mubpff"}
+{"time":"2025-04-28T11:53:52.886423108-04:00","level":"INFO","msg":"stream: started","id":"h7mubpff"}
+{"time":"2025-04-28T11:53:52.886447303-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"h7mubpff"}
+{"time":"2025-04-28T11:53:52.886525599-04:00","level":"INFO","msg":"handler: started","stream_id":"h7mubpff"}
+{"time":"2025-04-28T11:53:52.886465441-04:00","level":"INFO","msg":"sender: started","stream_id":"h7mubpff"}
+{"time":"2025-04-28T11:53:52.981227287-04:00","level":"INFO","msg":"Starting system monitor"}

@@ -1,0 +1,15 @@
+{"time":"2025-04-28T13:40:46.201597689-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250428_134045-k95vxmsp/logs/debug-core.log"}
+{"time":"2025-04-28T13:40:46.416288487-04:00","level":"INFO","msg":"created new stream","id":"k95vxmsp"}
+{"time":"2025-04-28T13:40:46.416355024-04:00","level":"INFO","msg":"stream: started","id":"k95vxmsp"}
+{"time":"2025-04-28T13:40:46.416373639-04:00","level":"INFO","msg":"handler: started","stream_id":"k95vxmsp"}
+{"time":"2025-04-28T13:40:46.416428746-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"k95vxmsp"}
+{"time":"2025-04-28T13:40:46.416458286-04:00","level":"INFO","msg":"sender: started","stream_id":"k95vxmsp"}
+{"time":"2025-04-28T13:40:46.437778277-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-28T14:41:03.172758557-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-28T14:41:03.173371989-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-28T14:41:03.173987047-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-04-28T14:41:04.179087225-04:00","level":"INFO","msg":"stream: closing","id":"k95vxmsp"}
+{"time":"2025-04-28T14:41:04.179121449-04:00","level":"INFO","msg":"handler: closed","stream_id":"k95vxmsp"}
+{"time":"2025-04-28T14:41:04.179140385-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"k95vxmsp"}
+{"time":"2025-04-28T14:41:04.179150027-04:00","level":"INFO","msg":"sender: closed","stream_id":"k95vxmsp"}
+{"time":"2025-04-28T14:41:04.179537105-04:00","level":"INFO","msg":"stream: closed","id":"k95vxmsp"}

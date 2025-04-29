@@ -1,0 +1,186 @@
+Loading train_5_200_50_500.txt
+Loaded test_5_200_50_500.txt
+Training the model with LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 21.6453
+Eval Epoch 1 | Regret moyen : 26.5600
+Epoch 2 | loss: 19.6115
+Epoch 3 | loss: 18.6905
+Epoch 4 | loss: 17.7835
+Epoch 5 | loss: 16.0419
+Epoch 6 | loss: 12.5009
+Eval Epoch 6 | Regret moyen : 27.2200
+Epoch 7 | loss: 11.1361
+Epoch 8 | loss: 10.2523
+Epoch 9 | loss: 9.5970
+Epoch 10 | loss: 9.0961
+Epoch 11 | loss: 9.0418
+Eval Epoch 11 | Regret moyen : 26.8200
+Epoch 12 | loss: 9.0425
+Epoch 13 | loss: 8.9253
+Epoch 14 | loss: 8.8866
+Epoch 15 | loss: 9.0203
+Epoch 16 | loss: 9.0329
+Eval Epoch 16 | Regret moyen : 26.5600
+Epoch 17 | loss: 8.8482
+Epoch 18 | loss: 8.8963
+Epoch 19 | loss: 8.9126
+Epoch 20 | loss: 9.0515
+Epoch 21 | loss: 8.9822
+Eval Epoch 21 | Regret moyen : 26.5100
+Epoch 22 | loss: 8.9936
+Epoch 23 | loss: 8.9515
+Epoch 24 | loss: 8.9489
+Epoch 25 | loss: 8.9290
+Epoch 26 | loss: 8.9741
+Eval Epoch 26 | Regret moyen : 26.1400
+Epoch 27 | loss: 8.9141
+Epoch 28 | loss: 8.9602
+Epoch 29 | loss: 8.9913
+Epoch 30 | loss: 8.8417
+Epoch 31 | loss: 8.9741
+Eval Epoch 31 | Regret moyen : 25.8500
+Epoch 32 | loss: 8.9498
+Epoch 33 | loss: 8.9163
+Epoch 34 | loss: 8.8996
+Epoch 35 | loss: 9.0203
+Epoch 36 | loss: 8.8432
+Eval Epoch 36 | Regret moyen : 25.7200
+Epoch 37 | loss: 8.8388
+Epoch 38 | loss: 8.9931
+Epoch 39 | loss: 9.0170
+Epoch 40 | loss: 8.8896
+Epoch 41 | loss: 8.9755
+Eval Epoch 41 | Regret moyen : 25.6900
+Epoch 42 | loss: 8.9366
+Epoch 43 | loss: 8.9725
+Epoch 44 | loss: 8.9867
+Epoch 45 | loss: 9.0044
+Epoch 46 | loss: 8.9567
+Eval Epoch 46 | Regret moyen : 25.5000
+Epoch 47 | loss: 8.9045
+Epoch 48 | loss: 8.8587
+Epoch 49 | loss: 8.8903
+Epoch 50 | loss: 8.9130
+Epoch 51 | loss: 8.9774
+Eval Epoch 51 | Regret moyen : 25.4400
+Epoch 52 | loss: 8.9247
+Epoch 53 | loss: 8.9272
+Epoch 54 | loss: 8.9934
+Epoch 55 | loss: 8.9925
+Epoch 56 | loss: 8.8604
+Eval Epoch 56 | Regret moyen : 25.3300
+Epoch 57 | loss: 8.9617
+Epoch 58 | loss: 9.0115
+Epoch 59 | loss: 8.9888
+Epoch 60 | loss: 8.8713
+Epoch 61 | loss: 8.9003
+Eval Epoch 61 | Regret moyen : 25.2100
+Epoch 62 | loss: 8.9836
+Epoch 63 | loss: 8.8692
+Epoch 64 | loss: 8.8891
+Epoch 65 | loss: 8.9527
+Epoch 66 | loss: 8.8253
+Eval Epoch 66 | Regret moyen : 25.0600
+Epoch 67 | loss: 8.9844
+Epoch 68 | loss: 8.8789
+Epoch 69 | loss: 8.9487
+Epoch 70 | loss: 8.8918
+Epoch 71 | loss: 8.9731
+Eval Epoch 71 | Regret moyen : 25.0900
+Epoch 72 | loss: 8.8867
+Epoch 73 | loss: 8.9354
+Epoch 74 | loss: 8.9022
+Epoch 75 | loss: 8.9433
+Epoch 76 | loss: 8.8631
+Eval Epoch 76 | Regret moyen : 25.1300
+Epoch 77 | loss: 8.8962
+Epoch 78 | loss: 8.9406
+Epoch 79 | loss: 8.9916
+Epoch 80 | loss: 8.8535
+Epoch 81 | loss: 8.9096
+Eval Epoch 81 | Regret moyen : 25.0200
+Epoch 82 | loss: 8.8735
+Epoch 83 | loss: 8.9375
+Epoch 84 | loss: 8.8552
+Epoch 85 | loss: 8.9542
+Epoch 86 | loss: 9.0577
+Eval Epoch 86 | Regret moyen : 24.9900
+Epoch 87 | loss: 8.9639
+Epoch 88 | loss: 8.8702
+Epoch 89 | loss: 8.9372
+Epoch 90 | loss: 9.0161
+Epoch 91 | loss: 8.8997
+Eval Epoch 91 | Regret moyen : 24.9800
+Epoch 92 | loss: 8.9388
+Epoch 93 | loss: 8.9535
+Epoch 94 | loss: 8.9127
+Epoch 95 | loss: 8.9654
+Epoch 96 | loss: 8.8971
+Eval Epoch 96 | Regret moyen : 24.9800
+Epoch 97 | loss: 8.9798
+Epoch 98 | loss: 8.9147
+Epoch 99 | loss: 8.9560
+Epoch 100 | loss: 8.8912
+Epoch 101 | loss: 8.9899
+Eval Epoch 101 | Regret moyen : 24.8800
+Epoch 102 | loss: 9.0189
+Epoch 103 | loss: 9.0432
+Epoch 104 | loss: 8.9692
+Epoch 105 | loss: 8.9635
+Epoch 106 | loss: 8.9611
+Eval Epoch 106 | Regret moyen : 24.8200
+Epoch 107 | loss: 8.8086
+Epoch 108 | loss: 8.9096
+Epoch 109 | loss: 8.9462
+Epoch 110 | loss: 9.1283
+Epoch 111 | loss: 8.8455
+Eval Epoch 111 | Regret moyen : 24.7900
+Epoch 112 | loss: 8.9009
+Epoch 113 | loss: 9.0161
+Epoch 114 | loss: 8.9531
+Epoch 115 | loss: 8.9543
+Epoch 116 | loss: 9.0263
+Eval Epoch 116 | Regret moyen : 24.8600
+Epoch 117 | loss: 8.9862
+Epoch 118 | loss: 8.8825
+Epoch 119 | loss: 8.8945
+Epoch 120 | loss: 8.9871
+Epoch 121 | loss: 8.8910
+Eval Epoch 121 | Regret moyen : 24.8700
+Epoch 122 | loss: 8.9868
+Epoch 123 | loss: 8.8936
+Epoch 124 | loss: 8.9631
+Epoch 125 | loss: 8.8561
+Epoch 126 | loss: 8.7906
+Eval Epoch 126 | Regret moyen : 24.8900
+Epoch 127 | loss: 8.9469
+Epoch 128 | loss: 8.9346
+Epoch 129 | loss: 8.8778
+Epoch 130 | loss: 8.9786
+Epoch 131 | loss: 8.9475
+Eval Epoch 131 | Regret moyen : 24.9000
+Epoch 132 | loss: 8.9551
+Epoch 133 | loss: 8.8957
+Epoch 134 | loss: 8.9653
+Epoch 135 | loss: 8.9283
+Epoch 136 | loss: 8.9001
+Eval Epoch 136 | Regret moyen : 25.0200
+Epoch 137 | loss: 8.9427
+Epoch 138 | loss: 8.8873
+Epoch 139 | loss: 8.9100
+Epoch 140 | loss: 8.9505
+Epoch 141 | loss: 8.9217
+Eval Epoch 141 | Regret moyen : 25.0200
+Epoch 142 | loss: 8.9176
+Epoch 143 | loss: 8.9745
+Epoch 144 | loss: 8.9502
+Epoch 145 | loss: 8.9414
+Epoch 146 | loss: 9.0526
+Eval Epoch 146 | Regret moyen : 24.9400
+Epoch 147 | loss: 8.9354
+Epoch 148 | loss: 8.8995
+Epoch 149 | loss: 8.8932
+Epoch 150 | loss: 8.9244
+Saving the model to models/LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth

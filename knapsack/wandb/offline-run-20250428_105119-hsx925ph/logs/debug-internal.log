@@ -1,0 +1,15 @@
+{"time":"2025-04-28T10:51:19.320118129-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250428_105119-hsx925ph/logs/debug-core.log"}
+{"time":"2025-04-28T10:51:19.443655701-04:00","level":"INFO","msg":"created new stream","id":"hsx925ph"}
+{"time":"2025-04-28T10:51:19.443703129-04:00","level":"INFO","msg":"stream: started","id":"hsx925ph"}
+{"time":"2025-04-28T10:51:19.443713214-04:00","level":"INFO","msg":"handler: started","stream_id":"hsx925ph"}
+{"time":"2025-04-28T10:51:19.443769209-04:00","level":"INFO","msg":"sender: started","stream_id":"hsx925ph"}
+{"time":"2025-04-28T10:51:19.443959582-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"hsx925ph"}
+{"time":"2025-04-28T10:51:19.461425776-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-28T11:04:43.074577861-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-28T11:04:43.075151872-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-28T11:04:43.075772112-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-04-28T11:04:44.080181199-04:00","level":"INFO","msg":"stream: closing","id":"hsx925ph"}
+{"time":"2025-04-28T11:04:44.080211056-04:00","level":"INFO","msg":"handler: closed","stream_id":"hsx925ph"}
+{"time":"2025-04-28T11:04:44.080228556-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"hsx925ph"}
+{"time":"2025-04-28T11:04:44.080238594-04:00","level":"INFO","msg":"sender: closed","stream_id":"hsx925ph"}
+{"time":"2025-04-28T11:04:44.080523453-04:00","level":"INFO","msg":"stream: closed","id":"hsx925ph"}

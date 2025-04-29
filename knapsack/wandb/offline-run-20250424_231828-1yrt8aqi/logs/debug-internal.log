@@ -1,0 +1,14 @@
+{"time":"2025-04-24T23:18:28.647567938-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250424_231828-1yrt8aqi/logs/debug-core.log"}
+{"time":"2025-04-24T23:18:28.784490964-04:00","level":"INFO","msg":"created new stream","id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:28.784572599-04:00","level":"INFO","msg":"stream: started","id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:28.784637897-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:28.784690145-04:00","level":"INFO","msg":"sender: started","stream_id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:28.784697363-04:00","level":"INFO","msg":"handler: started","stream_id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:28.789993962-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-24T23:18:47.809931993-04:00","level":"INFO","msg":"stream: closing","id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:47.809978802-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-24T23:18:47.810434631-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-24T23:18:47.81050516-04:00","level":"INFO","msg":"handler: closed","stream_id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:47.810524082-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:47.810554491-04:00","level":"INFO","msg":"sender: closed","stream_id":"1yrt8aqi"}
+{"time":"2025-04-24T23:18:47.820568426-04:00","level":"INFO","msg":"stream: closed","id":"1yrt8aqi"}
