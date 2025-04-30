@@ -147,8 +147,10 @@ num_data_test = 100 # Taille du dataset de test
 
 epochs_LD = args.ep_ld
 epochs_classic = args.ep_cla
+epochs_SG = args.ep_sg
 lr_LD = 0.001
 lr_classic = 0.001
+lr_SG = 0.002
 IMLE_n_samples_LD = 10
 IMLE_n_samples_classic = 10
 IMLE_sigma_LD = 1
@@ -157,6 +159,7 @@ IMLE_lambd_LD = 10
 IMLE_lambd_classic = 10
 schedulerType_LD = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 schedulerType_classic = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
+schedulerType_SG = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 IMLE_processes_LD = 1
 IMLE_processes_classic = 1
 dropout = 0.2
@@ -168,7 +171,7 @@ n = args.n
 # Choix dimension modèle
 hidden_layer = 100
 
-print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique et {epochs_LD} epochs pour le modèle LD sur {d} contraintes et {n} items.")
+print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique, {epochs_LD} epochs pour le modèle LD et {epochs_SG} pour le modèle avec SG de mu sur {d} contraintes et {n} items.")
 
 
 dim = [args.dim]
@@ -193,8 +196,8 @@ for d in dim:
                     "epochs": epochs_LD,
                     "learning_rate": lr_LD,
                     "schedulerType": schedulerType_LD,
-                    "sched_step_size": 10,
-                    "sched_gamma": 0.1,
+                    "sched_step_size": 50,
+                    "sched_gamma": 0.5,
                     "IMLE_n_samples": IMLE_n_samples_LD,
                     "IMLE_sigma": IMLE_sigma_LD,
                     "IMLE_lambd": IMLE_lambd_LD,
@@ -243,7 +246,7 @@ for d in dim:
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
                 'dir': "./",
-                'name': f"dynamic_mu_{d}_{num_feat}_{n}_{num_data_train}",
+                'name': f"SG_{d}_{num_feat}_{n}_{num_data_train}",
                 'group': f"{d}_{num_feat}_{n}_{num_data_train}",
                 'job_type': "SG",
                 'config': {
@@ -252,11 +255,11 @@ for d in dim:
                     "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
                     "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
                     "batch_size": 32,
-                    "epochs": epochs_classic,
-                    "learning_rate": lr_classic,
-                    "schedulerType": schedulerType_classic,
-                    "sched_step_size": 10,
-                    "sched_gamma": 0.1,
+                    "epochs": epochs_SG,
+                    "learning_rate": lr_SG,
+                    "schedulerType": schedulerType_SG,
+                    "sched_step_size": 150,
+                    "sched_gamma": 0.5,
                     "IMLE_n_samples": IMLE_n_samples_classic,
                     "IMLE_sigma": IMLE_sigma_classic,
                     "IMLE_lambd": IMLE_lambd_classic,
@@ -267,6 +270,7 @@ for d in dim:
                 }
         }
 
-        if args.step_mu > 0:
-            run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
-                    IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu)
+        if epochs_SG > 0:
+            run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
+                    IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
+                    sched_step_size=300, sched_gamma=0.5)

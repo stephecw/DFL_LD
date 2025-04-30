@@ -149,7 +149,7 @@ class OptimizationModel:
 
 
 class OptimizationBatchModel:
-    def __init__(self, num_item, dim, c_batch, weights, capacities, f, mu_init=None, device="cuda"):
+    def __init__(self, num_item, dim, c_batch, weights, capacities, mu_init=None, device="cuda"):
         """
         Batch-compatible optimization model for Lagrangian decomposition of multi-dimensional knapsack.
 
@@ -169,8 +169,8 @@ class OptimizationBatchModel:
 
         # Data
         self.c = c_batch.to(device)  # [B, n]
-        self.weights = torch.tensor(weights, dtype=torch.int32, device=device)  # [m, n]
-        self.capacity = torch.tensor(capacities, dtype=torch.int32, device=device)  # [m]
+        self.weights = weights.clone().to(device) # [m, n]
+        self.capacity = capacities.clone().to(device)  # [m]
 
         # Variables
         if mu_init is None:
@@ -214,7 +214,7 @@ class OptimizationBatchModel:
                 c_i = self.c[i]
                 x1 = x_all[i, 0].float()
                 dual_term = torch.sum(mu[i] * (x1 - x_all[i, 1:].float()))
-                primal_val = self.f(x1, c_i)
+                primal_val = torch.dot(x1, c_i)
                 self.vals[i] = primal_val + dual_term
 
         # if verbose:
@@ -258,8 +258,16 @@ class OptimizationBatchModel:
 
     def get_mu(self):
         return self.mu
+    
+    def get_X0(self):
+        self.X[0], _ = solve_kn1d(self.c, self.mu, np.expand_dims(self.weight[0], axis = 0), [self.capacity[0]], self.num_item, principal=True)
+        return self.X[0]
 
     def get_X(self):
+        self.X[0], _ = solve_kn1d(self.c, self.mu, np.expand_dims(self.weight[0], axis = 0), [self.capacity[0]], self.num_item, principal=True)
+        for i in range(1, self.dim, 1):
+            X_i, _ = solve_kn1d(self.c, self.mu[i-1], np.expand_dims(self.weight[i], axis = 0), [self.capacity[i]], self.num_item)
+            self.X[i] = X_i
         return self.X
 
     def get_value(self):

@@ -1,0 +1,20 @@
+Loading train_5_200_30_500.txt
+Loaded test_5_200_30_500.txt
+Training the model with dynamic mu and LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 4.6470
+/home/stephecw/env_projet/lib/python3.10/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 100 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/knapsack/imle/run_experiments.py", line 274, in <module>
+    run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
+  File "/home/stephecw/projet/DFL_LD/knapsack/imle/run_experiments.py", line 114, in run_train
+    train_SG(model, run, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs,
+  File "/home/stephecw/projet/DFL_LD/knapsack/imle/train_imle.py", line 472, in train_SG
+    mu_data = dataloader_train.dataset.mu.to(device)
+AttributeError: 'TensorDataset' object has no attribute 'mu'
