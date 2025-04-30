@@ -1,0 +1,15 @@
+{"time":"2025-04-29T18:07:26.772528032-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250429_180726-ccfi49wh/logs/debug-core.log"}
+{"time":"2025-04-29T18:07:26.884949501-04:00","level":"INFO","msg":"created new stream","id":"ccfi49wh"}
+{"time":"2025-04-29T18:07:26.885012812-04:00","level":"INFO","msg":"stream: started","id":"ccfi49wh"}
+{"time":"2025-04-29T18:07:26.885032352-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"ccfi49wh"}
+{"time":"2025-04-29T18:07:26.8850481-04:00","level":"INFO","msg":"handler: started","stream_id":"ccfi49wh"}
+{"time":"2025-04-29T18:07:26.885046813-04:00","level":"INFO","msg":"sender: started","stream_id":"ccfi49wh"}
+{"time":"2025-04-29T18:07:26.900895819-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-04-29T18:34:17.326386062-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-04-29T18:34:17.326889504-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-04-29T18:34:17.327572347-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-04-29T18:34:18.332701753-04:00","level":"INFO","msg":"stream: closing","id":"ccfi49wh"}
+{"time":"2025-04-29T18:34:18.33273712-04:00","level":"INFO","msg":"handler: closed","stream_id":"ccfi49wh"}
+{"time":"2025-04-29T18:34:18.332752974-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ccfi49wh"}
+{"time":"2025-04-29T18:34:18.33276078-04:00","level":"INFO","msg":"sender: closed","stream_id":"ccfi49wh"}
+{"time":"2025-04-29T18:34:18.333100696-04:00","level":"INFO","msg":"stream: closed","id":"ccfi49wh"}

@@ -1,0 +1,130 @@
+Loading train_5_200_30_500.txt
+Loaded test_5_200_30_500.txt
+Training the model with dynamic mu and LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 4.2883
+Eval Epoch 1 | Regret moyen : 15.3700
+Epoch 2 | loss: 3.7727
+Epoch 3 | loss: 3.5969
+Epoch 4 | loss: 3.4037
+Epoch 5 | loss: 3.2264
+Epoch 6 | loss: 3.0628
+Eval Epoch 6 | Regret moyen : 14.2600
+Epoch 7 | loss: 2.6090
+Epoch 8 | loss: 2.4118
+Epoch 9 | loss: 2.1716
+Epoch 10 | loss: 2.0014
+Epoch 11 | loss: 2.0183
+Eval Epoch 11 | Regret moyen : 12.5800
+Epoch 12 | loss: 1.7570
+Epoch 13 | loss: 1.6705
+Epoch 14 | loss: 1.5797
+Epoch 15 | loss: 1.5675
+Epoch 16 | loss: 1.5513
+Eval Epoch 16 | Regret moyen : 11.6400
+Epoch 17 | loss: 1.4705
+Epoch 18 | loss: 1.3491
+Epoch 19 | loss: 1.3473
+Epoch 20 | loss: 1.3244
+Epoch 21 | loss: 1.2823
+Eval Epoch 21 | Regret moyen : 11.1900
+Epoch 22 | loss: 1.1869
+Epoch 23 | loss: 1.2128
+Epoch 24 | loss: 1.1590
+Epoch 25 | loss: 1.0979
+Epoch 26 | loss: 1.1444
+Eval Epoch 26 | Regret moyen : 11.5100
+Epoch 27 | loss: 1.0867
+Epoch 28 | loss: 1.0637
+Epoch 29 | loss: 1.0079
+Epoch 30 | loss: 0.9982
+Epoch 31 | loss: 1.0356
+Eval Epoch 31 | Regret moyen : 11.0000
+Epoch 32 | loss: 0.9639
+Epoch 33 | loss: 1.0046
+Epoch 34 | loss: 0.9664
+Epoch 35 | loss: 0.9073
+Epoch 36 | loss: 0.9285
+Eval Epoch 36 | Regret moyen : 11.1900
+Epoch 37 | loss: 0.9054
+Epoch 38 | loss: 0.9179
+Epoch 39 | loss: 0.8939
+Epoch 40 | loss: 0.9277
+Epoch 41 | loss: 0.9456
+Eval Epoch 41 | Regret moyen : 11.2700
+Epoch 42 | loss: 0.8727
+Epoch 43 | loss: 0.9162
+Epoch 44 | loss: 0.8314
+Epoch 45 | loss: 0.7709
+Epoch 46 | loss: 0.8655
+Eval Epoch 46 | Regret moyen : 11.3400
+Epoch 47 | loss: 0.8560
+Epoch 48 | loss: 0.8205
+Epoch 49 | loss: 0.7507
+Epoch 50 | loss: 0.7631
+Epoch 51 | loss: 0.7653
+Eval Epoch 51 | Regret moyen : 11.2700
+Epoch 52 | loss: 0.7441
+Epoch 53 | loss: 0.7216
+Epoch 54 | loss: 0.7097
+Epoch 55 | loss: 0.6722
+Epoch 56 | loss: 0.7230
+Eval Epoch 56 | Regret moyen : 11.4500
+Epoch 57 | loss: 0.7094
+Epoch 58 | loss: 0.6828
+Epoch 59 | loss: 0.6982
+Epoch 60 | loss: 0.6595
+Epoch 61 | loss: 0.6586
+Eval Epoch 61 | Regret moyen : 11.4000
+Epoch 62 | loss: 0.5974
+Epoch 63 | loss: 0.6175
+Epoch 64 | loss: 0.6360
+Epoch 65 | loss: 0.6473
+Epoch 66 | loss: 0.6381
+Eval Epoch 66 | Regret moyen : 11.1200
+Epoch 67 | loss: 0.6409
+Epoch 68 | loss: 0.5669
+Epoch 69 | loss: 0.6308
+Epoch 70 | loss: 0.5854
+Epoch 71 | loss: 0.5797
+Eval Epoch 71 | Regret moyen : 11.2000
+Epoch 72 | loss: 0.5784
+Epoch 73 | loss: 0.5316
+Epoch 74 | loss: 0.5621
+Epoch 75 | loss: 0.5849
+Epoch 76 | loss: 0.6446
+Eval Epoch 76 | Regret moyen : 11.1500
+Epoch 77 | loss: 0.5512
+Epoch 78 | loss: 0.5698
+Epoch 79 | loss: 0.5495
+Epoch 80 | loss: 0.5323
+Epoch 81 | loss: 0.5341
+Eval Epoch 81 | Regret moyen : 10.8200
+Epoch 82 | loss: 0.5181
+Epoch 83 | loss: 0.4983
+Epoch 84 | loss: 0.5085
+Epoch 85 | loss: 0.5573
+Epoch 86 | loss: 0.5005
+Eval Epoch 86 | Regret moyen : 11.1100
+Epoch 87 | loss: 0.4793
+Epoch 88 | loss: 0.5096
+Epoch 89 | loss: 0.4835
+Epoch 90 | loss: 0.4759
+Epoch 91 | loss: 0.5403
+Eval Epoch 91 | Regret moyen : 10.8100
+Epoch 92 | loss: 0.5165
+Epoch 93 | loss: 0.4562
+Epoch 94 | loss: 0.4168
+Epoch 95 | loss: 0.4249
+Epoch 96 | loss: 0.4818
+Eval Epoch 96 | Regret moyen : 11.3800
+Epoch 97 | loss: 0.4357
+Epoch 98 | loss: 0.4051
+Epoch 99 | loss: 0.4077
+Epoch 100 | loss: 0.4645
+Saving the model to models/SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth
+/home/stephecw/env_projet/lib/python3.10/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 100 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
+/home/stephecw/env_projet/lib/python3.10/site-packages/torch/optim/lr_scheduler.py:243: UserWarning: The epoch parameter in `scheduler.step()` was not necessary and is being deprecated where possible. Please use `scheduler.step()` to step the scheduler. During the deprecation, if epoch is different from None, the closed form is used instead of the new chainable form, where available. Please open an issue if you are unable to replicate your use case: https://github.com/pytorch/pytorch/issues/new/choose.
+  warnings.warn(EPOCH_DEPRECATION_WARNING, UserWarning)
