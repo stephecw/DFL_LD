@@ -1,28 +1,18 @@
-from networkx import core_number
 import torch
 from torch import nn
-from torch.utils.data import DataLoader
-import pyepo
-from pyepo.metric import regret
-from pyepo.model.grb import knapsackModel
-import gurobipy as gp
+
+from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE
-from data_import import ImportDataset
-from my_solver import CustomOptModel
+
+from my_solver import Solveur_lin
 from imle.IMLE_perso import CustomIMLE
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Modèle prédictif (régression linéaire)
-class LinearRegression(nn.Module):
-    def __init__(self, num_feat, num_item):
-        super().__init__()
-        self.linear = nn.Linear(num_feat, num_item)
-
-    def forward(self, x):
-        return self.linear(x)
-    
 class CustomMLP(nn.Module):
+    '''
+    Classe pour construire un modèle MLP personalisable
+    '''
     def __init__(self, layer_sizes, activation=nn.ReLU, dropout=0.0):
         super(CustomMLP, self).__init__()
         layers = []
@@ -37,11 +27,13 @@ class CustomMLP(nn.Module):
     def forward(self, x):
         return self.network(x)
 
+
 def get_learning_rate(optimizer):
+    '''Retourne le learning rate de l'optimiseur'''
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
-def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, epochs=20, 
+def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           verbose=False):
     """
@@ -51,8 +43,8 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
         dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
         optimizer: optimiseur PyTorch
         scheduler: planificateur d'apprentissage
-        weights: matrice [m, n] des poids
-        capacities: vecteur [m] des capacités
+        cov : matrice de covariance [n, n]
+        gamma : niveau de risque
         epochs: nombre d’époques d'entraînement
         IMLE_n_samples: nombre d'échantillons pour i-MLE
         IMLE_sigma: sigma pour i-MLE
@@ -66,10 +58,11 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
         start_time = time.time()
         train_time = 0
 
-    # multiKPModel prend en charge plusieurs contraintes
-    optmodel = knapsackModel(weights=weights, capacity=capacities)
+    # Pour la résolution directe
+    solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
+    
     # i-MLE avec solveur exact multi-contrainte
-    imle = implicitMLE(optmodel, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
+    imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
 
     for epoch in range(epochs):
@@ -130,18 +123,18 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
                 batch_regrets = []
 
                 for i in range(z.size(0)):
-                    model_i = knapsackModel(weights=weights, capacity=capacities)
+                    solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
                     c_numpy = c_hat[i].detach().cpu().numpy()
-                    model_i.setObj(c_numpy)
-                    x_hat_np, _ = model_i.solve()
+                    solver_i.setObj(c_numpy)
+                    x_hat_np, _ = solver_i.solve()
 
                     x_true = x[i].to(dtype=torch.float32, device=device)
-                    c_true = c[i].to(dtype=torch.float32, device=device)
+                    r_true = r[i].to(dtype=torch.float32, device=device)
 
                     x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                             device=device)
 
-                    regret = torch.dot(c_true, x_true - x_hat_tensor)
+                    regret = torch.dot(r_true, x_true - x_hat_tensor)
                     batch_regrets.append(regret)
 
                 batch_regrets = torch.stack(batch_regrets)
@@ -161,7 +154,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
         run.log({"total_duration": total_duration})
 
 
-def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, epochs=20, 
+def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           verbose=False):
     """
@@ -171,8 +164,8 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
         optimizer: optimiseur PyTorch
         scheduler: planificateur d'apprentissage
-        weights: matrice [m, n] des poids
-        capacities: vecteur [m] des capacités
+        cov : matrice de covariance [n, n]
+        gamma : niveau de risque
         epochs: nombre d’époques d'entraînement
         IMLE_n_samples: nombre d'échantillons pour i-MLE
         IMLE_sigma: sigma pour i-MLE
@@ -187,7 +180,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         train_time = 0
     
     # Créer un solveur i-MLE avec les mu du batch
-    solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
+    solver = Solveur_lin(cov.shape[0])
     imle = CustomIMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
 
@@ -206,9 +199,8 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             # Résolution avec i-MLE
             X1p = imle(c_hat, mu).to(device)   # x̂ obtenu avec solve_main_problem
 
-            # (c + sum mu_i for i ≥ 2) · (w - x̂)
-            mu_sum = mu.sum(dim=1)  # shape [batch, n]
-            profit_modified = c + mu_sum     # shape [batch, n]
+            # (c + mu_i) · (w - x̂)
+            profit_modified = c + mu # shape [batch, n]
             loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
 
             optimizer.zero_grad()
@@ -255,24 +247,24 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     batch_regrets = []
 
                     for i in range(z.size(0)):
-                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
                         c_numpy = c_hat[i].detach().cpu().numpy()
-                        model_i.setObj(c_numpy)
-                        x_hat_np, _ = model_i.solve()
+                        solver_i.setObj(c_numpy)
+                        x_hat_np, _ = solver_i.solve()
 
                         x_true = x[i].to(dtype=torch.float32, device=device)
-                        c_true = c[i].to(dtype=torch.float32, device=device)
+                        r_true = r[i].to(dtype=torch.float32, device=device)
 
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
-                                        device=device)
+                                                device=device)
 
-                        regret = torch.dot(c_true, x_true - x_hat_tensor)
+                        regret = torch.dot(r_true, x_true - x_hat_tensor)
                         batch_regrets.append(regret)
 
                     batch_regrets = torch.stack(batch_regrets)
                     total_regret += batch_regrets.sum().item()
                     total_count += z.size(0)
-                
+                    
             mean_regret = total_regret / total_count
             if run is not None:
                 # Enregistrement des résultats dans wandb

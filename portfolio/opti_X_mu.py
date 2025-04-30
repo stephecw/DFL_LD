@@ -26,7 +26,7 @@ def solve_sp(X_2, mu, cov, gamma):
     return res.x
 
 class OptimizationModel:
-    def __init__(self, num_item, r, cov, gamma):
+    def __init__(self, num_item, c, cov, gamma):
         """
         Modèle d'optimisation pour le problème du sac à dos multi-dimensionnel.
         c : np.array : Coûts des items
@@ -36,7 +36,7 @@ class OptimizationModel:
         mu0 : np.array : Valeur initiale de mu
         """
         self.num_item = num_item
-        self.r = r
+        self.c = r
         self.cov = cov
         self.gamma = gamma
         self.X = np.zeros((2, num_item), dtype=int)
@@ -45,13 +45,13 @@ class OptimizationModel:
         
     def B(self):
         """Borne de la décomposition lagrangienne"""
-        return np.dot(self.r, self.X[0]) + np.dot(self.mu, self.X[0] - self.X[1])
+        return np.dot(self.c, self.X[0]) + np.dot(self.mu, self.X[0] - self.X[1])
     
     def update_X(self):
         """Met à jour X°_1 et X°_2"""
         # On résout le sous-problème principal pour obtenir X°_1
         self.X[0] = np.zeros(self.num_item)
-        self.X[0][np.argmax(self.r + self.mu)] = 1
+        self.X[0][np.argmax(self.c + self.mu)] = 1
         
         # On résout le deuxième sous-problème X°_2
         self.X[1] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
