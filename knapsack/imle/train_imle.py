@@ -394,7 +394,7 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     weights=weights,
                     capacities=capacities
                 )
-                optimizer_mu.optim_mu(verbose=verbose, max_iter=n_iter_mu)
+                optimizer_mu.optim_mu(verbose=False, max_iter=n_iter_mu)
 
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
@@ -418,12 +418,8 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             total_loss += loss.item()
 
-            if isinstance(scheduler, torch.optim.lr_scheduler.OneCycleLR):
-                    scheduler.step()
-
         if scheduler is not None:
-            if not(isinstance(scheduler, torch.optim.lr_scheduler.OneCycleLR)):
-                scheduler.step(loss)
+            scheduler.step()
 
 
         mean_loss = total_loss / len(dataloader_train)
@@ -470,13 +466,22 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     batch_regrets = torch.stack(batch_regrets)
                     total_regret += batch_regrets.sum().item()
                     total_count += z.size(0)
+
+                    # Calcul de la norme de la différence entre mu et mu_tilde
+                    mu_data = dataloader_train.dataset.tensors[4].to(device)
+
+                    mu_diff = torch.norm(mu_data[idx] - mu_tilde, p='fro').item()
+
+
                 
             mean_regret = total_regret / total_count
+
+
             if run is not None:
                 # Enregistrement des résultats dans wandb
-                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
+                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time, "mu_diff_norm": mu_diff})
             if verbose:
-                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
+                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f} | ‖μ_global - μ_data‖_F : {mu_diff:.4f}")
             
     if run is not None:   
         end_time = time.time()
