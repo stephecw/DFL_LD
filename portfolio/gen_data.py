@@ -5,7 +5,7 @@ from opti_X_mu import OptimizationModel
 from joblib import Parallel, delayed
 
 
-def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, r, x_star_array, X, mu):
+def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, c, x_star_array, X, mu):
     with open(fname, 'w') as f:
         # En-tête
         f.write(f"{num_data},{num_feat},{num_item},{gamma}\n")
@@ -38,7 +38,7 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
         print(f"➡ Dimensions : {num_item} items, {num_feat} features")
 
     # Données aléatoires
-    cov, Z, r = data.portfolio.genData(total_data, num_feat, num_item, deg=4, noise_level=1, seed=135)
+    cov, Z, c = data.portfolio.genData(total_data, num_feat, num_item, deg=4, noise_level=1, seed=135)
     gamma = gam  # risk_level = gamma * mean(cov[i])
     
     # Résolution exacte du problème (x*)

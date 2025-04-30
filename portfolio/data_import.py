@@ -20,7 +20,7 @@ class ImportDataset:
         Z_tensor = (Z_tensor - self.z_mean) / self.z_std # Normalisation
 
         self.Z_tensor  = Z_tensor
-        self.r_tensor  = torch.tensor(self.r , dtype=torch.float32)
+        self.r_tensor  = torch.tensor(self.c , dtype=torch.float32)
         self.x_tensor  = torch.tensor(self.x , dtype=torch.float32)
         self.X_tensor  = torch.tensor(self.X , dtype=torch.int32)
         self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
@@ -49,19 +49,19 @@ class ImportDataset:
                 self.cov.append(list(map(float, lines[i+1].split(","))))
             self.cov = np.array(self.cov)
             self.Z = []
-            self.r = []
+            self.c = []
             self.x = []
             self.X = []
             self.mu = []
             for i in range(self.num_data):
                 line = lines[self.dim+1+i].split(",")
                 self.Z.append(list(map(float, line[:self.num_feat])))
-                self.r.append(list(map(float, line[self.num_feat : self.num_feat + self.num_item])))
+                self.c.append(list(map(float, line[self.num_feat : self.num_feat + self.num_item])))
                 self.x.append(list(map(float, line[self.num_feat + self.num_item : self.num_feat + 2*self.num_item])))
                 self.X.append(list(map(int, line[self.num_feat + 2*self.num_item : self.num_feat + 3*self.num_item])))
                 self.mu.append(list(map(float, line[self.num_feat + 3*self.num_item :])))
             self.Z = np.array(self.Z)
-            self.r = np.array(self.r)
+            self.c = np.array(self.r)
             self.x = np.array(self.x)
             self.X = np.array(self.X)
             self.mu = np.array(self.mu)
@@ -102,7 +102,7 @@ class ImportDataset:
     
     def get_dataloader(self, batch_size=32, shuffle=True):
         """
-        Retourne le DataLoader PyTorch, avec des batchs de (Z, r, x, X°, mu).
+        Retourne le DataLoader PyTorch, avec des batchs de (Z, c, x, X°, mu).
         batch_size : int : Taille des batchs.
         shuffle : bool : Si True, mélange les données.
         """
