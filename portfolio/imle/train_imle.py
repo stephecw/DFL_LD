@@ -5,7 +5,9 @@ from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE
 
 from my_solver import Solveur_lin
-from imle.IMLE_perso import CustomIMLE
+
+from opti_X_mu import OptimizationModel
+from joblib import Parallel, delayed
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -129,7 +131,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
                     x_hat_np, _ = solver_i.solve()
 
                     x_true = x[i].to(dtype=torch.float32, device=device)
-                    r_true = r[i].to(dtype=torch.float32, device=device)
+                    r_true = c[i].to(dtype=torch.float32, device=device)
 
                     x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                             device=device)
@@ -181,7 +183,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
     
     # Créer un solveur i-MLE avec les mu du batch
     solver = Solveur_lin(cov.shape[0])
-    imle = CustomIMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
+    imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
 
     for epoch in range(epochs):
@@ -197,7 +199,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
 
             # Résolution avec i-MLE
-            X1p = imle(c_hat, mu).to(device)   # x̂ obtenu avec solve_main_problem
+            X1p = imle(c_hat + mu).to(device)   # x̂ obtenu avec solve_main_problem
 
             # (c + mu_i) · (w - x̂)
             profit_modified = c + mu # shape [batch, n]
@@ -253,7 +255,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                         x_hat_np, _ = solver_i.solve()
 
                         x_true = x[i].to(dtype=torch.float32, device=device)
-                        r_true = r[i].to(dtype=torch.float32, device=device)
+                        r_true = c[i].to(dtype=torch.float32, device=device)
 
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                                 device=device)
@@ -277,62 +279,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
 
-
-def test_regret(model, dataloader, weights, capacities, run = None,verbose=False):
-
-    """
-    Évaluation du modèle avec résolution exacte : regret = c · (x - x̂)
-    model: modèle prédictif des profits
-    run: wandb.run pour l'enregistrement des résultats
-    dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
-    weights: matrice [m, n] des poids
-    capacities: vecteur [m] des capacités
-    verbose: bool : Si True, affiche les détails de l'évaluation
-    """
-
-    model.eval()
-    total_regret = 0
-    total_count = 0
-
-    with torch.no_grad():
-        model.eval()
-        total_regret = 0
-        total_count = 0
-        for z, c, x, _, _ in dataloader:
-            z, c, x = [t.to(device) for t in (z, c, x)]
-            c_hat = model(z)  # prédiction des coûts [batch, n]
-            batch_regrets = []
-
-            for i in range(z.size(0)):
-                model_i = knapsackModel(weights=weights, capacity=capacities)
-                c_numpy = c_hat[i].detach().cpu().numpy()
-                model_i.setObj(c_numpy)
-                x_hat_np, _ = model_i.solve()
-
-                x_true = x[i].to(dtype=torch.float32, device=device)
-                c_true = c[i].to(dtype=torch.float32, device=device)
-
-
-                x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
-                                        device=device)
-
-                regret = torch.dot(c_true, x_true - x_hat_tensor)
-                batch_regrets.append(regret)
-
-            batch_regrets = torch.stack(batch_regrets)
-            total_regret += batch_regrets.sum().item()
-            total_count += z.size(0)
-                
-    mean_regret = total_regret / total_count
-    if run is not None:
-        # Enregistrement des résultats dans wandb
-        run.log({"regret": mean_regret})
-    if verbose:
-        print(f"\n Regret moyen exact (c · (x - x̂)) : {mean_regret:.4f}")
-    return mean_regret
-
-
-def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, epochs=20, 
+def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           verbose=False, step_mu=10, n_iter_mu = 100):
     """
@@ -342,8 +289,6 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         dataloader: DataLoader avec (z, c, x, X1*(c), mu(c))
         optimizer: optimiseur PyTorch
         scheduler: planificateur d'apprentissage
-        weights: matrice [m, n] des poids
-        capacities: vecteur [m] des capacités
         epochs: nombre d’époques d'entraînement
         IMLE_n_samples: nombre d'échantillons pour i-MLE
         IMLE_sigma: sigma pour i-MLE
@@ -357,14 +302,12 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         start_time = time.time()
         train_time = 0
 
-    dim = weights.shape[0]
-    n_items = weights.shape[1]
+    num_item = cov.shape[0]
 
-    mu_global = torch.ones(len(dataloader_train.dataset), dim - 1, n_items, device=device, dtype = torch.float32)
-    
+    mu_global = torch.ones((len(dataloader_train.dataset), num_item), device=device, dtype = torch.float32)
     # Créer un solveur i-MLE avec les mu du batch
-    solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
-    imle = CustomIMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
+    solver = Solveur_lin(cov.shape[0])
+    imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
 
     for epoch in range(epochs):
@@ -374,17 +317,23 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_loss = 0
         total_grad_norm = 0.0
 
-        for z, c, x, X1, _ in dataloader_train: # x vrai solution et X1 solution avec mu(c)
-            z, c, x, X1, _ = [t.to(device) for t in (z, c, x, X1, _)]
+        for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train): # x vrai solution et X1 solution avec mu(c)
+            z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prédiction des profits ĉ
 
+            idx = (batch_idx * dataloader_train.batch_size + torch.arange(z.size(0), device=device))
+            mu_tilde = mu_global[idx]
+
+            # Mise à jour de mu_global
+            if epoch % step_mu == 0:
+                mu_tilde = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i], cov, gamma, num_item, n_iter_mu, mu_tilde) for i in range(dataloader_train.batch_size))
+                mu_global[idx] = mu_tilde
 
             # Résolution avec i-MLE
-            X1p = imle(c_hat, mu).to(device)   # x̂ obtenu avec solve_main_problem
+            X1p = imle(c_hat + mu_tilde).to(device)   # x̂ obtenu avec solve_main_problem
 
-            # (c + sum mu_i for i ≥ 2) · (w - x̂)
-            mu_sum = mu.sum(dim=1)  # shape [batch, n]
-            profit_modified = c + mu_sum     # shape [batch, n]
+            # (c + mu) · (w - x̂)
+            profit_modified = c + mu    # shape [batch, n]
             loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
 
             optimizer.zero_grad()
@@ -397,11 +346,8 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             total_loss += loss.item()
 
-            if scheduler is not None:
-                if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
-                    scheduler.step(loss)
-                else:
-                    scheduler.step()
+        if scheduler is not None:
+            scheduler.step()
 
 
         mean_loss = total_loss / len(dataloader_train)
@@ -413,8 +359,12 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             current_lr = get_learning_rate(optimizer)
 
             train_time += epoch_duration
+            
+            if epoch % step_mu == 0:
+                mu_data = dataloader_train.dataset.tensors[4].to(device)
+                norm_mu_diff = torch.mean(torch.norm(mu_data - mu_global, dim=1, p='fro')).item()
             # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr, "mu_diff": norm_mu_diff})
         
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
@@ -431,24 +381,24 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     batch_regrets = []
 
                     for i in range(z.size(0)):
-                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
                         c_numpy = c_hat[i].detach().cpu().numpy()
-                        model_i.setObj(c_numpy)
-                        x_hat_np, _ = model_i.solve()
+                        solver_i.setObj(c_numpy)
+                        x_hat_np, _ = solver_i.solve()
 
                         x_true = x[i].to(dtype=torch.float32, device=device)
-                        c_true = c[i].to(dtype=torch.float32, device=device)
+                        r_true = c[i].to(dtype=torch.float32, device=device)
 
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
-                                        device=device)
+                                                device=device)
 
-                        regret = torch.dot(c_true, x_true - x_hat_tensor)
+                        regret = torch.dot(r_true, x_true - x_hat_tensor)
                         batch_regrets.append(regret)
 
                     batch_regrets = torch.stack(batch_regrets)
                     total_regret += batch_regrets.sum().item()
                     total_count += z.size(0)
-                
+                    
             mean_regret = total_regret / total_count
             if run is not None:
                 # Enregistrement des résultats dans wandb
@@ -460,3 +410,14 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         end_time = time.time()
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
+        
+        
+def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, mu0):
+    optimizer = OptimizationModel(
+        num_item=num_item,
+        c=c_i,
+        cov=cov,
+        gamma=gamma,
+    )
+    optimizer.optim_mu(mu0 = mu0, max_iter=num_iter)
+    return optimizer.get_mu()
