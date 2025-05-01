@@ -1,4 +1,3 @@
-import sched
 import torch
 from torch import optim
 from data_import import ImportDataset

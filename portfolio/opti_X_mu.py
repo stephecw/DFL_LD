@@ -1,5 +1,4 @@
 import numpy as np
-
 from scipy.optimize import minimize
 
 def solve_sp(X_2, mu, cov, gamma):
@@ -25,45 +24,49 @@ def solve_sp(X_2, mu, cov, gamma):
     
     return res.x
 
-class OptimizationModel:
-    def __init__(self, num_item, c, cov, gamma):
+class Optimization_X_mu_portfolio:
+    """Optimise la borne LD d'un problème de portfolio combinatoire
+    """
+    def __init__(self, num_item, c, cov, gamma, principal_lin = True):
         """
-        Modèle d'optimisation pour le problème du sac à dos multi-dimensionnel.
-        c : np.array : Coûts des items
-        num_item : int : Nombre d'items
-        dim : int : Nombre de contraintes
-        X0 : np.array : Valeur initiale de X°_1
-        mu0 : np.array : Valeur initiale de mu
+
+        Args:
+        num_item (int): nombre d'assets
+        c_i (float array de taile ( ,num_item)): coûts du problème
+        cov (float array de taille (num_item, num_item)): matrice de covariance de la contrainte quadratique
+        gamma (float): risk_level dans la contrainte quadratique
+        principal_lin (bool, optional): True pour conserver la contrainte linéaire, False pour conserver la contrainte quadratique. True par défaut
         """
         self.num_item = num_item
-        self.c = r
+        self.c = c
         self.cov = cov
         self.gamma = gamma
-        self.X = np.zeros((2, num_item), dtype=int)
+        self.lin = principal_lin
+        
+        self.X = np.zeros((2, num_item), dtype=float)
         self.mu = np.ones(num_item, dtype=float)
         self.val_actuelle = 0
         
     def B(self):
-        """Borne de la décomposition lagrangienne"""
+        """Borne de la LD"""
         return np.dot(self.c, self.X[0]) + np.dot(self.mu, self.X[0] - self.X[1])
     
     def update_X(self):
         """Met à jour X°_1 et X°_2"""
-        # On résout le sous-problème principal pour obtenir X°_1
-        self.X[0] = np.zeros(self.num_item)
-        self.X[0][np.argmax(self.c + self.mu)] = 1
+        # On résout le sous-problème avec contrainte linéaire, et on le place selon le choix de sous-problème principal
+        self.X[not self.lin] = np.zeros(self.num_item, dtype=float)
+        self.X[not self.lin][np.argmax(self.c + self.mu)] = 1.
         
-        # On résout le deuxième sous-problème X°_2
-        self.X[1] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
+        # On résout le sous-problème avec contrainte quadratique, et on le place selon le choix de sous-problème principal
+        self.X[self.lin] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
         
     def update_val(self):
-        # Actualisation de la valeur actuelle
+        """Actualise la valeur de la borne LD"""
         self.val_actuelle = self.B()
             
     def gradient(self):
         """Gradient de B par rapport à mu. On a besoin de trouver X° qui maximise B à mu fixé"""
         self.update_X()
-        
         return self.X[0] - self.X[1]
 
     def adam_optimizer(self, grad_func, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000, verbose=False):
@@ -124,3 +127,10 @@ class OptimizationModel:
         """
         self.update_val()
         return self.val_actuelle
+    
+    def info_sp_principal(self):
+        """Renvoie le type de sous-problème choisi en tant que principal"""
+        if self.lin:
+            print("Sous-problème principal : Contrainte linéaire")
+        else:
+            print("Sous-problème principal : Contrainte quadratique")
