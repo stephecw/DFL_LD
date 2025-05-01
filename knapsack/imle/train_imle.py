@@ -467,10 +467,10 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     total_regret += batch_regrets.sum().item()
                     total_count += z.size(0)
 
-                    # Calcul de la norme de la différence entre mu et mu_tilde
-                    mu_data = dataloader_train.dataset.tensors[4].to(device)
+                # Calcul de la norme de la différence entre mu et mu_tilde
+                mu_data = dataloader_train.dataset.tensors[4].to(device)
 
-                    mu_diff = torch.norm(mu_data[idx] - mu_tilde, p='fro').item()
+                mu_diff = torch.norm(mu_data - mu_global, p='fro').item()
 
 
                 
