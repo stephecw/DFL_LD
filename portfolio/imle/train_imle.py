@@ -62,7 +62,6 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
 
     # Pour la résolution directe
     solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
-    
     # i-MLE avec solveur exact multi-contrainte
     imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
