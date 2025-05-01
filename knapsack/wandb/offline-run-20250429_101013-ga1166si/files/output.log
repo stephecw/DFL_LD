@@ -1,0 +1,8 @@
+Loading train_5_200_30_500.txt
+Loaded test_5_200_30_500.txt
+Training the model with LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 13.2278
+Eval Epoch 1 | Regret moyen : 15.7900
+Saving the model to models/LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth

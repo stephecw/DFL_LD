@@ -1,0 +1,128 @@
+Loading train_5_200_30_500.txt
+Loaded test_5_200_30_500.txt
+Training the model with dynamic mu and LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 4.5059
+Eval Epoch 1 | Regret moyen : 15.7600
+Epoch 2 | loss: 3.9989
+Epoch 3 | loss: 3.7474
+Epoch 4 | loss: 3.5981
+Epoch 5 | loss: 3.3076
+Epoch 6 | loss: 3.2314
+Eval Epoch 6 | Regret moyen : 14.3800
+Epoch 7 | loss: 2.8012
+Epoch 8 | loss: 2.4711
+Epoch 9 | loss: 2.3228
+Epoch 10 | loss: 2.0194
+Epoch 11 | loss: 2.0273
+Eval Epoch 11 | Regret moyen : 12.9800
+Epoch 12 | loss: 1.7776
+Epoch 13 | loss: 1.6600
+Epoch 14 | loss: 1.4927
+Epoch 15 | loss: 1.4975
+Epoch 16 | loss: 1.4598
+Eval Epoch 16 | Regret moyen : 12.2900
+Epoch 17 | loss: 1.3154
+Epoch 18 | loss: 1.2985
+Epoch 19 | loss: 1.3066
+Epoch 20 | loss: 1.2722
+Epoch 21 | loss: 1.2074
+Eval Epoch 21 | Regret moyen : 12.0800
+Epoch 22 | loss: 1.1852
+Epoch 23 | loss: 1.1312
+Epoch 24 | loss: 1.1568
+Epoch 25 | loss: 1.0634
+Epoch 26 | loss: 1.1353
+Eval Epoch 26 | Regret moyen : 11.7500
+Epoch 27 | loss: 1.0222
+Epoch 28 | loss: 1.0008
+Epoch 29 | loss: 0.9996
+Epoch 30 | loss: 0.9719
+Epoch 31 | loss: 1.0351
+Eval Epoch 31 | Regret moyen : 11.5700
+Epoch 32 | loss: 0.9745
+Epoch 33 | loss: 0.9798
+Epoch 34 | loss: 0.9349
+Epoch 35 | loss: 0.8735
+Epoch 36 | loss: 0.9612
+Eval Epoch 36 | Regret moyen : 11.6500
+Epoch 37 | loss: 0.9193
+Epoch 38 | loss: 0.9374
+Epoch 39 | loss: 0.8624
+Epoch 40 | loss: 0.8683
+Epoch 41 | loss: 0.9166
+Eval Epoch 41 | Regret moyen : 11.7500
+Epoch 42 | loss: 0.8808
+Epoch 43 | loss: 0.8592
+Epoch 44 | loss: 0.8171
+Epoch 45 | loss: 0.8336
+Epoch 46 | loss: 0.8510
+Eval Epoch 46 | Regret moyen : 11.9800
+Epoch 47 | loss: 0.7975
+Epoch 48 | loss: 0.7734
+Epoch 49 | loss: 0.8508
+Epoch 50 | loss: 0.8005
+Epoch 51 | loss: 0.8331
+Eval Epoch 51 | Regret moyen : 12.0900
+Epoch 52 | loss: 0.7694
+Epoch 53 | loss: 0.7957
+Epoch 54 | loss: 0.7752
+Epoch 55 | loss: 0.7715
+Epoch 56 | loss: 0.7444
+Eval Epoch 56 | Regret moyen : 12.1800
+Epoch 57 | loss: 0.7940
+Epoch 58 | loss: 0.7250
+Epoch 59 | loss: 0.7475
+Epoch 60 | loss: 0.7275
+Epoch 61 | loss: 0.7583
+Eval Epoch 61 | Regret moyen : 12.4900
+Epoch 62 | loss: 0.7796
+Epoch 63 | loss: 0.7701
+Epoch 64 | loss: 0.7107
+Epoch 65 | loss: 0.7312
+Epoch 66 | loss: 0.7649
+Eval Epoch 66 | Regret moyen : 12.5400
+Epoch 67 | loss: 0.7266
+Epoch 68 | loss: 0.7422
+Epoch 69 | loss: 0.7595
+Epoch 70 | loss: 0.7275
+Epoch 71 | loss: 0.7594
+Eval Epoch 71 | Regret moyen : 12.8700
+Epoch 72 | loss: 0.7215
+Epoch 73 | loss: 0.6988
+Epoch 74 | loss: 0.7030
+Epoch 75 | loss: 0.7330
+Epoch 76 | loss: 0.7308
+Eval Epoch 76 | Regret moyen : 12.8400
+Epoch 77 | loss: 0.6863
+Epoch 78 | loss: 0.6999
+Epoch 79 | loss: 0.7010
+Epoch 80 | loss: 0.6595
+Epoch 81 | loss: 0.6924
+Eval Epoch 81 | Regret moyen : 13.0000
+Epoch 82 | loss: 0.7205
+Epoch 83 | loss: 0.7262
+Epoch 84 | loss: 0.6713
+Epoch 85 | loss: 0.6492
+Epoch 86 | loss: 0.7337
+Eval Epoch 86 | Regret moyen : 13.1000
+Epoch 87 | loss: 0.6924
+Epoch 88 | loss: 0.6489
+Epoch 89 | loss: 0.6732
+Epoch 90 | loss: 0.6613
+Epoch 91 | loss: 0.7279
+Eval Epoch 91 | Regret moyen : 13.1600
+Epoch 92 | loss: 0.6786
+Epoch 93 | loss: 0.7000
+Epoch 94 | loss: 0.6653
+Epoch 95 | loss: 0.7089
+Epoch 96 | loss: 0.6891
+Eval Epoch 96 | Regret moyen : 13.2000
+Epoch 97 | loss: 0.6653
+Epoch 98 | loss: 0.6170
+Epoch 99 | loss: 0.6469
+Epoch 100 | loss: 0.6599
+Saving the model to models/SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth
+/home/stephecw/env_projet/lib/python3.10/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 100 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))

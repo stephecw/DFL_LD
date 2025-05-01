@@ -4,6 +4,7 @@ from torch import nn
 from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE
 
+
 from my_solver import Solveur_lin
 
 from opti_X_mu import OptimizationModel
@@ -325,11 +326,13 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             # Mise à jour de mu_global
             if epoch % step_mu == 0:
+
                 mu_tilde = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i], cov, gamma, num_item, n_iter_mu, mu_tilde) for i in range(dataloader_train.batch_size))
                 mu_global[idx] = mu_tilde
 
             # Résolution avec i-MLE
             X1p = imle(c_hat + mu_tilde).to(device)   # x̂ obtenu avec solve_main_problem
+
 
             # (c + mu) · (w - x̂)
             profit_modified = c + mu    # shape [batch, n]
@@ -368,7 +371,7 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
-        
+                
         if epoch % 5 == 0:
             with torch.no_grad():
                 model.eval()
@@ -397,13 +400,15 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     batch_regrets = torch.stack(batch_regrets)
                     total_regret += batch_regrets.sum().item()
                     total_count += z.size(0)
-                    
+
             mean_regret = total_regret / total_count
+
+
             if run is not None:
                 # Enregistrement des résultats dans wandb
-                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
+                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time, "mu_diff_norm": mu_diff})
             if verbose:
-                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
+                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f} | ‖μ_global - μ_data‖_F : {mu_diff:.4f}")
             
     if run is not None:   
         end_time = time.time()

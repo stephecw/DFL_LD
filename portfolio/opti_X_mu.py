@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import minimize
+from gurobi_solver import gurobi_portfolio_solver
 
 def solve_sp(X_2, mu, cov, gamma):
     # Fonction objective à minimiser (opposé de la fonction à maximiser)
@@ -24,10 +25,12 @@ def solve_sp(X_2, mu, cov, gamma):
     
     return res.x
 
+
 class Optimization_X_mu_portfolio:
     """Optimise la borne LD d'un problème de portfolio combinatoire
     """
     def __init__(self, num_item, c, cov, gamma, principal_lin = True):
+
         """
 
         Args:
@@ -41,10 +44,12 @@ class Optimization_X_mu_portfolio:
         self.c = c
         self.cov = cov
         self.gamma = gamma
+
         self.lin = principal_lin
         
         self.X = np.zeros((2, num_item), dtype=float)
         self.mu = np.ones(num_item, dtype=float)
+
         self.val_actuelle = 0
         
     def B(self):
@@ -127,6 +132,7 @@ class Optimization_X_mu_portfolio:
         """
         self.update_val()
         return self.val_actuelle
+
     
     def info_sp_principal(self):
         """Renvoie le type de sous-problème choisi en tant que principal"""
@@ -134,3 +140,4 @@ class Optimization_X_mu_portfolio:
             print("Sous-problème principal : Contrainte linéaire")
         else:
             print("Sous-problème principal : Contrainte quadratique")
+
