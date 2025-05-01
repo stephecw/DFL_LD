@@ -27,10 +27,8 @@ def solve_sp(X_2, mu, cov, gamma):
 
 
 class Optimization_X_mu_portfolio:
-    """Optimise la borne LD d'un problème de portfolio combinatoire
-    """
+    """Optimise la borne LD d'un problème de portfolio combinatoire"""
     def __init__(self, num_item, c, cov, gamma, principal_lin = True):
-
         """
 
         Args:
@@ -47,6 +45,7 @@ class Optimization_X_mu_portfolio:
 
         self.lin = principal_lin
         
+        self.num_item = num_item
         self.X = np.zeros((2, num_item), dtype=float)
         self.mu = np.ones(num_item, dtype=float)
 
@@ -59,11 +58,11 @@ class Optimization_X_mu_portfolio:
     def update_X(self):
         """Met à jour X°_1 et X°_2"""
         # On résout le sous-problème avec contrainte linéaire, et on le place selon le choix de sous-problème principal
-        self.X[not self.lin] = np.zeros(self.num_item, dtype=float)
-        self.X[not self.lin][np.argmax(self.c + self.mu)] = 1.
+        self.X[0] = np.zeros(self.num_item, dtype=float)
+        self.X[0][np.argmax(self.c + self.mu)] = 1.
         
         # On résout le sous-problème avec contrainte quadratique, et on le place selon le choix de sous-problème principal
-        self.X[self.lin] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
+        self.X[1] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
         
     def update_val(self):
         """Actualise la valeur de la borne LD"""
