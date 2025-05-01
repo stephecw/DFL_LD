@@ -21,7 +21,9 @@ parser.add_argument('--n_iter_mu', type=int, default=10, help='Nombre d\'itérat
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Entraînement sur :", device)
 
+
 def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test, gamma,
+
               batch_size=32, epochs=20, lr=1e-3, 
               schedulerType="StepLR", sched_step_size=50, sched_gamma=0.5,
               IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
@@ -110,9 +112,9 @@ def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test,
     elif jobtype == "SG":
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
+
         train_SG(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
-                 IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
-                 verbose=verbose, step_mu=step_mu, n_iter_mu=n_iter_mu)
+
         
 
 
@@ -272,4 +274,6 @@ for d in dim:
         if epochs_SG > 0:
             run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
                     IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
+
                     sched_step_size=300, sched_gamma=0.5)
+
