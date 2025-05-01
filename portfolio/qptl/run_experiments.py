@@ -2,9 +2,9 @@ import sched
 import torch
 from torch import optim
 from data_import import ImportDataset
-from imle.train_imle import train, train_LD, train_SG
+from qptl.train_qptl import train, train_LD, train_SG
 
-from imle.train_imle import CustomMLP
+from qptl.train_qptl import CustomMLP
 
 import argparse
 
