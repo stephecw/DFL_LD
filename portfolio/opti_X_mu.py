@@ -1,6 +1,7 @@
 import numpy as np
 
 from scipy.optimize import minimize
+from gurobi_solver import gurobi_portfolio_solver
 
 def solve_sp(X_2, mu, cov, gamma):
     # Fonction objective à minimiser (opposé de la fonction à maximiser)
@@ -26,7 +27,7 @@ def solve_sp(X_2, mu, cov, gamma):
     return res.x
 
 class OptimizationModel:
-    def __init__(self, num_item, r, cov, gamma):
+    def __init__(self, num_item, r, cov, gamma, mu = None):
         """
         Modèle d'optimisation pour le problème du sac à dos multi-dimensionnel.
         c : np.array : Coûts des items
@@ -40,7 +41,10 @@ class OptimizationModel:
         self.cov = cov
         self.gamma = gamma
         self.X = np.zeros((2, num_item), dtype=int)
-        self.mu = np.ones(num_item, dtype=float)
+        if mu is not None:
+            self.mu = mu
+        else:
+            self.mu = np.ones(num_item, dtype=float)
         self.val_actuelle = 0
         
     def B(self):
@@ -124,3 +128,4 @@ class OptimizationModel:
         """
         self.update_val()
         return self.val_actuelle
+    
