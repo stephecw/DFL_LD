@@ -4,10 +4,9 @@ from torch import nn
 from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE
 
-
 from my_solver import Solveur_lin
+from opti_X_mu import Optimization_X_mu_portfolio
 
-from opti_X_mu import OptimizationModel
 from joblib import Parallel, delayed
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
