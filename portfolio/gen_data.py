@@ -121,11 +121,12 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
 
     # Sauvegarde
-    write_dataset_file(f"datasets/train_{num_item}_{num_data_train}_{num_feat}_{gamma}.txt",
+    gamma_str = str(gamma).replace('.', '-')
+    write_dataset_file(f"datasets/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                        num_feat, num_item, num_data_train,
                        cov, gamma, Z_train, r_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"datasets/test_{num_item}_{num_data_train}_{num_feat}_{gamma}.txt",
+    write_dataset_file(f"datasets/test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                        num_feat, num_item, num_data_test,
                        cov, gamma, Z_test, r_test, x_star_test, X_test, mu_test)
     
