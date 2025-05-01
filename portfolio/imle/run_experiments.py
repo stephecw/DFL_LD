@@ -114,9 +114,9 @@ def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test,
             print("Training the model with dynamic mu and LD bound as loss...")
 
         train_SG(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
-
+                    IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
+                    verbose=verbose)
         
-
 
     # Enregistrement du modèle
     if save_model:
