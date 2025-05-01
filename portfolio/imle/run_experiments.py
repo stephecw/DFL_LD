@@ -1,4 +1,3 @@
-import sched
 import torch
 from torch import optim
 from data_import import ImportDataset
@@ -22,7 +21,9 @@ parser.add_argument('--n_iter_mu', type=int, default=10, help='Nombre d\'itérat
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Entraînement sur :", device)
 
-def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_test, 
+
+def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test, gamma,
+
               batch_size=32, epochs=20, lr=1e-3, 
               schedulerType="StepLR", sched_step_size=50, sched_gamma=0.5,
               IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
@@ -57,20 +58,21 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
         run = wandb.init(mode = "offline", **wandbarg)
     
     # Chargement du train dataset
+    gamma_str = str(gamma).replace('.', '-')
     if verbose:
-        print(f"Loading train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+        print(f"Loading train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     try:
-        train_set = ImportDataset(f"datasets1000/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"datasets/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
-        print(f"File not found. Generating dataset with {num_data_train} data.")
+        print(f"File not found.")
         return
     
     if verbose:
-        print(f"Loaded test_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+        print(f"Loaded test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     try:
-        test_set = ImportDataset(f"datasets1000/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
+        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
-        print(f"File not found. Generating dataset with {num_data_train} data.")
+        print(f"File not found.")
         return
    
     # Construction du dataloader
@@ -78,8 +80,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Paramètres du problème
-    weights = train_set.get_weights(tensor=True)
-    capacities = train_set.get_capacities(tensor=True)
+    cov = train_set.get_cov(tensor=True)
 
     # Modèle, optimiseur et scheduleur
     optimizer = optim.Adam(model.parameters(), lr)
@@ -99,21 +100,21 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     if jobtype == "LD":
         if verbose:
             print("Training the model with LD bound as loss...")
-        train_LD(model, run, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs,
+        train_LD(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
                  IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                  verbose=verbose)
     elif jobtype == "classic":
         if verbose:
             print("Training the model with regret as loss...")
-        train(model, run, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs, 
+        train(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, 
                     IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                     verbose=verbose)
     elif jobtype == "SG":
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
-        train_SG(model, run, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs,
-                 IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
-                 verbose=verbose, step_mu=step_mu, n_iter_mu=n_iter_mu)
+
+        train_SG(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
+
         
 
 
@@ -273,4 +274,6 @@ for d in dim:
         if epochs_SG > 0:
             run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
                     IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
+
                     sched_step_size=300, sched_gamma=0.5)
+

@@ -4,25 +4,35 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 class ImportDataset:
+    """Classe pour gérer l'import de données pour l'entrainement ou le test
+    """
 
     def __init__(self, fname, model=None, z_stats=None):
+        """
+
+        Args:
+            fname (str): emplacement du dataset à importer
+            model (optModel, optional): Si non None, créer un optDataset incluant model au lieu d'un TensorDataset. Defaults to None.
+            z_stats ((float array (,num_feat) ou (num_data ,num_feat), float array (,num_feat) ou (num_data ,num_feat)), optional):
+            paramètres de normalisation des features. Si None, une normalisation centrée réduite est effectuée. Defaults to None.
+        """
 
         self.read_file(fname)
 
         Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
-
-        if z_stats is None:               # on calcule les stats sur CE dataset
+        # Normalisation
+        if z_stats is None:
             self.z_mean = Z_tensor.mean(dim=0, keepdim=True)
             self.z_std  = Z_tensor.std (dim=0, keepdim=True)
             self.z_std[self.z_std == 0] = 1.0         # évite div/0
-        else:                             # on ré-utilise celles passées
+        else:                         
             self.z_mean, self.z_std = z_stats
-        Z_tensor = (Z_tensor - self.z_mean) / self.z_std # Normalisation
-
+        Z_tensor = (Z_tensor - self.z_mean) / self.z_std 
         self.Z_tensor  = Z_tensor
-        self.r_tensor  = torch.tensor(self.r , dtype=torch.float32)
+        
+        self.r_tensor  = torch.tensor(self.c , dtype=torch.float32)
         self.x_tensor  = torch.tensor(self.x , dtype=torch.float32)
-        self.X_tensor  = torch.tensor(self.X , dtype=torch.int32)
+        self.X_tensor  = torch.tensor(self.X , dtype=torch.float32)
         self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
 
 
@@ -39,29 +49,34 @@ class ImportDataset:
     
     def read_file(self,fname):
         """
-        Lit le fichier de données.
+        Lit le fichier de données à l'emplacement fname.
         """
         with open(fname, 'r') as f:
             lines = f.readlines()
+            # Lecture des tailles
             self.num_data, self.num_feat, self.num_item, self.gamma = map((int, int, int, float), lines[0].split(","))
+            
+            # Lecture de cov
             self.cov = []
-            for i in range(self.num_item):
-                self.cov.append(list(map(float, lines[i+1].split(","))))
+            for i in range(1, self.num_item + 1):
+                self.cov.append(list(map(float, lines[i].split(","))))
             self.cov = np.array(self.cov)
+            
+            # Lecture des données des problèmes
             self.Z = []
-            self.r = []
+            self.c = []
             self.x = []
             self.X = []
             self.mu = []
             for i in range(self.num_data):
-                line = lines[self.dim+1+i].split(",")
+                line = lines[self.num_item+1+i].split(",")
                 self.Z.append(list(map(float, line[:self.num_feat])))
-                self.r.append(list(map(float, line[self.num_feat : self.num_feat + self.num_item])))
+                self.c.append(list(map(float, line[self.num_feat : self.num_feat + self.num_item])))
                 self.x.append(list(map(float, line[self.num_feat + self.num_item : self.num_feat + 2*self.num_item])))
-                self.X.append(list(map(int, line[self.num_feat + 2*self.num_item : self.num_feat + 3*self.num_item])))
+                self.X.append(list(map(float, line[self.num_feat + 2*self.num_item : self.num_feat + 3*self.num_item])))
                 self.mu.append(list(map(float, line[self.num_feat + 3*self.num_item :])))
             self.Z = np.array(self.Z)
-            self.r = np.array(self.r)
+            self.c = np.array(self.r)
             self.x = np.array(self.x)
             self.X = np.array(self.X)
             self.mu = np.array(self.mu)
@@ -102,7 +117,7 @@ class ImportDataset:
     
     def get_dataloader(self, batch_size=32, shuffle=True):
         """
-        Retourne le DataLoader PyTorch, avec des batchs de (Z, r, x, X°, mu).
+        Retourne le DataLoader PyTorch, avec des batchs de (Z, c, x, X°, mu).
         batch_size : int : Taille des batchs.
         shuffle : bool : Si True, mélange les données.
         """
