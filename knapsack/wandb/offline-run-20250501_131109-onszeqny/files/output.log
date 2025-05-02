@@ -1,0 +1,488 @@
+Loading train_5_200_30_500.txt
+Loaded test_5_200_30_500.txt
+Training the model with dynamic mu and LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 6.6791
+Eval Epoch 1 | Regret moyen : 15.4200 | ‖μ_global - μ_data‖_F : 398.7543
+Epoch 2 | loss: 6.0630
+Epoch 3 | loss: 5.8546
+Epoch 4 | loss: 5.6519
+Epoch 5 | loss: 5.3119
+Epoch 6 | loss: 5.0039
+Eval Epoch 6 | Regret moyen : 14.3600 | ‖μ_global - μ_data‖_F : 398.7543
+Epoch 7 | loss: 4.6145
+Epoch 8 | loss: 4.3588
+Epoch 9 | loss: 4.1286
+Epoch 10 | loss: 3.9240
+Epoch 11 | loss: 4.0326
+Eval Epoch 11 | Regret moyen : 13.5300 | ‖μ_global - μ_data‖_F : 378.2981
+Epoch 12 | loss: 3.7464
+Epoch 13 | loss: 3.6364
+Epoch 14 | loss: 3.5783
+Epoch 15 | loss: 3.5552
+Epoch 16 | loss: 3.4779
+Eval Epoch 16 | Regret moyen : 12.3400 | ‖μ_global - μ_data‖_F : 378.2981
+Epoch 17 | loss: 3.4271
+Epoch 18 | loss: 3.3938
+Epoch 19 | loss: 3.3046
+Epoch 20 | loss: 3.3193
+Epoch 21 | loss: 3.4162
+Eval Epoch 21 | Regret moyen : 12.3300 | ‖μ_global - μ_data‖_F : 360.0411
+Epoch 22 | loss: 3.2644
+Epoch 23 | loss: 3.2635
+Epoch 24 | loss: 3.2163
+Epoch 25 | loss: 3.1693
+Epoch 26 | loss: 3.1438
+Eval Epoch 26 | Regret moyen : 11.9800 | ‖μ_global - μ_data‖_F : 360.0411
+Epoch 27 | loss: 3.1476
+Epoch 28 | loss: 3.0859
+Epoch 29 | loss: 3.1171
+Epoch 30 | loss: 3.0829
+Epoch 31 | loss: 3.1639
+Eval Epoch 31 | Regret moyen : 11.7500 | ‖μ_global - μ_data‖_F : 344.1946
+Epoch 32 | loss: 3.1061
+Epoch 33 | loss: 3.0819
+Epoch 34 | loss: 3.0618
+Epoch 35 | loss: 3.0380
+Epoch 36 | loss: 2.9971
+Eval Epoch 36 | Regret moyen : 11.4800 | ‖μ_global - μ_data‖_F : 344.1946
+Epoch 37 | loss: 3.0079
+Epoch 38 | loss: 3.0258
+Epoch 39 | loss: 3.0203
+Epoch 40 | loss: 3.0023
+Epoch 41 | loss: 3.1036
+Eval Epoch 41 | Regret moyen : 12.2400 | ‖μ_global - μ_data‖_F : 331.0619
+Epoch 42 | loss: 3.0578
+Epoch 43 | loss: 2.9661
+Epoch 44 | loss: 3.0322
+Epoch 45 | loss: 2.9564
+Epoch 46 | loss: 2.9809
+Eval Epoch 46 | Regret moyen : 12.0800 | ‖μ_global - μ_data‖_F : 331.0619
+Epoch 47 | loss: 2.9676
+Epoch 48 | loss: 2.9894
+Epoch 49 | loss: 2.9938
+Epoch 50 | loss: 2.9514
+Epoch 51 | loss: 3.0187
+Eval Epoch 51 | Regret moyen : 12.0100 | ‖μ_global - μ_data‖_F : 320.8853
+Epoch 52 | loss: 2.9357
+Epoch 53 | loss: 2.9272
+Epoch 54 | loss: 2.9706
+Epoch 55 | loss: 2.9162
+Epoch 56 | loss: 2.8828
+Eval Epoch 56 | Regret moyen : 11.7900 | ‖μ_global - μ_data‖_F : 320.8853
+Epoch 57 | loss: 2.9595
+Epoch 58 | loss: 2.9063
+Epoch 59 | loss: 2.8767
+Epoch 60 | loss: 2.8808
+Epoch 61 | loss: 2.9137
+Eval Epoch 61 | Regret moyen : 11.6100 | ‖μ_global - μ_data‖_F : 313.7036
+Epoch 62 | loss: 2.9041
+Epoch 63 | loss: 2.8594
+Epoch 64 | loss: 2.8492
+Epoch 65 | loss: 2.8287
+Epoch 66 | loss: 2.8069
+Eval Epoch 66 | Regret moyen : 11.8100 | ‖μ_global - μ_data‖_F : 313.7036
+Epoch 67 | loss: 2.8600
+Epoch 68 | loss: 2.8396
+Epoch 69 | loss: 2.8259
+Epoch 70 | loss: 2.8484
+Epoch 71 | loss: 2.8695
+Eval Epoch 71 | Regret moyen : 11.5400 | ‖μ_global - μ_data‖_F : 307.8832
+Epoch 72 | loss: 2.8285
+Epoch 73 | loss: 2.8108
+Epoch 74 | loss: 2.7793
+Epoch 75 | loss: 2.7637
+Epoch 76 | loss: 2.7875
+Eval Epoch 76 | Regret moyen : 11.9400 | ‖μ_global - μ_data‖_F : 307.8832
+Epoch 77 | loss: 2.7718
+Epoch 78 | loss: 2.7326
+Epoch 79 | loss: 2.7634
+Epoch 80 | loss: 2.7841
+Epoch 81 | loss: 2.7874
+Eval Epoch 81 | Regret moyen : 11.6800 | ‖μ_global - μ_data‖_F : 303.2432
+Epoch 82 | loss: 2.7319
+Epoch 83 | loss: 2.7677
+Epoch 84 | loss: 2.6867
+Epoch 85 | loss: 2.7498
+Epoch 86 | loss: 2.6931
+Eval Epoch 86 | Regret moyen : 11.5900 | ‖μ_global - μ_data‖_F : 303.2432
+Epoch 87 | loss: 2.7247
+Epoch 88 | loss: 2.6994
+Epoch 89 | loss: 2.6771
+Epoch 90 | loss: 2.6933
+Epoch 91 | loss: 2.7117
+Eval Epoch 91 | Regret moyen : 11.4900 | ‖μ_global - μ_data‖_F : 299.4037
+Epoch 92 | loss: 2.6704
+Epoch 93 | loss: 2.6767
+Epoch 94 | loss: 2.7007
+Epoch 95 | loss: 2.6279
+Epoch 96 | loss: 2.6517
+Eval Epoch 96 | Regret moyen : 12.0100 | ‖μ_global - μ_data‖_F : 299.4037
+Epoch 97 | loss: 2.6390
+Epoch 98 | loss: 2.6289
+Epoch 99 | loss: 2.6524
+Epoch 100 | loss: 2.6010
+Epoch 101 | loss: 2.6888
+Eval Epoch 101 | Regret moyen : 11.4500 | ‖μ_global - μ_data‖_F : 296.2594
+Epoch 102 | loss: 2.6252
+Epoch 103 | loss: 2.6491
+Epoch 104 | loss: 2.6214
+Epoch 105 | loss: 2.6070
+Epoch 106 | loss: 2.5857
+Eval Epoch 106 | Regret moyen : 11.5400 | ‖μ_global - μ_data‖_F : 296.2594
+Epoch 107 | loss: 2.5885
+Epoch 108 | loss: 2.5856
+Epoch 109 | loss: 2.5694
+Epoch 110 | loss: 2.5677
+Epoch 111 | loss: 2.5864
+Eval Epoch 111 | Regret moyen : 11.1400 | ‖μ_global - μ_data‖_F : 293.7471
+Epoch 112 | loss: 2.5822
+Epoch 113 | loss: 2.6182
+Epoch 114 | loss: 2.5733
+Epoch 115 | loss: 2.5869
+Epoch 116 | loss: 2.5823
+Eval Epoch 116 | Regret moyen : 10.4300 | ‖μ_global - μ_data‖_F : 293.7471
+Epoch 117 | loss: 2.5929
+Epoch 118 | loss: 2.5828
+Epoch 119 | loss: 2.5492
+Epoch 120 | loss: 2.5609
+Epoch 121 | loss: 2.5649
+Eval Epoch 121 | Regret moyen : 10.7600 | ‖μ_global - μ_data‖_F : 291.6990
+Epoch 122 | loss: 2.5549
+Epoch 123 | loss: 2.5940
+Epoch 124 | loss: 2.5244
+Epoch 125 | loss: 2.5597
+Epoch 126 | loss: 2.5572
+Eval Epoch 126 | Regret moyen : 10.2200 | ‖μ_global - μ_data‖_F : 291.6990
+Epoch 127 | loss: 2.5434
+Epoch 128 | loss: 2.5227
+Epoch 129 | loss: 2.5498
+Epoch 130 | loss: 2.5641
+Epoch 131 | loss: 2.5615
+Eval Epoch 131 | Regret moyen : 9.9700 | ‖μ_global - μ_data‖_F : 290.1221
+Epoch 132 | loss: 2.5281
+Epoch 133 | loss: 2.5213
+Epoch 134 | loss: 2.5306
+Epoch 135 | loss: 2.5391
+Epoch 136 | loss: 2.5148
+Eval Epoch 136 | Regret moyen : 10.2700 | ‖μ_global - μ_data‖_F : 290.1221
+Epoch 137 | loss: 2.5258
+Epoch 138 | loss: 2.4925
+Epoch 139 | loss: 2.5194
+Epoch 140 | loss: 2.4931
+Epoch 141 | loss: 2.5144
+Eval Epoch 141 | Regret moyen : 9.4200 | ‖μ_global - μ_data‖_F : 288.8369
+Epoch 142 | loss: 2.4907
+Epoch 143 | loss: 2.4776
+Epoch 144 | loss: 2.4940
+Epoch 145 | loss: 2.5217
+Epoch 146 | loss: 2.4657
+Eval Epoch 146 | Regret moyen : 9.7100 | ‖μ_global - μ_data‖_F : 288.8369
+Epoch 147 | loss: 2.4499
+Epoch 148 | loss: 2.4673
+Epoch 149 | loss: 2.5182
+Epoch 150 | loss: 2.4680
+Epoch 151 | loss: 2.5191
+Eval Epoch 151 | Regret moyen : 9.7500 | ‖μ_global - μ_data‖_F : 288.2964
+Epoch 152 | loss: 2.4548
+Epoch 153 | loss: 2.4248
+Epoch 154 | loss: 2.4372
+Epoch 155 | loss: 2.4196
+Epoch 156 | loss: 2.4260
+Eval Epoch 156 | Regret moyen : 9.6200 | ‖μ_global - μ_data‖_F : 288.2964
+Epoch 157 | loss: 2.4662
+Epoch 158 | loss: 2.4596
+Epoch 159 | loss: 2.4324
+Epoch 160 | loss: 2.4199
+Epoch 161 | loss: 2.4473
+Eval Epoch 161 | Regret moyen : 8.9600 | ‖μ_global - μ_data‖_F : 287.9659
+Epoch 162 | loss: 2.4493
+Epoch 163 | loss: 2.4305
+Epoch 164 | loss: 2.4305
+Epoch 165 | loss: 2.3982
+Epoch 166 | loss: 2.4068
+Eval Epoch 166 | Regret moyen : 9.0800 | ‖μ_global - μ_data‖_F : 287.9659
+Epoch 167 | loss: 2.4263
+Epoch 168 | loss: 2.4359
+Epoch 169 | loss: 2.4507
+Epoch 170 | loss: 2.4472
+Epoch 171 | loss: 2.4404
+Eval Epoch 171 | Regret moyen : 9.1400 | ‖μ_global - μ_data‖_F : 288.0527
+Epoch 172 | loss: 2.3977
+Epoch 173 | loss: 2.4226
+Epoch 174 | loss: 2.3858
+Epoch 175 | loss: 2.4031
+Epoch 176 | loss: 2.3845
+Eval Epoch 176 | Regret moyen : 9.2400 | ‖μ_global - μ_data‖_F : 288.0527
+Epoch 177 | loss: 2.4074
+Epoch 178 | loss: 2.4205
+Epoch 179 | loss: 2.3840
+Epoch 180 | loss: 2.3944
+Epoch 181 | loss: 2.3860
+Eval Epoch 181 | Regret moyen : 9.0800 | ‖μ_global - μ_data‖_F : 288.4368
+Epoch 182 | loss: 2.4619
+Epoch 183 | loss: 2.4209
+Epoch 184 | loss: 2.3807
+Epoch 185 | loss: 2.3923
+Epoch 186 | loss: 2.4255
+Eval Epoch 186 | Regret moyen : 9.1100 | ‖μ_global - μ_data‖_F : 288.4368
+Epoch 187 | loss: 2.3928
+Epoch 188 | loss: 2.4131
+Epoch 189 | loss: 2.3636
+Epoch 190 | loss: 2.3929
+Epoch 191 | loss: 2.3938
+Eval Epoch 191 | Regret moyen : 9.2100 | ‖μ_global - μ_data‖_F : 289.3112
+Epoch 192 | loss: 2.3618
+Epoch 193 | loss: 2.4007
+Epoch 194 | loss: 2.3982
+Epoch 195 | loss: 2.3741
+Epoch 196 | loss: 2.3890
+Eval Epoch 196 | Regret moyen : 9.0200 | ‖μ_global - μ_data‖_F : 289.3112
+Epoch 197 | loss: 2.3720
+Epoch 198 | loss: 2.3991
+Epoch 199 | loss: 2.3702
+Epoch 200 | loss: 2.3641
+Epoch 201 | loss: 2.3838
+Eval Epoch 201 | Regret moyen : 9.1000 | ‖μ_global - μ_data‖_F : 290.2109
+Epoch 202 | loss: 2.3535
+Epoch 203 | loss: 2.3591
+Epoch 204 | loss: 2.3765
+Epoch 205 | loss: 2.3920
+Epoch 206 | loss: 2.3794
+Eval Epoch 206 | Regret moyen : 9.3200 | ‖μ_global - μ_data‖_F : 290.2109
+Epoch 207 | loss: 2.3785
+Epoch 208 | loss: 2.3884
+Epoch 209 | loss: 2.3582
+Epoch 210 | loss: 2.3663
+Epoch 211 | loss: 2.3561
+Eval Epoch 211 | Regret moyen : 9.1800 | ‖μ_global - μ_data‖_F : 291.4721
+Epoch 212 | loss: 2.3709
+Epoch 213 | loss: 2.3779
+Epoch 214 | loss: 2.3504
+Epoch 215 | loss: 2.3967
+Epoch 216 | loss: 2.3701
+Eval Epoch 216 | Regret moyen : 9.3100 | ‖μ_global - μ_data‖_F : 291.4721
+Epoch 217 | loss: 2.3358
+Epoch 218 | loss: 2.3730
+Epoch 219 | loss: 2.3560
+Epoch 220 | loss: 2.3308
+Epoch 221 | loss: 2.3769
+Eval Epoch 221 | Regret moyen : 8.6600 | ‖μ_global - μ_data‖_F : 292.6873
+Epoch 222 | loss: 2.3923
+Epoch 223 | loss: 2.3189
+Epoch 224 | loss: 2.3527
+Epoch 225 | loss: 2.3500
+Epoch 226 | loss: 2.3735
+Eval Epoch 226 | Regret moyen : 9.0300 | ‖μ_global - μ_data‖_F : 292.6873
+Epoch 227 | loss: 2.3685
+Epoch 228 | loss: 2.3667
+Epoch 229 | loss: 2.3664
+Epoch 230 | loss: 2.3424
+Epoch 231 | loss: 2.3542
+Eval Epoch 231 | Regret moyen : 9.0200 | ‖μ_global - μ_data‖_F : 294.0060
+Epoch 232 | loss: 2.3536
+Epoch 233 | loss: 2.3353
+Epoch 234 | loss: 2.3229
+Epoch 235 | loss: 2.3573
+Epoch 236 | loss: 2.3626
+Eval Epoch 236 | Regret moyen : 9.1900 | ‖μ_global - μ_data‖_F : 294.0060
+Epoch 237 | loss: 2.3392
+Epoch 238 | loss: 2.3333
+Epoch 239 | loss: 2.3343
+Epoch 240 | loss: 2.3165
+Epoch 241 | loss: 2.3199
+Eval Epoch 241 | Regret moyen : 8.7300 | ‖μ_global - μ_data‖_F : 295.5276
+Epoch 242 | loss: 2.3376
+Epoch 243 | loss: 2.3295
+Epoch 244 | loss: 2.3115
+Epoch 245 | loss: 2.3290
+Epoch 246 | loss: 2.3141
+Eval Epoch 246 | Regret moyen : 8.7800 | ‖μ_global - μ_data‖_F : 295.5276
+Epoch 247 | loss: 2.3376
+Epoch 248 | loss: 2.3546
+Epoch 249 | loss: 2.3223
+Epoch 250 | loss: 2.3197
+Epoch 251 | loss: 2.3380
+Eval Epoch 251 | Regret moyen : 8.7600 | ‖μ_global - μ_data‖_F : 297.0010
+Epoch 252 | loss: 2.3190
+Epoch 253 | loss: 2.3100
+Epoch 254 | loss: 2.3364
+Epoch 255 | loss: 2.3504
+Epoch 256 | loss: 2.3528
+Eval Epoch 256 | Regret moyen : 8.3100 | ‖μ_global - μ_data‖_F : 297.0010
+Epoch 257 | loss: 2.3209
+Epoch 258 | loss: 2.3314
+Epoch 259 | loss: 2.3422
+Epoch 260 | loss: 2.3319
+Epoch 261 | loss: 2.3271
+Eval Epoch 261 | Regret moyen : 8.4300 | ‖μ_global - μ_data‖_F : 298.9245
+Epoch 262 | loss: 2.3631
+Epoch 263 | loss: 2.3038
+Epoch 264 | loss: 2.3004
+Epoch 265 | loss: 2.2909
+Epoch 266 | loss: 2.3133
+Eval Epoch 266 | Regret moyen : 8.5800 | ‖μ_global - μ_data‖_F : 298.9245
+Epoch 267 | loss: 2.3143
+Epoch 268 | loss: 2.3170
+Epoch 269 | loss: 2.3086
+Epoch 270 | loss: 2.3379
+Epoch 271 | loss: 2.3296
+Eval Epoch 271 | Regret moyen : 8.5300 | ‖μ_global - μ_data‖_F : 300.7791
+Epoch 272 | loss: 2.3180
+Epoch 273 | loss: 2.2922
+Epoch 274 | loss: 2.2934
+Epoch 275 | loss: 2.2963
+Epoch 276 | loss: 2.3017
+Eval Epoch 276 | Regret moyen : 8.6800 | ‖μ_global - μ_data‖_F : 300.7791
+Epoch 277 | loss: 2.3235
+Epoch 278 | loss: 2.3395
+Epoch 279 | loss: 2.2982
+Epoch 280 | loss: 2.3314
+Epoch 281 | loss: 2.3209
+Eval Epoch 281 | Regret moyen : 8.3500 | ‖μ_global - μ_data‖_F : 302.8421
+Epoch 282 | loss: 2.2998
+Epoch 283 | loss: 2.3047
+Epoch 284 | loss: 2.3023
+Epoch 285 | loss: 2.2835
+Epoch 286 | loss: 2.3156
+Eval Epoch 286 | Regret moyen : 8.6100 | ‖μ_global - μ_data‖_F : 302.8421
+Epoch 287 | loss: 2.3196
+Epoch 288 | loss: 2.2815
+Epoch 289 | loss: 2.2888
+Epoch 290 | loss: 2.3302
+Epoch 291 | loss: 2.3188
+Eval Epoch 291 | Regret moyen : 8.3500 | ‖μ_global - μ_data‖_F : 304.9371
+Epoch 292 | loss: 2.3080
+Epoch 293 | loss: 2.2956
+Epoch 294 | loss: 2.2627
+Epoch 295 | loss: 2.2897
+Epoch 296 | loss: 2.3187
+Eval Epoch 296 | Regret moyen : 8.2600 | ‖μ_global - μ_data‖_F : 304.9371
+Epoch 297 | loss: 2.3023
+Epoch 298 | loss: 2.2668
+Epoch 299 | loss: 2.2796
+Epoch 300 | loss: 2.3094
+Epoch 301 | loss: 2.2952
+Eval Epoch 301 | Regret moyen : 8.4200 | ‖μ_global - μ_data‖_F : 307.2215
+Epoch 302 | loss: 2.2892
+Epoch 303 | loss: 2.2948
+Epoch 304 | loss: 2.3104
+Epoch 305 | loss: 2.2857
+Epoch 306 | loss: 2.3034
+Eval Epoch 306 | Regret moyen : 8.3600 | ‖μ_global - μ_data‖_F : 307.2215
+Epoch 307 | loss: 2.2664
+Epoch 308 | loss: 2.2855
+Epoch 309 | loss: 2.2802
+Epoch 310 | loss: 2.2773
+Epoch 311 | loss: 2.2883
+Eval Epoch 311 | Regret moyen : 8.3100 | ‖μ_global - μ_data‖_F : 309.6518
+Epoch 312 | loss: 2.2827
+Epoch 313 | loss: 2.2707
+Epoch 314 | loss: 2.2809
+Epoch 315 | loss: 2.2819
+Epoch 316 | loss: 2.2465
+Eval Epoch 316 | Regret moyen : 8.2000 | ‖μ_global - μ_data‖_F : 309.6518
+Epoch 317 | loss: 2.2288
+Epoch 318 | loss: 2.2809
+Epoch 319 | loss: 2.2619
+Epoch 320 | loss: 2.2750
+Epoch 321 | loss: 2.2822
+Eval Epoch 321 | Regret moyen : 8.4700 | ‖μ_global - μ_data‖_F : 312.2291
+Epoch 322 | loss: 2.2480
+Epoch 323 | loss: 2.2539
+Epoch 324 | loss: 2.2674
+Epoch 325 | loss: 2.2697
+Epoch 326 | loss: 2.2631
+Eval Epoch 326 | Regret moyen : 8.3600 | ‖μ_global - μ_data‖_F : 312.2291
+Epoch 327 | loss: 2.2647
+Epoch 328 | loss: 2.2620
+Epoch 329 | loss: 2.2475
+Epoch 330 | loss: 2.2564
+Epoch 331 | loss: 2.2435
+Eval Epoch 331 | Regret moyen : 8.3000 | ‖μ_global - μ_data‖_F : 314.9274
+Epoch 332 | loss: 2.2415
+Epoch 333 | loss: 2.2656
+Epoch 334 | loss: 2.2639
+Epoch 335 | loss: 2.2417
+Epoch 336 | loss: 2.2174
+Eval Epoch 336 | Regret moyen : 8.4400 | ‖μ_global - μ_data‖_F : 314.9274
+Epoch 337 | loss: 2.2687
+Epoch 338 | loss: 2.2689
+Epoch 339 | loss: 2.2268
+Epoch 340 | loss: 2.2626
+Epoch 341 | loss: 2.2743
+Eval Epoch 341 | Regret moyen : 8.2100 | ‖μ_global - μ_data‖_F : 317.7193
+Epoch 342 | loss: 2.2739
+Epoch 343 | loss: 2.2441
+Epoch 344 | loss: 2.2308
+Epoch 345 | loss: 2.2471
+Epoch 346 | loss: 2.2538
+Eval Epoch 346 | Regret moyen : 8.1200 | ‖μ_global - μ_data‖_F : 317.7193
+Epoch 347 | loss: 2.2539
+Epoch 348 | loss: 2.2615
+Epoch 349 | loss: 2.2350
+Epoch 350 | loss: 2.2514
+Epoch 351 | loss: 2.2286
+Eval Epoch 351 | Regret moyen : 8.2800 | ‖μ_global - μ_data‖_F : 320.6196
+Epoch 352 | loss: 2.2486
+Epoch 353 | loss: 2.2874
+Epoch 354 | loss: 2.2814
+Epoch 355 | loss: 2.2813
+Epoch 356 | loss: 2.2487
+Eval Epoch 356 | Regret moyen : 8.2300 | ‖μ_global - μ_data‖_F : 320.6196
+Epoch 357 | loss: 2.2618
+Epoch 358 | loss: 2.2335
+Epoch 359 | loss: 2.2581
+Epoch 360 | loss: 2.2445
+Epoch 361 | loss: 2.2501
+Eval Epoch 361 | Regret moyen : 8.2100 | ‖μ_global - μ_data‖_F : 323.6550
+Epoch 362 | loss: 2.2553
+Epoch 363 | loss: 2.2388
+Epoch 364 | loss: 2.2748
+Epoch 365 | loss: 2.2703
+Epoch 366 | loss: 2.2531
+Eval Epoch 366 | Regret moyen : 8.3100 | ‖μ_global - μ_data‖_F : 323.6550
+Epoch 367 | loss: 2.2335
+Epoch 368 | loss: 2.2394
+Epoch 369 | loss: 2.2341
+Epoch 370 | loss: 2.2422
+Epoch 371 | loss: 2.2463
+Eval Epoch 371 | Regret moyen : 8.2700 | ‖μ_global - μ_data‖_F : 326.8532
+Epoch 372 | loss: 2.2339
+Epoch 373 | loss: 2.2515
+Epoch 374 | loss: 2.2525
+Epoch 375 | loss: 2.2436
+Epoch 376 | loss: 2.2237
+Eval Epoch 376 | Regret moyen : 8.1900 | ‖μ_global - μ_data‖_F : 326.8532
+Epoch 377 | loss: 2.2587
+Epoch 378 | loss: 2.2255
+Epoch 379 | loss: 2.2113
+Epoch 380 | loss: 2.2335
+Epoch 381 | loss: 2.2534
+Eval Epoch 381 | Regret moyen : 8.4300 | ‖μ_global - μ_data‖_F : 330.1504
+Epoch 382 | loss: 2.2567
+Epoch 383 | loss: 2.2485
+Epoch 384 | loss: 2.2520
+Epoch 385 | loss: 2.2492
+Epoch 386 | loss: 2.2748
+Eval Epoch 386 | Regret moyen : 8.5100 | ‖μ_global - μ_data‖_F : 330.1504
+Epoch 387 | loss: 2.2363
+Epoch 388 | loss: 2.2443
+Epoch 389 | loss: 2.2472
+Epoch 390 | loss: 2.2361
+Epoch 391 | loss: 2.2407
+Eval Epoch 391 | Regret moyen : 8.6000 | ‖μ_global - μ_data‖_F : 333.3630
+Epoch 392 | loss: 2.2284
+Epoch 393 | loss: 2.2441
+Epoch 394 | loss: 2.2906
+Epoch 395 | loss: 2.2314
+Epoch 396 | loss: 2.2338
+Eval Epoch 396 | Regret moyen : 8.5700 | ‖μ_global - μ_data‖_F : 333.3630
+Epoch 397 | loss: 2.2298
+Epoch 398 | loss: 2.2127
+Epoch 399 | loss: 2.2425
+Epoch 400 | loss: 2.2334
+Saving the model to models/SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth
+/home/stephecw/env_projet/lib/python3.10/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 100 will likely result in GPU under-utilization due to low occupancy.
+  warn(NumbaPerformanceWarning(msg))
