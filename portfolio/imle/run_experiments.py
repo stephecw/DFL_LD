@@ -68,25 +68,28 @@ def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test,
         return
     
     if verbose:
-        print(f"Loaded test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        print(f"Loading test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     try:
-        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
-   
-    # Construction du dataloader
-    train_loader = train_set.get_dataloader(batch_size=batch_size, shuffle=True)
-    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
-
+    
     # Paramètres du problème
     cov = train_set.get_cov(tensor=True)
+   
+    # Construction du dataloader
+    if verbose:
+        print(f"Getting train dataloader")
+    train_loader = train_set.get_dataloader(batch_size=batch_size, shuffle=True)
+    if verbose:
+        print(f"Getting test dataloader")
+    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Modèle, optimiseur et scheduleur
     optimizer = optim.Adam(model.parameters(), lr)
-    if schedulerType == "None":
-        scheduler = None
-    elif schedulerType == "StepLR":
+    scheduler = None
+    if schedulerType == "StepLR":
         scheduler = optim.lr_scheduler.StepLR(optimizer, sched_step_size, sched_gamma)
     elif schedulerType == "ReduceLROnPlateau":
         if jobtype == "LD" or jobtype == "SG": patience = 15
@@ -149,7 +152,7 @@ gamma_str = str(gamma).replace('.', '-')
 
 # Paramètres LD
 epochs_LD = args.ep_ld
-lr_LD = 0.001
+lr_LD = 10
 IMLE_n_samples_LD = 10
 IMLE_sigma_LD = 1
 IMLE_lambd_LD = 10
@@ -167,11 +170,11 @@ IMLE_processes_classic = 1
 
 # Paramètres SG
 epochs_SG = args.ep_sg
-lr_SG = 0.001
+lr_SG = 10
 IMLE_n_samples_SG = 10
 IMLE_sigma_SG = 1
 IMLE_lambd_SG = 10
-schedulerType_SG = "None" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
+schedulerType_SG = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 IMLE_processes_SG = 1
 
 # Paramètres modèle
@@ -183,10 +186,10 @@ dropout = 0.2
 
 for n in num_item:
     
-    print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique, {epochs_LD} epochs pour le modèle LD et {epochs_SG} pour le modèle avec SG de mu sur {n} items.")
     
     ### AVEC LD ###
     if epochs_LD > 0:
+        print(f"Entrainement sur {epochs_LD} epochs pour le modèle LD sur {n} items.")
         model = CustomMLP([num_feat,hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
@@ -214,7 +217,7 @@ for n in num_item:
                 }
         }
         run_train(
-            model, "LD", num_feat, n, num_data_train, num_data_test, gamma=gamma, 
+            model, "LD", num_feat, n, num_data_train, num_data_test, gamma=gamma,
             epochs = epochs_LD, lr = lr_LD, schedulerType = schedulerType_LD,
             IMLE_n_samples = IMLE_n_samples_LD, IMLE_sigma = IMLE_sigma_LD, IMLE_lambd = IMLE_lambd_LD, IMLE_processes = IMLE_processes_LD, 
             verbose = True, wandbarg = wandbarg
@@ -223,6 +226,7 @@ for n in num_item:
     
     ### SANS LD ###
     if epochs_classic > 0:
+        print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique {n} items.")
         model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
@@ -259,6 +263,7 @@ for n in num_item:
         
     ### MU DYNAMIQUE ###
     if epochs_SG > 0:
+        print(f"Entrainement sur {epochs_SG} pour le modèle avec SG de mu sur {n} items.")
         model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
@@ -289,7 +294,7 @@ for n in num_item:
         }        
         run_train(
             model, "LD", num_feat, n, num_data_train, num_data_test, gamma=gamma, 
-            epochs = epochs_SG, lr = lr_SG, schedulerType = schedulerType_SG, sched_step_size = 300, sched_gamma = 0.5,
+            epochs = epochs_SG, lr = lr_SG, schedulerType = schedulerType_SG, sched_step_size = 20, sched_gamma = 0.1,
             IMLE_n_samples = IMLE_n_samples_SG, IMLE_sigma = IMLE_sigma_SG, IMLE_lambd = IMLE_lambd_SG, IMLE_processes = IMLE_processes_SG, 
             step_mu = args.step_mu, n_iter_mu = args.n_iter_mu,
             verbose = True, wandbarg = wandbarg

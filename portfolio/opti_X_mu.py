@@ -5,7 +5,7 @@ from gurobi_solver import gurobi_portfolio_solver
 def solve_sp(X_2, mu, cov, gamma):
     # Fonction objective à minimiser (opposé de la fonction à maximiser)
     def objective(x):
-        return np.dot(mu, x)
+        return -np.dot(mu, x)
 
     # Contrainte quadratique
     def constraint(x):
@@ -57,12 +57,18 @@ class Optimization_X_mu_portfolio:
     
     def update_X(self):
         """Met à jour X°_1 et X°_2"""
-        # On résout le sous-problème avec contrainte linéaire, et on le place selon le choix de sous-problème principal
-        self.X[0] = np.zeros(self.num_item, dtype=float)
-        self.X[0][np.argmax(self.c + self.mu)] = 1.
-        
-        # On résout le sous-problème avec contrainte quadratique, et on le place selon le choix de sous-problème principal
-        self.X[1] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
+        if self.lin:
+            # On résout le sous-problème avec contrainte linéaire, et on le place selon le choix de sous-problème principal
+            self.X[0] = np.zeros(self.num_item, dtype=float)
+            self.X[0][np.argmax(self.c + self.mu)] = 1.
+            # On résout le sous-problème avec contrainte quadratique, et on le place selon le choix de sous-problème principal
+            self.X[int(self.lin)] = solve_sp(self.X[1], -self.mu, self.cov, self.gamma)
+        else:
+            # On résout le sous-problème avec contrainte linéaire, et on le place selon le choix de sous-problème principal
+            self.X[1] = np.zeros(self.num_item, dtype=float)
+            self.X[1][np.argmin(self.mu)] = 1.
+            # On résout le sous-problème avec contrainte quadratique, et on le place selon le choix de sous-problème principal
+            self.X[int(self.lin)] = solve_sp(self.X[1], self.c + self.mu, self.cov, self.gamma)
         
     def update_val(self):
         """Actualise la valeur de la borne LD"""
@@ -71,6 +77,7 @@ class Optimization_X_mu_portfolio:
     def gradient(self):
         """Gradient de B par rapport à mu. On a besoin de trouver X° qui maximise B à mu fixé"""
         self.update_X()
+        print(self.X[0] - self.X[1])
         return self.X[0] - self.X[1]
 
     def adam_optimizer(self, grad_func, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000, verbose=False):
@@ -90,9 +97,10 @@ class Optimization_X_mu_portfolio:
             self.mu -= lr * m_hat / (np.sqrt(v_hat) + eps)
 
             if t % 500 == 0:
+                self.update_val()
                 print(f"        Iter {t}, B(mu) = {self.val_actuelle:.6f}")
     
-    def optim_mu(self, mu0=None, verbose=False, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
+    def optim_mu(self, mu0=None, verbose=False, lr=0.1, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
         """
         Optimisation de mu par Adam.
         lr : float : Taux d'apprentissage

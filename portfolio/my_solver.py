@@ -16,12 +16,16 @@ class Solveur_lin(optModel):
         """
         Juste pour satisfaire l’interface requise par optModel.  
         """
-        return None
+        m = gp.Model()               # nécessite « import gurobipy as gp »
+        x = [m.addVar(vtype=gp.GRB.BINARY, name=f"x{i}")
+             for i in range(self.num_item)]
+        m.update()
+        return m, x  
 
     def solve(self):
         sol = torch.zeros(self.num_item)
-        sol[torch.argmax(self.r)] = 1
-        return sol
+        sol[torch.argmax(self.c)] = 1
+        return sol, None
     
 class Solveur_quad(optModel):
     def __init__(self, num_item, cov, gamma):
@@ -42,14 +46,14 @@ class Solveur_quad(optModel):
         # petit modèle bidon
         m = gp.Model()               # nécessite « import gurobipy as gp »
         x = [m.addVar(vtype=gp.GRB.BINARY, name=f"x{i}")
-             for i in range(self.n_items)]
+             for i in range(self.num_item)]
         m.update()
         return m, x                  # ⬅️ deux objets non‑None obligatoires
 
     def solve(self):
         mean = torch.mean(self.cov)
         def objective(x):
-            return np.dot(self.r.detach().cpu().numpy(), x)
+            return np.dot(self.c.detach().cpu().numpy(), x)
 
         # Contrainte quadratique
         def constraint(x):
@@ -67,4 +71,4 @@ class Solveur_quad(optModel):
         # Résolution du problème
         res = minimize(objective, x0, bounds=bounds, constraints=constraints, method='trust-constr')
     
-        return torch.Tensor(res)
+        return torch.Tensor(res), None

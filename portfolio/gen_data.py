@@ -119,6 +119,12 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     x_star_train, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:]
     X_train, X_test = X[:num_data_train], X[num_data_train:]
     mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
+    
+    print(f"x : {x_star_train[0]}")
+    print(f"X : {X_train[0]}")
+    print(f"mu : {mu_train[0]}")
+    print(np.dot(X_train[0].T, np.dot(cov, X_train[0])))
+    print(gamma*np.mean(cov))
 
     # Sauvegarde
     gamma_str = str(gamma).replace('.', '-')
@@ -126,7 +132,7 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
                        num_feat, num_item, num_data_train,
                        cov, gamma, Z_train, r_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"datasets/test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+    write_dataset_file(f"datasets/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt",
                        num_feat, num_item, num_data_test,
                        cov, gamma, Z_test, r_test, x_star_test, X_test, mu_test)
     
