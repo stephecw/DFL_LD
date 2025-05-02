@@ -4,10 +4,9 @@ from torch import nn
 from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE
 
-
 from my_solver import Solveur_lin
+from opti_X_mu import Optimization_X_mu_portfolio
 
-from opti_X_mu import OptimizationModel
 from joblib import Parallel, delayed
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -62,7 +61,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
         train_time = 0
 
     # Pour la résolution directe
-    solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
+    solver = portfolioModel(num_assets=cov.shape[0], covariance=cov.numpy(), gamma=gamma) 
     # i-MLE avec solveur exact multi-contrainte
     imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
@@ -125,7 +124,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
                 batch_regrets = []
 
                 for i in range(z.size(0)):
-                    solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
+                    solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov.numpy(), gamma=gamma) 
                     c_numpy = c_hat[i].detach().cpu().numpy()
                     solver_i.setObj(c_numpy)
                     x_hat_np, _ = solver_i.solve()
@@ -249,7 +248,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     batch_regrets = []
 
                     for i in range(z.size(0)):
-                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
+                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov.numpy(), gamma=gamma) 
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         solver_i.setObj(c_numpy)
                         x_hat_np, _ = solver_i.solve()
@@ -383,7 +382,7 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     batch_regrets = []
 
                     for i in range(z.size(0)):
-                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
+                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov.numpy(), gamma=gamma) 
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         solver_i.setObj(c_numpy)
                         x_hat_np, _ = solver_i.solve()
@@ -416,12 +415,27 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         run.log({"total_duration": total_duration})
         
         
-def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, mu0):
-    optimizer = OptimizationModel(
+def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, mu0, principal_lin):
+    """ Optimise la borne LD pour un problème donné. Voué à être parallélisé.
+    Args:
+        c_i (float array de taile ( ,num_item)): coûts du problème
+        cov (float array de taille (num_item, num_item)): matrice de covariance de la contrainte quadratique
+        gamma (float): risk_level dans la contrainte quadratique
+        num_item (int): nombre d'assets
+        num_iter (int): nombre d'itérations dans la descente de sous-gradient
+        mu0 (float array de taile ( ,num_item)): valeur initiale pour la descente de graident
+        principal_lin (bool, optional): True pour conserver la contrainte linéaire, False pour conserver la contrainte quadratique. True par défaut
+
+    Returns:
+        float array de taille ( ,num_item): solution optimale du sous-problème principal de la LD
+        float array de taille ( ,num_item): multiplicateur de Lagr optimal
+    """
+    optimizer = Optimization_X_mu_portfolio(
         num_item=num_item,
         c=c_i,
         cov=cov,
         gamma=gamma,
+        principal_lin = principal_lin
     )
-    optimizer.optim_mu(mu0 = mu0, max_iter=num_iter)
+    optimizer.optim_mu(mu0=mu0, max_iter=num_iter)
     return optimizer.get_mu()
