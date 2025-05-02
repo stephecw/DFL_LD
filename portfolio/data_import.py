@@ -55,7 +55,11 @@ class ImportDataset:
             lines = f.readlines()
             # Lecture des tailles
             self.num_data, self.num_feat, self.num_item, self.gamma = map(float, lines[0].split(","))
-            self.num_data, self.num_feat, self.num_item = map(int, [self.num_data, self.num_feat, self.num_item])
+
+            self.num_data = int(self.num_data)
+            self.num_feat = int(self.num_feat)
+            self.num_item = int(self.num_item)
+            
             # Lecture de cov
             self.cov = []
             for i in range(1, self.num_item + 1):
