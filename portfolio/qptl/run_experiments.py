@@ -56,18 +56,19 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         run = wandb.init(mode = "offline", **wandbarg)
     
     # Chargement du train dataset
+    gamma_str = str(gamma).replace('.', '-')
     if verbose:
-        print(f"Loading train_{num_item}_{num_data_train}_{num_feat}_.txt")
+        print(f"Loading train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     try:
-        train_set = ImportDataset(f"datasets/train_{num_item}_{num_data_train}_{num_feat}.txt")
+        train_set = ImportDataset(f"datasets/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found. Generating dataset with {num_data_train} data.")
         return
     
     if verbose:
-        print(f"Loaded test_{num_item}_{num_data_train}_{num_feat}.txt")
+        print(f"Loading test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     try:
-        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_test}_{num_feat}.txt")
+        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found. Generating dataset with {num_data_test} data.")
         return
@@ -99,19 +100,19 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         if verbose:
             print("Training the model with LD bound as loss...")
         train_LD(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
-                 QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer,
+                 QPTL_alpha=QPTL_alpha, regularized=QPTL_regularizer,
                  verbose=verbose)
     elif jobtype == "classic":
         if verbose:
             print("Training the model with regret as loss...")
         train(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, 
-                    QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer,
+                    QPTL_alpha=QPTL_alpha, regularized=QPTL_regularizer,
                     verbose=verbose)
     elif jobtype == "SG":
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
         train_SG(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
-                QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer,
+                QPTL_alpha=QPTL_alpha, regularized=QPTL_regularizer,
                  verbose=verbose, step_mu=step_mu, n_iter_mu=n_iter_mu)
         
 
@@ -120,16 +121,16 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     if save_model:
         if jobtype == "LD":
             if verbose:
-                print("Saving the model to models/LD_{num_item}_{num_data_train}_{num_feat}.pth")
-            torch.save(model.state_dict(), f'qptl/models/LD_{num_item}_{num_data_train}_{num_feat}.pth')
+                print("Saving the model to models/LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f'qptl/models/LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
         elif jobtype == "classic":
             if verbose:
                 print("Saving the model to models/{num_item}_{num_data_train}_{num_feat}.pth")
-            torch.save(model.state_dict(), f'qptl/models/{num_item}_{num_data_train}_{num_feat}.pth')
+            torch.save(model.state_dict(), f'qptl/models/{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
         elif jobtype == "SG":
             if verbose:
                 print("Saving the model to models/SG_{num_item}_{num_data_train}_{num_feat}.pth")
-            torch.save(model.state_dict(), f'qptl/models/SG_{num_item}_{num_data_train}_{num_feat}.pth')
+            torch.save(model.state_dict(), f'qptl/models/SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
     
     # Fin de l'exécution
     if run is not None:
@@ -144,13 +145,14 @@ num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
 gamma = 2.25
+gamma_str = str(gamma).replace('.', '-')
 
 epochs_LD = args.ep_ld
 epochs_classic = args.ep_cla
 epochs_SG = args.ep_sg
 lr_LD = 0.001
 lr_classic = 0.001
-lr_SG = 0.002
+lr_SG = 0.001
 QPTL_alpha = 1e-6
 QPTL_regularizer = 'quadratic'
 schedulerType_LD = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
@@ -159,103 +161,99 @@ schedulerType_SG = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None
 dropout = 0.2
 
 
-d = args.dim
 n = args.n
 
 # Choix dimension modèle
 hidden_layer = 100
 
-print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique, {epochs_LD} epochs pour le modèle LD et {epochs_SG} pour le modèle avec SG de mu sur {d} contraintes et {n} items.")
+print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique, {epochs_LD} epochs pour le modèle LD et {epochs_SG} pour le modèle avec SG de mu sur {n} items.")
 
 
-dim = [args.dim]
 num_item = [args.n]
-for d in dim:
-    for n in num_item:
-        ### AVEC LD ###
-        model = CustomMLP([num_feat,hidden_layer, n], dropout=dropout).to(device)
-        wandbarg = {
-                'entity': "hugoper-polytechnique-montr-al",
-                'project': "DFL_LD",
-                'dir': "./",
-                'name': f"LD_{num_item}_{num_data_train}_{num_feat}",
-                'group': f"portfolio_qptl_{num_item}_{num_data_train}_{num_feat}",
-                'job_type': "LD",
-                'config': {
-                    "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
-                    "dropout": dropout,
-                    "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}.txt",
-                    "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}.txt",
-                    "batch_size": 32,
-                    "epochs": epochs_LD,
-                    "learning_rate": lr_LD,
-                    "schedulerType": schedulerType_LD,
-                    "sched_step_size": 50,
-                    "sched_gamma": 0.5,
-                    "QPTL_alpha": QPTL_alpha,
-                    "QPTL_regularizer": QPTL_regularizer,
-                }
-        }
-        if epochs_LD > 0:
-            run_train(model, "LD", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType_LD, verbose=True, wandbarg=wandbarg,
-                    QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer)
+for n in num_item:
+    ### AVEC LD ###
+    model = CustomMLP([num_feat,hidden_layer, n], dropout=dropout).to(device)
+    wandbarg = {
+            'entity': "hugoper-polytechnique-montr-al",
+            'project': "DFL_LD",
+            'dir': "./",
+            'name': f"LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_qptl_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'job_type': "LD",
+            'config': {
+                "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
+                "dropout": dropout,
+                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",                    "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                "batch_size": 32,
+                "epochs": epochs_LD,
+                "learning_rate": lr_LD,
+                "schedulerType": schedulerType_LD,
+                "sched_step_size": 50,
+                "sched_gamma": 0.5,
+                "QPTL_alpha": QPTL_alpha,
+                "QPTL_regularizer": QPTL_regularizer,
+            }
+    }
+    if epochs_LD > 0:
+        run_train(model, "LD", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType_LD, verbose=True, wandbarg=wandbarg,
+                QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer)
         
-        ### SANS LD ###
-        model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
-        wandbarg = {
-                'entity': "hugoper-polytechnique-montr-al",
-                'project': "DFL_LD",
-                'dir': "./",
-                'name': f"classic_{num_item}_{num_data_train}_{num_feat}",
-                'group': f"portfolio_qptl_{num_item}_{num_data_train}_{num_feat}",
-                'job_type': "classic",
-                'config': {
-                    "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
-                    "dropout": dropout,
-                    "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}.txt",
-                    "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}.txt",
-                    "batch_size": 32,
-                    "epochs": epochs_classic,
-                    "learning_rate": lr_classic,
-                    "schedulerType": schedulerType_classic,
-                    "sched_step_size": 10,
-                    "sched_gamma": 0.1,
-                    "QPTL_alpha": QPTL_alpha,
-                    "QPTL_regularizer": QPTL_regularizer,
-                }
-        }
-        if epochs_classic > 0:
-            run_train(model, "classic", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
-                    QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer)
+    ### SANS LD ###
+    model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
+    wandbarg = {
+            'entity': "hugoper-polytechnique-montr-al",
+            'project': "DFL_LD",
+            'dir': "./",
+            'name': f"classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_qptl_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'job_type': "classic",
+            'config': {
+                "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
+                "dropout": dropout,
+                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                "batch_size": 32,
+                "epochs": epochs_classic,
+                "learning_rate": lr_classic,
+                "schedulerType": schedulerType_classic,
+                "sched_step_size": 10,
+                "sched_gamma": 0.1,
+                "QPTL_alpha": QPTL_alpha,
+                "QPTL_regularizer": QPTL_regularizer,
+            }
+    }
+    if epochs_classic > 0:
+        run_train(model, "classic", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
+                QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer, sched_step_size=100, sched_gamma=0.5)
             
-        ### MU DYNAMIQUE ###
-        model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
-        wandbarg = {
-                'entity': "hugoper-polytechnique-montr-al",
-                'project': "DFL_LD",
-                'dir': "./",
-                'name': f"SG_{num_item}_{num_data_train}_{num_feat}",
-                'group': f"portfolio_qptl_{num_item}_{num_data_train}_{num_feat}",
-                'job_type': "SG",
-                'config': {
-                    "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
-                    "dropout": dropout,
-                    "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}.txt",
-                    "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}.txt",
-                    "batch_size": 32,
-                    "epochs": epochs_SG,
-                    "learning_rate": lr_SG,
-                    "schedulerType": schedulerType_SG,
-                    "sched_step_size": 150,
-                    "sched_gamma": 0.5,
-                    "QPTL_alpha": QPTL_alpha,
-                    "QPTL_regularizer": QPTL_regularizer,
-                    "step_mu": args.step_mu,
-                    "n_iter_mu": args.n_iter_mu
-                }
-        }
+    ### MU DYNAMIQUE ###
+    model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
+    wandbarg = {
+            'entity': "hugoper-polytechnique-montr-al",
+            'project': "DFL_LD",
+            'dir': "./",
+            'name': f"SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_qptl_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'job_type': "SG",
+            'config': {
+                "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
+                "dropout": dropout,
+                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                "batch_size": 32,
+                "epochs": epochs_SG,
+                "learning_rate": lr_SG,
+                "schedulerType": schedulerType_SG,
+                "sched_step_size": 150,
+                "sched_gamma": 0.5,
+                "QPTL_alpha": QPTL_alpha,
+                "QPTL_regularizer": QPTL_regularizer,
+                "step_mu": args.step_mu,
+                "n_iter_mu": args.n_iter_mu
+            }
+    }
 
-        if epochs_SG > 0:
-            run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
-                    QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
-                    sched_step_size=300, sched_gamma=0.5)
+    if epochs_SG > 0:
+        run_train(model, "SG", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
+                QPTL_alpha=QPTL_alpha, QPTL_regularizer=QPTL_regularizer, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
+                sched_step_size=100, sched_gamma=0.5)
