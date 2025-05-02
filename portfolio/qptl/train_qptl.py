@@ -3,7 +3,10 @@ from torch import nn
 from pyepo.model.grb import portfolioModel
 import gurobipy as gp
 from qptl.QPTL_perso import cvxsolver, cvxsolver_LD
-from opti_X_mu import OptimizationModel
+from opti_X_mu import Optimization_X_mu_portfolio
+import numpy as np
+
+from joblib import Parallel, delayed
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -91,7 +94,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
                     scheduler.step(loss)
                 else:
                     scheduler.step()
-        
+
         mean_loss = total_loss / len(dataloader_train)
         if run is not None:
             epoch_end_time = time.time()
@@ -107,41 +110,43 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
 
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
-            
-        with torch.no_grad():
-            model.eval()
-            total_regret = 0
-            total_count = 0
-            eval_solver = portfolioModel(cov, gamma, n_stocks=cov.shape[0])
-            for z, c, x, _, _ in dataloader_test:
-                z, c, x = [t.to(device) for t in (z, c, x)]
-                c_hat = model(z)  # prédiction des coûts [batch, n]
-                batch_regrets = []
 
-                for i in range(z.size(0)):
-                    c_numpy = c_hat[i].detach().cpu().numpy()
-                    eval_solver.setObj(c_numpy)
-                    x_hat_np = eval_solver.solve()
 
-                    x_true = x[i].to(dtype=torch.float32, device=device)
-                    c_true = c[i].to(dtype=torch.float32, device=device)
+        if epoch % 5 == 0:    
+            with torch.no_grad():
+                model.eval()
+                total_regret = 0
+                total_count = 0
+                eval_solver = portfolioModel(num_assets=cov.shape[0],covariance = cov, gamma=gamma)
+                for z, c, x, _, _ in dataloader_test:
+                    z, c, x = [t.to(device) for t in (z, c, x)]
+                    c_hat = model(z)  # prédiction des coûts [batch, n]
+                    batch_regrets = []
 
-                    x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                    for i in range(z.size(0)):
+                        c_numpy = c_hat[i].detach().cpu().numpy()
+                        eval_solver.setObj(c_numpy)
+                        x_hat_np, _ = eval_solver.solve()
+
+                        x_true = x[i].to(dtype=torch.float32, device=device)
+                        c_true = c[i].to(dtype=torch.float32, device=device)
+
+                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                             device=device)
 
-                    regret = torch.dot(c_true, x_true - x_hat_tensor)
-                    batch_regrets.append(regret)
+                        regret = torch.dot(c_true, x_true - x_hat_tensor)
+                        batch_regrets.append(regret)
 
-                batch_regrets = torch.stack(batch_regrets)
-                total_regret += batch_regrets.sum().item()
-                total_count += z.size(0)
+                    batch_regrets = torch.stack(batch_regrets)
+                    total_regret += batch_regrets.sum().item()
+                    total_count += z.size(0)
                 
-        mean_regret = total_regret / total_count
-        if run is not None:
-            # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
-        if verbose:
-            print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
+            mean_regret = total_regret / total_count
+            if run is not None:
+                # Enregistrement des résultats dans wandb
+                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
+            if verbose:
+                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
             
     if run is not None:   
         end_time = time.time()
@@ -150,7 +155,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
 
 
 def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
-            QPTL_alpha = 1e-6, regularized = 'quadratic', verbose=False):
+            QPTL_alpha = 1e-6, QPTL_regularized = 'quadratic', verbose=False):
     """
         Entraînement du modèle avec la décomposition lagrangienne
         model: modèle prédictif des profits
@@ -186,13 +191,13 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prédiction des profits ĉ
 
-            mu_sum = mu.sum(dim=1)  # shape [batch, n]
-            profit_modified = c + mu_sum     # shape [batch, n]
+          # shape [batch, n]
+            profit_modified = c + mu     # shape [batch, n]
 
 
 
             # Résolution avec qptl
-            X1p = qptl_solver.solution(profit_modified)   # x̂ obtenu avec solve_main_problem
+            X1p = qptl_solver.solution(c_hat + mu)   # x̂ obtenu avec solve_main_problem
 
             # (c + sum mu_i for i ≥ 2) · (w - x̂)
 
@@ -236,7 +241,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                 model.eval()
                 total_regret = 0
                 total_count = 0
-                eval_solver = portfolioModel(cov, gamma, n_stocks=cov.shape[0])
+                eval_solver = portfolioModel(num_assets=cov.shape[0],covariance = cov, gamma=gamma)
                 for z, c, x, _, _ in dataloader_test:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # prédiction des coûts [batch, n]
@@ -253,6 +258,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                         device=device)
+                        
 
                         regret = torch.dot(c_true, x_true - x_hat_tensor)
                         batch_regrets.append(regret)
@@ -294,7 +300,7 @@ def test_regret(model, dataloader, cov, gamma, run = None,verbose=False):
         model.eval()
         total_regret = 0
         total_count = 0
-        eval_solver = portfolioModel(cov, gamma, n_stocks=cov.shape[0])
+        eval_solver = portfolioModel(num_assets=cov.shape[0],covariance = cov, gamma=gamma)
         for z, c, x, _, _ in dataloader:
             z, c, x = [t.to(device) for t in (z, c, x)]
             c_hat = model(z)  # prédiction des coûts [batch, n]
@@ -375,24 +381,17 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             # Mise à jour de mu_global
             if epoch % step_mu == 0:
-                for j in range(mu_tilde.shape[0]):
-                    optimizer_mu = OptimizationModel(
-                        num_item=n_stocks,
-                        r=c_hat.detach(),
-                        cov=cov,
-                        gamma=gamma,
-                        mu=mu_tilde.clone(),
-                    )
-                    optimizer_mu.optim_mu(verbose=False, max_iter=n_iter_mu)
+                mu_list = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i].detach().cpu().numpy(), cov, gamma, n_stocks, n_iter_mu, mu_tilde[i].detach().cpu().numpy()) for i in range(z.size(0)))
+                mu_np = np.stack(mu_list)
+                mu_tilde = torch.tensor(mu_np, device=device, dtype=torch.float32)
+                mu_global[idx] = mu_tilde
 
-                    mu_tilde = optimizer_mu.get_mu().detach()
-                    mu_global[idx+j] = mu_tilde
 
-            mu_sum = mu.sum(dim=1)  # shape [batch, n]
-            profit_modified = c + mu_sum 
+              # shape [batch, n]
+            profit_modified = c + mu
 
             # Résolution avec qptl
-            X1p = qptl_solver.solution(profit_modified)   # x̂ obtenu avec solve_main_problem
+            X1p = qptl_solver.solution(c_hat + mu_tilde)   # x̂ obtenu avec solve_main_problem
 
             # (c + sum mu_i for i ≥ 2) · (w - x̂)
             loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
@@ -436,7 +435,7 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # prédiction des coûts [batch, n]
                     batch_regrets = []
-                    eval_solver = portfolioModel(cov, gamma, n_stocks=cov.shape[0])
+                    eval_solver = portfolioModel(num_assets=cov.shape[0],covariance = cov, gamma=gamma)
                     for i in range(z.size(0)):
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         eval_solver.setObj(c_numpy)
@@ -475,3 +474,13 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         end_time = time.time()
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
+
+def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, mu0):
+    optimizer = Optimization_X_mu_portfolio(
+        num_item=num_item,
+        c=c_i,
+        cov=cov,
+        gamma=gamma,
+    )
+    optimizer.optim_mu(mu0 = mu0, max_iter=num_iter)
+    return optimizer.get_mu()

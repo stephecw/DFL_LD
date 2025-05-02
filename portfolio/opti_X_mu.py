@@ -1,6 +1,5 @@
 import numpy as np
 from scipy.optimize import minimize
-from gurobi_solver import gurobi_portfolio_solver
 
 def solve_sp(X_2, mu, cov, gamma):
     # Fonction objective à minimiser (opposé de la fonction à maximiser)
@@ -21,7 +20,7 @@ def solve_sp(X_2, mu, cov, gamma):
     x0 = np.ones(X_2.shape[0])  # Utiliser des valeurs initiales raisonnables
 
     # Résolution du problème
-    res = minimize(objective, x0, bounds=bounds, constraints=constraints, method='trust-constr')
+    res = minimize(objective, x0, bounds=bounds, constraints=constraints, method='SLSQP')
     
     return res.x
 
@@ -59,11 +58,11 @@ class Optimization_X_mu_portfolio:
     def update_X(self):
         """Met à jour X°_1 et X°_2"""
         # On résout le sous-problème avec contrainte linéaire, et on le place selon le choix de sous-problème principal
-        self.X[not self.lin] = np.zeros(self.num_item, dtype=float)
-        self.X[not self.lin][np.argmax(self.c + self.mu)] = 1.
+        self.X[0] = np.zeros(self.num_item, dtype=float)
+        self.X[0][np.argmax(self.c + self.mu)] = 1.
         
         # On résout le sous-problème avec contrainte quadratique, et on le place selon le choix de sous-problème principal
-        self.X[self.lin] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
+        self.X[1] = solve_sp(self.X[1], self.mu, self.cov, self.gamma)
         
     def update_val(self):
         """Actualise la valeur de la borne LD"""
@@ -91,6 +90,7 @@ class Optimization_X_mu_portfolio:
             self.mu -= lr * m_hat / (np.sqrt(v_hat) + eps)
 
             if t % 500 == 0:
+                self.update_val()
                 print(f"        Iter {t}, B(mu) = {self.val_actuelle:.6f}")
     
     def optim_mu(self, mu0=None, verbose=False, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
