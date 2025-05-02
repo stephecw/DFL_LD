@@ -30,7 +30,7 @@ class ImportDataset:
         Z_tensor = (Z_tensor - self.z_mean) / self.z_std 
         self.Z_tensor  = Z_tensor
         
-        self.r_tensor  = torch.tensor(self.c , dtype=torch.float32)
+        self.c_tensor  = torch.tensor(self.c , dtype=torch.float32)
         self.x_tensor  = torch.tensor(self.x , dtype=torch.float32)
         self.X_tensor  = torch.tensor(self.X , dtype=torch.float32)
         self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
@@ -38,12 +38,12 @@ class ImportDataset:
 
         if model is not None:
             self.dataset = dataset.optDataset(
-                model, self.Z_tensor, self.r_tensor,
+                model, self.Z_tensor, self.c_tensor,
                 self.x_tensor, self.X_tensor, self.mu_tensor
             )
         else:
             self.dataset = TensorDataset(
-                self.Z_tensor, self.r_tensor,
+                self.Z_tensor, self.c_tensor,
                 self.x_tensor, self.X_tensor, self.mu_tensor
             )
     
@@ -54,8 +54,8 @@ class ImportDataset:
         with open(fname, 'r') as f:
             lines = f.readlines()
             # Lecture des tailles
-            self.num_data, self.num_feat, self.num_item, self.gamma = map((int, int, int, float), lines[0].split(","))
-            
+            self.num_data, self.num_feat, self.num_item, self.gamma = map(float, lines[0].split(","))
+            self.num_data, self.num_feat, self.num_item = map(int, [self.num_data, self.num_feat, self.num_item])
             # Lecture de cov
             self.cov = []
             for i in range(1, self.num_item + 1):
@@ -76,7 +76,7 @@ class ImportDataset:
                 self.X.append(list(map(float, line[self.num_feat + 2*self.num_item : self.num_feat + 3*self.num_item])))
                 self.mu.append(list(map(float, line[self.num_feat + 3*self.num_item :])))
             self.Z = np.array(self.Z)
-            self.c = np.array(self.r)
+            self.c = np.array(self.c)
             self.x = np.array(self.x)
             self.X = np.array(self.X)
             self.mu = np.array(self.mu)
@@ -106,7 +106,7 @@ class ImportDataset:
         tensor : bool : Si True, retourne un tenseur PyTorch.
         """
         if tensor:
-            return torch.tensor(self.cov, dtype=torch.float32)
+            return torch.tensor(self.cov, dtype=torch.float32, requires_grad=False)
         return self.cov
     
     def get_dataset(self):
