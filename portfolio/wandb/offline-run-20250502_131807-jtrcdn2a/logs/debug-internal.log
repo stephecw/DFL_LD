@@ -1,0 +1,15 @@
+{"time":"2025-05-02T13:18:07.395451966-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250502_131807-jtrcdn2a/logs/debug-core.log"}
+{"time":"2025-05-02T13:18:07.523519884-04:00","level":"INFO","msg":"created new stream","id":"jtrcdn2a"}
+{"time":"2025-05-02T13:18:07.523576677-04:00","level":"INFO","msg":"stream: started","id":"jtrcdn2a"}
+{"time":"2025-05-02T13:18:07.523590225-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"jtrcdn2a"}
+{"time":"2025-05-02T13:18:07.523603111-04:00","level":"INFO","msg":"handler: started","stream_id":"jtrcdn2a"}
+{"time":"2025-05-02T13:18:07.523611676-04:00","level":"INFO","msg":"sender: started","stream_id":"jtrcdn2a"}
+{"time":"2025-05-02T13:18:07.548373057-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-02T13:25:41.740086939-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-02T13:25:41.74070716-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-02T13:25:41.741396085-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-02T13:25:42.746226733-04:00","level":"INFO","msg":"stream: closing","id":"jtrcdn2a"}
+{"time":"2025-05-02T13:25:42.746265929-04:00","level":"INFO","msg":"handler: closed","stream_id":"jtrcdn2a"}
+{"time":"2025-05-02T13:25:42.746288272-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"jtrcdn2a"}
+{"time":"2025-05-02T13:25:42.746328677-04:00","level":"INFO","msg":"sender: closed","stream_id":"jtrcdn2a"}
+{"time":"2025-05-02T13:25:42.746677071-04:00","level":"INFO","msg":"stream: closed","id":"jtrcdn2a"}
