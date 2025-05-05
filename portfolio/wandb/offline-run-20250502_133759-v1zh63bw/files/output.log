@@ -1,0 +1,12 @@
+Loading train_30_500_200_2-25.txt
+Loading test_30_500_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
+Epoch 1 | loss: 0.0141
+Eval Epoch 1 | Regret moyen : 0.0314 | ‖μ_global - μ_data‖_F : 71.7789
+Epoch 2 | loss: 0.0138
+Epoch 3 | loss: 0.0142
+Epoch 4 | loss: 0.0143
+Epoch 5 | loss: 0.0139
+Epoch 6 | loss: 0.0136
+Eval Epoch 6 | Regret moyen : 0.0317 | ‖μ_global - μ_data‖_F : 71.7789
+Saving the model to models/SG_{num_item}_{num_data_train}_{num_feat}.pth

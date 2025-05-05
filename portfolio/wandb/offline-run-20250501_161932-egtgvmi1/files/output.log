@@ -1,0 +1,23 @@
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/portfolio/qptl/run_experiments.py", line 257, in <module>
+    run_train(model, "SG", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
+  File "/home/stephecw/projet/DFL_LD/portfolio/qptl/run_experiments.py", line 114, in run_train
+    train_SG(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
+  File "/home/stephecw/projet/DFL_LD/portfolio/qptl/train_qptl.py", line 389, in train_SG
+    optimizer_mu.optim_mu(mu0= mu_tilde[j], verbose=False, max_iter=n_iter_mu)
+  File "/home/stephecw/projet/DFL_LD/portfolio/opti_X_mu.py", line 108, in optim_mu
+    self.adam_optimizer(self.gradient, lr, beta1, beta2, eps, max_iter, verbose)
+  File "/home/stephecw/projet/DFL_LD/portfolio/opti_X_mu.py", line 78, in adam_optimizer
+    m = np.zeros_like(self.mu)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/numpy/core/numeric.py", line 129, in zeros_like
+    res = empty_like(a, dtype=dtype, order=order, subok=subok, shape=shape)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/_tensor.py", line 1194, in __array__
+    return self.numpy()
+TypeError: can't convert cuda:0 device type tensor to numpy. Use Tensor.cpu() to copy the tensor to host memory first.
+Loading train_30_500_200_2-25.txt
+Loading test_30_500_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
