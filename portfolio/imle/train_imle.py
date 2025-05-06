@@ -4,7 +4,8 @@ from torch import nn
 from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE
 
-from my_solver import Solveur_lin
+from gurobi_solver_hugo import gurobi_portfolio_solver
+from my_solver import Solveur_lin, Solveur_quad
 from opti_X_mu import Optimization_X_mu_portfolio
 
 from joblib import Parallel, delayed
@@ -73,8 +74,8 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
         total_loss = 0
         total_grad_norm = 0.0
         
-        for z, c, x, X1, mu in dataloader_train:
-            z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
+        for z, c, x, _, _ in dataloader_train:
+            z, c, x = [t.to(device) for t in (z, c, x)]
             cp = model(z)
             xp = imle(cp).to(device)
 
@@ -155,7 +156,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, c
         run.log({"total_duration": total_duration})
 
 
-def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
+def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, principal_lin=True,
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           verbose=False):
     """
@@ -181,8 +182,8 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         train_time = 0
     
     # Créer un solveur i-MLE avec les mu du batch
-    solver = Solveur_lin(cov.shape[0])
-    imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
+    solver = Solveur_lin(cov.shape[0]) if principal_lin else gurobi_portfolio_solver(cov.shape[0], cov, gamma)
+    imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=0.0001, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
 
     for epoch in range(epochs):
@@ -193,9 +194,10 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_grad_norm = 0.0
 
         for z, c, x, X1, mu in dataloader_train: # x vrai solution et X1 solution avec mu(c)
+            
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prédiction des profits ĉ
-
+            print(c_)
 
             # Résolution avec i-MLE
             X1p = imle(c_hat + mu).to(device)   # x̂ obtenu avec solve_main_problem
@@ -248,7 +250,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     batch_regrets = []
 
                     for i in range(z.size(0)):
-                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov.numpy(), gamma=gamma) 
+                        solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         solver_i.setObj(c_numpy)
                         x_hat_np, _ = solver_i.solve()
@@ -278,7 +280,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
 
-def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
+def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, principal_lin=True,
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           verbose=False, step_mu=10, n_iter_mu = 100):
     """
@@ -305,7 +307,7 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
     mu_global = torch.ones((len(dataloader_train.dataset), num_item), device=device, dtype = torch.float32)
     # Créer un solveur i-MLE avec les mu du batch
-    solver = Solveur_lin(cov.shape[0])
+    solver = Solveur_lin(cov.shape[0]) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
     imle = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                        two_sides=IMLE_two_sides, processes=IMLE_processes)
 
@@ -326,7 +328,7 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             # Mise à jour de mu_global
             if epoch % step_mu == 0:
 
-                mu_tilde = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i], cov, gamma, num_item, n_iter_mu, mu_tilde) for i in range(dataloader_train.batch_size))
+                mu_tilde = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i], cov, gamma, num_item, n_iter_mu, mu_tilde, principal_lin) for i in range(dataloader_train.batch_size))
                 mu_global[idx] = mu_tilde
 
             # Résolution avec i-MLE

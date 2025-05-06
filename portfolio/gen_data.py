@@ -40,7 +40,7 @@ def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, c, x_
             line += ",".join(str(mu[i][j]) for j in range(num_item)) + f"\n"
             f.write(line)
 
-def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, principal_lin):
+def optimize_single_instance(i, c_i, cov, gamma, num_item, num_iter, principal_lin):
     """ Optimise la borne LD pour un problème donné. Voué à être parallélisé.
     Args:
         c_i (float array de taile ( ,num_item)): coûts du problème
@@ -61,6 +61,8 @@ def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, principal_lin)
         gamma=gamma,
         principal_lin = principal_lin
     )
+    if i % 20:
+        print(f"Begin {i}")
     optimizer.optim_mu(max_iter=num_iter)
     return optimizer.get_X0(), optimizer.get_mu()
 
@@ -106,7 +108,7 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     if verbose:
         print("Résolution approchée des mu et X° ...")
     # Parallélisation de l'optimisation de mu et X°
-    results = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c[i], cov, gamma, num_item, num_iter, principal_lin) for i in range(total_data))
+    results = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(i, c[i], cov, gamma, num_item, num_iter, principal_lin) for i in range(total_data))
     X, mu = zip(*results)
     X = np.array(X)
     mu = np.array(mu)
@@ -120,19 +122,24 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     X_train, X_test = X[:num_data_train], X[num_data_train:]
     mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
     
-    print(f"x : {x_star_train[0]}")
-    print(f"X : {X_train[0]}")
-    print(f"mu : {mu_train[0]}")
-    print(np.dot(X_train[0].T, np.dot(cov, X_train[0])))
-    print(gamma*np.mean(cov))
+    # print(f"x : {x_star_train[0]}")
+    # print(f"X : {X_train[0]}")
+    # print(f"mu : {mu_train[0]}")
+    # margin = np.array([gamma*np.mean(cov) - np.dot(X[i].T, np.dot(cov, X[i])) for i in range(total_data)])
+    # print(margin)
+    # print(margin.mean())
+    # print(margin.std())
+    # print()
+    # print(gamma*np.mean(cov))
 
     # Sauvegarde
     gamma_str = str(gamma).replace('.', '-')
-    write_dataset_file(f"datasets/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+    fold = "/lin" if principal_lin else "/quad"
+    write_dataset_file(f"datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                        num_feat, num_item, num_data_train,
                        cov, gamma, Z_train, r_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"datasets/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt",
+    write_dataset_file(f"datasets{fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt",
                        num_feat, num_item, num_data_test,
                        cov, gamma, Z_test, r_test, x_star_test, X_test, mu_test)
     
