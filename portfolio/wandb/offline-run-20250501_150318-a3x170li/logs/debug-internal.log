@@ -1,0 +1,18 @@
+{"time":"2025-05-01T15:03:18.61654562-04:00","level":"INFO","msg":"using version","core version":"0.18.0"}
+{"time":"2025-05-01T15:03:18.641544798-04:00","level":"INFO","msg":"created symlink","path":"wandb/offline-run-20250501_150318-a3x170li/logs/debug-core.log"}
+{"time":"2025-05-01T15:03:18.6420063-04:00","level":"INFO","msg":"using version","core version":"0.18.0"}
+{"time":"2025-05-01T15:03:18.642023256-04:00","level":"INFO","msg":"created symlink","path":"wandb/offline-run-20250501_150318-a3x170li/logs/debug-core.log"}
+{"time":"2025-05-01T15:03:18.645404578-04:00","level":"INFO","msg":"created new stream","id":"a3x170li"}
+{"time":"2025-05-01T15:03:18.645447689-04:00","level":"INFO","msg":"stream: started","id":"a3x170li"}
+{"time":"2025-05-01T15:03:18.645501849-04:00","level":"INFO","msg":"handler: started","stream_id":{"value":"a3x170li"}}
+{"time":"2025-05-01T15:03:18.645554383-04:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"a3x170li"}}
+{"time":"2025-05-01T15:03:18.645549317-04:00","level":"INFO","msg":"sender: started","stream_id":{"value":"a3x170li"}}
+{"time":"2025-05-01T15:03:18.657318328-04:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2025-05-01T15:03:18.728387743-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-01T15:03:18.913599414-04:00","level":"INFO","msg":"stream: closing","id":"a3x170li"}
+{"time":"2025-05-01T15:03:18.913657343-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-01T15:03:18.913790793-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-01T15:03:18.944598381-04:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"a3x170li"}}
+{"time":"2025-05-01T15:03:18.944610907-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"a3x170li"}}
+{"time":"2025-05-01T15:03:18.944667709-04:00","level":"INFO","msg":"sender: closed","stream_id":{"value":"a3x170li"}}
+{"time":"2025-05-01T15:03:18.97247543-04:00","level":"INFO","msg":"stream: closed","id":"a3x170li"}
