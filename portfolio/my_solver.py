@@ -61,7 +61,7 @@ class Solveur_quad(optModel):
                 return -np.dot(self.c.detach().cpu().numpy(), x)
             else:
                 return np.dot(self.c.detach().cpu().numpy(), x)
-
+        
         # Contrainte quadratique
         def constraint(x):
             return self.gamma*mean - np.dot(x.T, np.dot(self.cov.detach().cpu().numpy(), x))

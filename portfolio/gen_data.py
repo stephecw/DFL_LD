@@ -119,6 +119,12 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     x_star_train, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:]
     X_train, X_test = X[:num_data_train], X[num_data_train:]
     mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
+    
+    print(f"x : {x_star_train[0]}")
+    print(f"X : {X_train[0]}")
+    print(f"mu : {mu_train[0]}")
+    print(np.dot(X_train[0].T, np.dot(cov, X_train[0])))
+    print(gamma*np.mean(cov))
 
     # Sauvegarde
     gamma_str = str(gamma).replace('.', '-')
