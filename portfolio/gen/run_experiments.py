@@ -21,14 +21,14 @@ parser.add_argument(
     default='imle',
     help="Méthode d'optimisation (ex: imle, reinforce, sample)"
     )
+parser.add_argument('--lin', type=int, default=1, help='1 pour prendre la contrainte linéraire pour le sous-prob principal, 0 pour la contrainte quadratique')
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Entraînement sur :", device)
 
 
-def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train, num_data_test,
-
+def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train, num_data_test, principal_lin=True,
               batch_size=32, epochs=20, lr=1e-3, 
               schedulerType="StepLR", sched_step_size=50, sched_gamma=0.5,
               IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
@@ -65,18 +65,19 @@ def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train,
     
     # Chargement du train dataset
     gamma_str = str(gamma).replace('.', '-')
+    fold = "/lin" if principal_lin else "/quad"
     if verbose:
-        print(f"Loading train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
+        print(f"Loading {fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     try:
-        train_set = ImportDataset(f"datasets/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
+        train_set = ImportDataset(f"datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
     
     if verbose:
-        print(f"Loaded test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        print(f"Loading {fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     try:
-        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        test_set = ImportDataset(f"datasets{fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
@@ -106,14 +107,14 @@ def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train,
     if jobtype == "LD":
         if verbose:
             print("Training the model with LD bound as loss...")
-        train_LD(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
+        train_LD(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, principal_lin,
                     IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                     SPO_solve_ratio=SPO_solve_ratio, SPO_reduction=SPO_reduction, SPO_processes=SPO_processes,
                     verbose=verbose)
     elif jobtype == "classic":
         if verbose:
             print("Training the model with regret as loss...")
-        train(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, 
+        train(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, principal_lin,
                     IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                     SPO_solve_ratio=SPO_solve_ratio, SPO_reduction=SPO_reduction, SPO_processes=SPO_processes,
                     verbose=verbose)
@@ -121,7 +122,7 @@ def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train,
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
 
-        train_SG(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
+        train_SG(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, principal_lin,
                     IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                     SPO_solve_ratio=SPO_solve_ratio, SPO_reduction=SPO_reduction, SPO_processes=SPO_processes,
                     step_mu=step_mu, n_iter_mu=n_iter_mu,
@@ -160,6 +161,7 @@ num_data_test = 100 # Taille du dataset de test
 gamma = 2.25
 gamma_str = str(gamma).replace('.', '-')
 method = args.method
+principal_lin = False if args.lin == 0 else True
 
 epochs_LD = args.ep_ld
 epochs_classic = args.ep_cla
@@ -207,6 +209,8 @@ for n in num_item:
                 "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",                    
                 "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                 "batch_size": 32,
+                "gamma": gamma,
+                "sp_principal": "lin" if principal_lin else "quad",
                 "epochs": epochs_LD,
                 "learning_rate": lr_LD,
                 "schedulerType": schedulerType_LD,
@@ -215,7 +219,7 @@ for n in num_item:
             }
     }
     if epochs_LD > 0:
-        run_train(model, method, "LD", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType_LD, verbose=True, wandbarg=wandbarg,
+        run_train(model, method, "LD", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType_LD, verbose=True, wandbarg=wandbarg,
                   sched_step_size=100, sched_gamma=0.5)
         
     ### SANS LD ###
@@ -233,6 +237,8 @@ for n in num_item:
                 "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                 "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                 "batch_size": 32,
+                "gamma": gamma,
+                "sp_principal": "lin" if principal_lin else "quad",
                 "epochs": epochs_classic,
                 "learning_rate": lr_classic,
                 "schedulerType": schedulerType_classic,
@@ -241,7 +247,7 @@ for n in num_item:
             }
     }
     if epochs_classic > 0:
-        run_train(model, method, "classic", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
+        run_train(model, method, "classic", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
         sched_step_size=100, sched_gamma=0.5)
             
     ### MU DYNAMIQUE ###
@@ -259,6 +265,8 @@ for n in num_item:
                 "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                 "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                 "batch_size": 32,
+                "gamma": gamma,
+                "sp_principal": "lin" if principal_lin else "quad",
                 "epochs": epochs_SG,
                 "learning_rate": lr_SG,
                 "schedulerType": schedulerType_SG,
@@ -270,6 +278,6 @@ for n in num_item:
     }
 
     if epochs_SG > 0:
-        run_train(model, method, "SG", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
+        run_train(model, method, "SG", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
                 step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
                 sched_step_size=100, sched_gamma=0.5)
