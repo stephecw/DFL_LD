@@ -5,23 +5,36 @@ def solve_sp(X_2, mu, cov, gamma):
     # Fonction objective à minimiser (opposé de la fonction à maximiser)
     def objective(x):
         return -np.dot(mu, x)
+    
+    # Gradient de la fonction objective (Jacobien)
+    def jacobian(x):
+        return -mu
+    
+    # Hessienne de la fonction objective (nulle pour une fonction linéaire)
+    def hessian(x):
+        return np.zeros((len(x), len(x)))
+    
+    # Jacobien de la contrainte
+    def constraint_jacobian(x):
+        return 2 * np.dot(cov, x)
 
     # Contrainte quadratique
+    mean = np.mean(cov)
     def constraint(x):
-        return gamma*np.mean(cov) - np.dot(x.T, np.dot(cov, x))
+        return gamma*mean - np.dot(x.T, np.dot(cov, x))
 
     # Contraintes de positivité
     bounds = [(0, None) for _ in range(X_2.shape[0])]
 
-    # Contrainte quadratique sous forme de dictionnaire
-    constraints = ({'type': 'ineq', 'fun': constraint})
-
     # Valeurs initiales
     x0 = np.ones(X_2.shape[0])  # Utiliser des valeurs initiales raisonnables
 
-    # Résolution du problème
-    res = minimize(objective, x0, bounds=bounds, constraints=constraints, method='SLSQP')
-    
+    # Contrainte sous forme de dictionnaire
+    constraints = ({'type': 'ineq', 'fun': constraint})
+
+    # Résolution du problème d'optimisation
+    res = minimize(objective, x0, jac=jacobian, hess=hessian, bounds=bounds, constraints=constraints, method='trust-constr', options={'maxiter': 200})
+
     return res.x
 
 
@@ -29,7 +42,6 @@ class Optimization_X_mu_portfolio:
     """Optimise la borne LD d'un problème de portfolio combinatoire"""
     def __init__(self, num_item, c, cov, gamma, principal_lin = True):
         """
-
         Args:
         num_item (int): nombre d'assets
         c_i (float array de taile ( ,num_item)): coûts du problème
@@ -78,7 +90,6 @@ class Optimization_X_mu_portfolio:
     def gradient(self):
         """Gradient de B par rapport à mu. On a besoin de trouver X° qui maximise B à mu fixé"""
         self.update_X()
-        print(self.X[0] - self.X[1])
         return self.X[0] - self.X[1]
 
     def adam_optimizer(self, grad_func, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000, verbose=False):
