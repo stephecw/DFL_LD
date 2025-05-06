@@ -97,8 +97,8 @@ class ImportDataset:
         num_item : int : Nombre d'items.
         """
         return self.num_data, self.num_feat, self.num_item
-    
-    def get_gamma(self, tensor=False):
+        
+    def get_gamma(self):
         """
         Retourne le paramètre gamma du problème de portfolio.
         """

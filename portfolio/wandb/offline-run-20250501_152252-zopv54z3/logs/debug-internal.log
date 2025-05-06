@@ -1,0 +1,18 @@
+{"time":"2025-05-01T15:22:52.748330641-04:00","level":"INFO","msg":"using version","core version":"0.18.0"}
+{"time":"2025-05-01T15:22:52.752673147-04:00","level":"INFO","msg":"created symlink","path":"wandb/offline-run-20250501_152252-zopv54z3/logs/debug-core.log"}
+{"time":"2025-05-01T15:22:52.753008286-04:00","level":"INFO","msg":"using version","core version":"0.18.0"}
+{"time":"2025-05-01T15:22:52.753025095-04:00","level":"INFO","msg":"created symlink","path":"wandb/offline-run-20250501_152252-zopv54z3/logs/debug-core.log"}
+{"time":"2025-05-01T15:22:52.756121876-04:00","level":"INFO","msg":"created new stream","id":"zopv54z3"}
+{"time":"2025-05-01T15:22:52.756166972-04:00","level":"INFO","msg":"stream: started","id":"zopv54z3"}
+{"time":"2025-05-01T15:22:52.756196294-04:00","level":"INFO","msg":"sender: started","stream_id":{"value":"zopv54z3"}}
+{"time":"2025-05-01T15:22:52.756227414-04:00","level":"INFO","msg":"handler: started","stream_id":{"value":"zopv54z3"}}
+{"time":"2025-05-01T15:22:52.756184414-04:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"zopv54z3"}}
+{"time":"2025-05-01T15:22:52.768039105-04:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2025-05-01T15:22:52.826159311-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-01T15:22:55.039844582-04:00","level":"INFO","msg":"stream: closing","id":"zopv54z3"}
+{"time":"2025-05-01T15:22:55.040087986-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-01T15:22:55.040346011-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-01T15:22:55.113190181-04:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"zopv54z3"}}
+{"time":"2025-05-01T15:22:55.11323068-04:00","level":"INFO","msg":"sender: closed","stream_id":{"value":"zopv54z3"}}
+{"time":"2025-05-01T15:22:55.113226685-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"zopv54z3"}}
+{"time":"2025-05-01T15:22:55.130033301-04:00","level":"INFO","msg":"stream: closed","id":"zopv54z3"}

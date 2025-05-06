@@ -39,7 +39,7 @@ class Solveur_quad(optModel):
         super().__init__()
 
     def setObj(self, r):
-        self.c = r
+        self.c = r.cpu().numpy()
 
     def _getModel(self):
         """
@@ -55,30 +55,45 @@ class Solveur_quad(optModel):
         return m, x                  # ⬅️ deux objets non‑None obligatoires
 
     def solve(self):
-        mean = torch.mean(self.cov)
         def objective(x):
-            if self.maximize:
+          if self.maximize:
                 return -np.dot(self.c.detach().cpu().numpy(), x)
             else:
                 return np.dot(self.c.detach().cpu().numpy(), x)
         
+        # Gradient de la fonction objective (Jacobien)
+        def jacobian(x):
+          if self.maximize:
+            return -self.c
+          else : 
+            return self.c
+        
+        # Hessienne de la fonction objective (nulle pour une fonction linéaire)
+        def hessian(x):
+            return np.zeros((len(x), len(x)))
+        
+        # Jacobien de la contrainte
+        def constraint_jacobian(x):
+            return 2 * np.dot(self.cov, x)
+
         # Contrainte quadratique
+        mean = np.mean(self.cov)
         def constraint(x):
-            return self.gamma*mean - np.dot(x.T, np.dot(self.cov.detach().cpu().numpy(), x))
+            return self.gamma*mean - np.dot(x.T, np.dot(self.cov, x))
 
         # Contraintes de positivité
         bounds = [(0, None) for _ in range(self.num_item)]
 
-        # Contrainte quadratique sous forme de dictionnaire
-        constraints = ({'type': 'ineq', 'fun': constraint})
-
         # Valeurs initiales
         x0 = np.ones(self.num_item)  # Utiliser des valeurs initiales raisonnables
 
-        # Résolution du problème
-        res = minimize(objective, x0, bounds=bounds, constraints=constraints, method='trust-constr')
-    
-        return torch.Tensor(res), torch.dot(self.c, torch.Tensor(res))
+        # Contrainte sous forme de dictionnaire
+        constraints = ({'type': 'ineq', 'fun': constraint, 'jac':constraint_jacobian})
+
+        # Résolution du problème d'optimisation
+        res = minimize(objective, x0, jac=jacobian, hess=hessian, bounds=bounds, constraints=constraints, method='trust-constr', options={'maxiter': 100})
+
+        return torch.Tensor(res.x), None
     
 class gurobi_portfolio_solver(optModel):
     '''
