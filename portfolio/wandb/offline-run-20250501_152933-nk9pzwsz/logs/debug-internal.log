@@ -1,0 +1,18 @@
+{"time":"2025-05-01T15:29:33.915051941-04:00","level":"INFO","msg":"using version","core version":"0.18.0"}
+{"time":"2025-05-01T15:29:33.937442232-04:00","level":"INFO","msg":"created symlink","path":"wandb/offline-run-20250501_152933-nk9pzwsz/logs/debug-core.log"}
+{"time":"2025-05-01T15:29:33.937934434-04:00","level":"INFO","msg":"using version","core version":"0.18.0"}
+{"time":"2025-05-01T15:29:33.937952881-04:00","level":"INFO","msg":"created symlink","path":"wandb/offline-run-20250501_152933-nk9pzwsz/logs/debug-core.log"}
+{"time":"2025-05-01T15:29:33.94086453-04:00","level":"INFO","msg":"created new stream","id":"nk9pzwsz"}
+{"time":"2025-05-01T15:29:33.9409177-04:00","level":"INFO","msg":"stream: started","id":"nk9pzwsz"}
+{"time":"2025-05-01T15:29:33.940978349-04:00","level":"INFO","msg":"sender: started","stream_id":{"value":"nk9pzwsz"}}
+{"time":"2025-05-01T15:29:33.940986021-04:00","level":"INFO","msg":"writer: Do: started","stream_id":{"value":"nk9pzwsz"}}
+{"time":"2025-05-01T15:29:33.940993119-04:00","level":"INFO","msg":"handler: started","stream_id":{"value":"nk9pzwsz"}}
+{"time":"2025-05-01T15:29:33.953114095-04:00","level":"INFO","msg":"wandb-core","!BADKEY":null}
+{"time":"2025-05-01T15:29:33.995713064-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-01T15:30:44.141252927-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-01T15:30:44.141524233-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-01T15:30:45.188368652-04:00","level":"INFO","msg":"stream: closing","id":"nk9pzwsz"}
+{"time":"2025-05-01T15:30:45.188429436-04:00","level":"INFO","msg":"handler: closed","stream_id":{"value":"nk9pzwsz"}}
+{"time":"2025-05-01T15:30:45.188481126-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":{"value":"nk9pzwsz"}}
+{"time":"2025-05-01T15:30:45.188491207-04:00","level":"INFO","msg":"sender: closed","stream_id":{"value":"nk9pzwsz"}}
+{"time":"2025-05-01T15:30:45.188884405-04:00","level":"INFO","msg":"stream: closed","id":"nk9pzwsz"}
