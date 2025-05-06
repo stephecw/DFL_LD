@@ -11,6 +11,7 @@ parser.add_argument('--n_feat', type=int, default=200, help='Nombre de features'
 parser.add_argument('--lin', type=int, default=1, help='1 pour prendre la contrainte linéraire pour le sous-prob principal, 0 pour la contrainte quadratique')
 parser.add_argument('--n_iter', type=int, default=300, help='Nombre d\'itérations pour l\'optimisation de \mu. (0 pour ne pas l\'exécuter)')
 
+
 # Paramètres du dataset
 args = parser.parse_args()
 num_data_train = args.n_train
@@ -21,3 +22,4 @@ num_item = args.n
 gamma = args.gamma
 principal_lin = False if args.lin == 0 else True
 gen_datafile(num_data_train, num_data_test, num_feat, num_item, gamma, num_iter, principal_lin = principal_lin, verbose=True)
+

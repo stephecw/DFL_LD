@@ -1,0 +1,14 @@
+{"time":"2025-05-02T13:01:22.588170088-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250502_130122-hp7zrlx2/logs/debug-core.log"}
+{"time":"2025-05-02T13:01:22.783102294-04:00","level":"INFO","msg":"created new stream","id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:22.783159402-04:00","level":"INFO","msg":"stream: started","id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:22.783226829-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:22.783233871-04:00","level":"INFO","msg":"sender: started","stream_id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:22.783238114-04:00","level":"INFO","msg":"handler: started","stream_id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:22.824837294-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-02T13:01:25.684789927-04:00","level":"INFO","msg":"stream: closing","id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:25.68485193-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-02T13:01:25.685289531-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-02T13:01:25.685385029-04:00","level":"INFO","msg":"handler: closed","stream_id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:25.685405575-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:25.685423043-04:00","level":"INFO","msg":"sender: closed","stream_id":"hp7zrlx2"}
+{"time":"2025-05-02T13:01:25.69842719-04:00","level":"INFO","msg":"stream: closed","id":"hp7zrlx2"}

@@ -1,0 +1,16 @@
+
+Loading train_30_500_200_2-25.txt
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/portfolio/qptl/run_experiments.py", line 226, in <module>
+    run_train(model, "classic", gamma, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
+  File "/home/stephecw/projet/DFL_LD/portfolio/qptl/run_experiments.py", line 63, in run_train
+    train_set = ImportDataset(f"datasets/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
+  File "/home/stephecw/projet/DFL_LD/portfolio/data_import.py", line 20, in __init__
+    self.read_file(fname)
+  File "/home/stephecw/projet/DFL_LD/portfolio/data_import.py", line 82, in read_file
+    self.c = np.array(self.r)
+AttributeError: 'ImportDataset' object has no attribute 'r'
