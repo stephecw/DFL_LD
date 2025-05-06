@@ -1,0 +1,15 @@
+{"time":"2025-05-05T16:00:43.802774006-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250505_160043-roltc7x3/logs/debug-core.log"}
+{"time":"2025-05-05T16:00:43.996636543-04:00","level":"INFO","msg":"created new stream","id":"roltc7x3"}
+{"time":"2025-05-05T16:00:43.99672407-04:00","level":"INFO","msg":"stream: started","id":"roltc7x3"}
+{"time":"2025-05-05T16:00:43.996751238-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"roltc7x3"}
+{"time":"2025-05-05T16:00:43.996768949-04:00","level":"INFO","msg":"handler: started","stream_id":"roltc7x3"}
+{"time":"2025-05-05T16:00:43.996773717-04:00","level":"INFO","msg":"sender: started","stream_id":"roltc7x3"}
+{"time":"2025-05-05T16:00:44.002671665-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-05T16:00:51.88782672-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-05T16:00:51.888402792-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-05T16:00:51.889349022-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-05T16:00:52.894653481-04:00","level":"INFO","msg":"stream: closing","id":"roltc7x3"}
+{"time":"2025-05-05T16:00:52.894689464-04:00","level":"INFO","msg":"handler: closed","stream_id":"roltc7x3"}
+{"time":"2025-05-05T16:00:52.89470957-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"roltc7x3"}
+{"time":"2025-05-05T16:00:52.894720752-04:00","level":"INFO","msg":"sender: closed","stream_id":"roltc7x3"}
+{"time":"2025-05-05T16:00:52.896232297-04:00","level":"INFO","msg":"stream: closed","id":"roltc7x3"}
