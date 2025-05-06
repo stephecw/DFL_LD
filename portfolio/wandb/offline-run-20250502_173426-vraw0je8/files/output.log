@@ -1,0 +1,12 @@
+Loading train_100_500_200_2-25.txt
+Loading test_100_500_200_2-25.txt
+Training the model with regret as loss...
+Epoch 1 | loss: 0.0314
+Restricted license - for non-production use only - expires 2026-11-23
+Eval Epoch 1 | Regret moyen : 0.0302
+Epoch 2 | loss: 0.0283
+Epoch 3 | loss: 0.0260
+Epoch 4 | loss: 0.0240
+Epoch 5 | loss: 0.0224
+Epoch 6 | loss: 0.0209
+Eval Epoch 6 | Regret moyen : 0.0262

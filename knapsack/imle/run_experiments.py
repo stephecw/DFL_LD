@@ -238,7 +238,7 @@ for d in dim:
         }
         if epochs_classic > 0:
             run_train(model, "classic", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
-                    IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic)
+                    IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic, sched_step_size=12, sched_gamma=0.5)
             
         ### MU DYNAMIQUE ###
         model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
@@ -273,4 +273,4 @@ for d in dim:
         if epochs_SG > 0:
             run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
                     IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
-                    sched_step_size=500, sched_gamma=0.5)
+                    sched_step_size=120, sched_gamma=0.5)
