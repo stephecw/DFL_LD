@@ -1,0 +1,15 @@
+{"time":"2025-05-06T14:05:59.694913894-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250506_140559-ds8ltryy/logs/debug-core.log"}
+{"time":"2025-05-06T14:05:59.937442427-04:00","level":"INFO","msg":"created new stream","id":"ds8ltryy"}
+{"time":"2025-05-06T14:05:59.937499553-04:00","level":"INFO","msg":"stream: started","id":"ds8ltryy"}
+{"time":"2025-05-06T14:05:59.937565986-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"ds8ltryy"}
+{"time":"2025-05-06T14:05:59.9376167-04:00","level":"INFO","msg":"sender: started","stream_id":"ds8ltryy"}
+{"time":"2025-05-06T14:05:59.937623789-04:00","level":"INFO","msg":"handler: started","stream_id":"ds8ltryy"}
+{"time":"2025-05-06T14:05:59.980660789-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-06T14:12:51.52288208-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-06T14:12:51.523521809-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-06T14:12:51.524274108-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-06T14:12:52.529890928-04:00","level":"INFO","msg":"stream: closing","id":"ds8ltryy"}
+{"time":"2025-05-06T14:12:52.529925052-04:00","level":"INFO","msg":"handler: closed","stream_id":"ds8ltryy"}
+{"time":"2025-05-06T14:12:52.52994437-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ds8ltryy"}
+{"time":"2025-05-06T14:12:52.529953748-04:00","level":"INFO","msg":"sender: closed","stream_id":"ds8ltryy"}
+{"time":"2025-05-06T14:12:52.53041061-04:00","level":"INFO","msg":"stream: closed","id":"ds8ltryy"}
