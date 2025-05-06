@@ -5,7 +5,7 @@ from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE, SPOPlus
 
 
-from my_solver import Solveur_lin
+from my_solver import Solveur_lin, Solveur_quad, gurobi_portfolio_solver
 
 from opti_X_mu import Optimization_X_mu_portfolio
 from joblib import Parallel, delayed
@@ -66,9 +66,11 @@ def train(model, method, run, dataloader_train, dataloader_test, optimizer, sche
     solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
     # i-MLE avec solveur exact multi-contrainte
     if method == "imle":   
+        solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
         gen = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                         two_sides=IMLE_two_sides, processes=IMLE_processes)
     elif method == "spo":
+        solver = gurobi_portfolio_solver(n_stocks = cov.shape[0], cov = cov, gamma = gamma, maximize=False)
         gen = SPOPlus(solver, solve_ratio = SPO_solve_ratio, reduction = SPO_reduction, processes = SPO_processes)
 
     for epoch in range(epochs):
@@ -88,10 +90,10 @@ def train(model, method, run, dataloader_train, dataloader_test, optimizer, sche
                 # Regret = c · (w - wp)
                 loss = torch.sum(c * (x - xp), dim=1).mean()
             elif method == "spo":
-                true_cost = c.detach()
+                true_cost = -c.detach()
                 true_sol = x.detach()
                 obj_opt = (true_cost*true_sol).sum(dim=1)  
-                loss = gen(cp, true_cost, true_sol, obj_opt)
+                loss = gen(-cp, true_cost, true_sol, obj_opt)
 
             optimizer.zero_grad()
             loss.backward()
@@ -123,40 +125,41 @@ def train(model, method, run, dataloader_train, dataloader_test, optimizer, sche
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
             
-        with torch.no_grad():
-            model.eval()
-            total_regret = 0
-            total_count = 0
-            for z, c, x, _, _ in dataloader_test:
-                z, c, x = [t.to(device) for t in (z, c, x)]
-                c_hat = model(z)  # prédiction des coûts [batch, n]
-                batch_regrets = []
+        if epoch % 5 == 0:    
+            with torch.no_grad():
+                model.eval()
+                total_regret = 0
+                total_count = 0
+                eval_solver = portfolioModel(num_assets=cov.shape[0],covariance = cov, gamma=gamma)
+                for z, c, x, _, _ in dataloader_test:
+                    z, c, x = [t.to(device) for t in (z, c, x)]
+                    c_hat = model(z)  # prédiction des coûts [batch, n]
+                    batch_regrets = []
 
-                for i in range(z.size(0)):
-                    solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
-                    c_numpy = c_hat[i].detach().cpu().numpy()
-                    solver_i.setObj(c_numpy)
-                    x_hat_np, _ = solver_i.solve()
+                    for i in range(z.size(0)):
+                        c_numpy = c_hat[i].detach().cpu().numpy()
+                        eval_solver.setObj(c_numpy)
+                        x_hat_np, _ = eval_solver.solve()
 
-                    x_true = x[i].to(dtype=torch.float32, device=device)
-                    r_true = c[i].to(dtype=torch.float32, device=device)
+                        x_true = x[i].to(dtype=torch.float32, device=device)
+                        c_true = c[i].to(dtype=torch.float32, device=device)
 
-                    x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
                                             device=device)
 
-                    regret = torch.dot(r_true, x_true - x_hat_tensor)
-                    batch_regrets.append(regret)
+                        regret = torch.dot(c_true, x_true - x_hat_tensor)
+                        batch_regrets.append(regret)
 
-                batch_regrets = torch.stack(batch_regrets)
-                total_regret += batch_regrets.sum().item()
-                total_count += z.size(0)
+                    batch_regrets = torch.stack(batch_regrets)
+                    total_regret += batch_regrets.sum().item()
+                    total_count += z.size(0)
                 
-        mean_regret = total_regret / total_count
-        if run is not None:
-            # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
-        if verbose:
-            print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
+            mean_regret = total_regret / total_count
+            if run is not None:
+                # Enregistrement des résultats dans wandb
+                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
+            if verbose:
+                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
             
     if run is not None:   
         end_time = time.time()
@@ -217,10 +220,10 @@ def train_LD(model, method, run, dataloader_train, dataloader_test, optimizer, s
                 profit_modified = c + mu # shape [batch, n]
                 loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
             elif method == "spo":
-                true_cost = c.detach()+ mu.detach()
+                true_cost = -c.detach()- mu.detach()
                 true_sol = X1.detach()
                 obj_opt = (true_cost*true_sol).sum(dim=1)  
-                loss = gen(c_hat + mu, true_cost, true_sol, obj_opt)
+                loss = gen(-c_hat - mu, true_cost, true_sol, obj_opt)
 
             optimizer.zero_grad()
             loss.backward()
@@ -321,12 +324,14 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
 
     mu_global = torch.ones(len(dataloader_train.dataset), n_stocks, device=device, dtype = torch.float32)
     # Créer un solveur i-MLE avec les mu du batch
-    solver = Solveur_lin(cov.shape[0])
+    
 
     if method == "imle":
+        solver = Solveur_lin(cov.shape[0], maximize=True)
         gen = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                 two_sides=IMLE_two_sides, processes=IMLE_processes)
     elif method == "spo":
+        solver = Solveur_lin(cov.shape[0], maximize=False)
         gen = SPOPlus(solver, solve_ratio = SPO_solve_ratio, reduction = SPO_reduction, processes = SPO_processes)
 
     for epoch in range(epochs):
@@ -357,10 +362,10 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
                 profit_modified = c + mu    # shape [batch, n]
                 loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
             elif method == "spo":
-                true_cost = c.detach()+ mu.detach()
+                true_cost = -c.detach()- mu.detach()
                 true_sol = X1.detach()
                 obj_opt = (true_cost*true_sol).sum(dim=1)  
-                loss = gen(c_hat + mu_tilde, true_cost, true_sol, obj_opt)
+                loss = gen(-c_hat - mu_tilde, true_cost, true_sol, obj_opt)
 
             optimizer.zero_grad()
             loss.backward()
@@ -424,6 +429,9 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
                     batch_regrets = torch.stack(batch_regrets)
                     total_regret += batch_regrets.sum().item()
                     total_count += z.size(0)
+                
+                mu_data = dataloader_train.dataset.tensors[4].to(device)
+                mu_diff = torch.norm(mu_data - mu_global, p='fro').item()
 
             mean_regret = total_regret / total_count
 
