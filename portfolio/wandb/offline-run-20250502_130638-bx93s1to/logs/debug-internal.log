@@ -1,0 +1,14 @@
+{"time":"2025-05-02T13:06:38.785539516-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250502_130638-bx93s1to/logs/debug-core.log"}
+{"time":"2025-05-02T13:06:38.986946003-04:00","level":"INFO","msg":"created new stream","id":"bx93s1to"}
+{"time":"2025-05-02T13:06:38.987004875-04:00","level":"INFO","msg":"stream: started","id":"bx93s1to"}
+{"time":"2025-05-02T13:06:38.987067343-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"bx93s1to"}
+{"time":"2025-05-02T13:06:38.987075202-04:00","level":"INFO","msg":"sender: started","stream_id":"bx93s1to"}
+{"time":"2025-05-02T13:06:38.987083645-04:00","level":"INFO","msg":"handler: started","stream_id":"bx93s1to"}
+{"time":"2025-05-02T13:06:39.027975964-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-02T13:06:42.038514418-04:00","level":"INFO","msg":"stream: closing","id":"bx93s1to"}
+{"time":"2025-05-02T13:06:42.038571686-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-02T13:06:42.039080537-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-02T13:06:42.039184153-04:00","level":"INFO","msg":"handler: closed","stream_id":"bx93s1to"}
+{"time":"2025-05-02T13:06:42.039207705-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"bx93s1to"}
+{"time":"2025-05-02T13:06:42.039222587-04:00","level":"INFO","msg":"sender: closed","stream_id":"bx93s1to"}
+{"time":"2025-05-02T13:06:42.254171627-04:00","level":"INFO","msg":"stream: closed","id":"bx93s1to"}
