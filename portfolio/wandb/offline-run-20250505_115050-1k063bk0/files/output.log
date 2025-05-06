@@ -1,0 +1,124 @@
+Loading train_30_500_200_2-25.txt
+Loading test_30_500_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
+Epoch 1 | loss: 0.0144
+Eval Epoch 1 | Regret moyen : 0.0310 | ‖μ_global - μ_data‖_F : 71.8565
+Epoch 2 | loss: 0.0135
+Epoch 3 | loss: 0.0141
+Epoch 4 | loss: 0.0133
+Epoch 5 | loss: 0.0136
+Epoch 6 | loss: 0.0140
+Eval Epoch 6 | Regret moyen : 0.0309 | ‖μ_global - μ_data‖_F : 71.8565
+Epoch 7 | loss: 0.0141
+Epoch 8 | loss: 0.0134
+Epoch 9 | loss: 0.0137
+Epoch 10 | loss: 0.0137
+Epoch 11 | loss: 0.0141
+Eval Epoch 11 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 70.3648
+Epoch 12 | loss: 0.0140
+Epoch 13 | loss: 0.0140
+Epoch 14 | loss: 0.0138
+Epoch 15 | loss: 0.0134
+Epoch 16 | loss: 0.0136
+Eval Epoch 16 | Regret moyen : 0.0307 | ‖μ_global - μ_data‖_F : 70.3648
+Epoch 17 | loss: 0.0140
+Epoch 18 | loss: 0.0143
+Epoch 19 | loss: 0.0143
+Epoch 20 | loss: 0.0142
+Epoch 21 | loss: 0.0147
+Eval Epoch 21 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 69.0215
+Epoch 22 | loss: 0.0142
+Epoch 23 | loss: 0.0140
+Epoch 24 | loss: 0.0144
+Epoch 25 | loss: 0.0134
+Epoch 26 | loss: 0.0145
+Eval Epoch 26 | Regret moyen : 0.0305 | ‖μ_global - μ_data‖_F : 69.0215
+Epoch 27 | loss: 0.0142
+Epoch 28 | loss: 0.0139
+Epoch 29 | loss: 0.0140
+Epoch 30 | loss: 0.0140
+Epoch 31 | loss: 0.0138
+Eval Epoch 31 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 67.7077
+Epoch 32 | loss: 0.0136
+Epoch 33 | loss: 0.0139
+Epoch 34 | loss: 0.0137
+Epoch 35 | loss: 0.0143
+Epoch 36 | loss: 0.0139
+Eval Epoch 36 | Regret moyen : 0.0309 | ‖μ_global - μ_data‖_F : 67.7077
+Epoch 37 | loss: 0.0140
+Epoch 38 | loss: 0.0145
+Epoch 39 | loss: 0.0138
+Epoch 40 | loss: 0.0134
+Epoch 41 | loss: 0.0141
+Eval Epoch 41 | Regret moyen : 0.0308 | ‖μ_global - μ_data‖_F : 66.4833
+Epoch 42 | loss: 0.0143
+Epoch 43 | loss: 0.0136
+Epoch 44 | loss: 0.0134
+Epoch 45 | loss: 0.0140
+Epoch 46 | loss: 0.0138
+Eval Epoch 46 | Regret moyen : 0.0307 | ‖μ_global - μ_data‖_F : 66.4833
+Epoch 47 | loss: 0.0135
+Epoch 48 | loss: 0.0135
+Epoch 49 | loss: 0.0136
+Epoch 50 | loss: 0.0139
+Epoch 51 | loss: 0.0139
+Eval Epoch 51 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 65.3048
+Epoch 52 | loss: 0.0138
+Epoch 53 | loss: 0.0138
+Epoch 54 | loss: 0.0139
+Epoch 55 | loss: 0.0140
+Epoch 56 | loss: 0.0142
+Eval Epoch 56 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 65.3048
+Epoch 57 | loss: 0.0136
+Epoch 58 | loss: 0.0128
+Epoch 59 | loss: 0.0140
+Epoch 60 | loss: 0.0136
+Epoch 61 | loss: 0.0130
+Eval Epoch 61 | Regret moyen : 0.0305 | ‖μ_global - μ_data‖_F : 64.2326
+Epoch 62 | loss: 0.0139
+Epoch 63 | loss: 0.0139
+Epoch 64 | loss: 0.0135
+Epoch 65 | loss: 0.0137
+Epoch 66 | loss: 0.0139
+Eval Epoch 66 | Regret moyen : 0.0305 | ‖μ_global - μ_data‖_F : 64.2326
+Epoch 67 | loss: 0.0143
+Epoch 68 | loss: 0.0139
+Epoch 69 | loss: 0.0137
+Epoch 70 | loss: 0.0138
+Epoch 71 | loss: 0.0135
+Eval Epoch 71 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 63.1623
+Epoch 72 | loss: 0.0141
+Epoch 73 | loss: 0.0141
+Epoch 74 | loss: 0.0143
+Epoch 75 | loss: 0.0141
+Epoch 76 | loss: 0.0141
+Eval Epoch 76 | Regret moyen : 0.0305 | ‖μ_global - μ_data‖_F : 63.1623
+Epoch 77 | loss: 0.0141
+Epoch 78 | loss: 0.0142
+Epoch 79 | loss: 0.0149
+Epoch 80 | loss: 0.0141
+Epoch 81 | loss: 0.0145
+Eval Epoch 81 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 62.1099
+Epoch 82 | loss: 0.0141
+Epoch 83 | loss: 0.0141
+Epoch 84 | loss: 0.0144
+Epoch 85 | loss: 0.0147
+Epoch 86 | loss: 0.0150
+Eval Epoch 86 | Regret moyen : 0.0306 | ‖μ_global - μ_data‖_F : 62.1099
+Epoch 87 | loss: 0.0141
+Epoch 88 | loss: 0.0150
+Epoch 89 | loss: 0.0138
+Epoch 90 | loss: 0.0137
+Epoch 91 | loss: 0.0136
+Eval Epoch 91 | Regret moyen : 0.0305 | ‖μ_global - μ_data‖_F : 61.0726
+Epoch 92 | loss: 0.0147
+Epoch 93 | loss: 0.0134
+Epoch 94 | loss: 0.0142
+Epoch 95 | loss: 0.0143
+Epoch 96 | loss: 0.0149
+Eval Epoch 96 | Regret moyen : 0.0305 | ‖μ_global - μ_data‖_F : 61.0726
+Epoch 97 | loss: 0.0141
+Epoch 98 | loss: 0.0144
+Epoch 99 | loss: 0.0139
+Epoch 100 | loss: 0.0135
+Saving the model to models/SG_{num_item}_{num_data_train}_{num_feat}.pth
