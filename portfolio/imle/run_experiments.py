@@ -9,8 +9,8 @@ import argparse
 
 # Définir les arguments de ligne de commande
 parser = argparse.ArgumentParser(description="Script d'entraînement avec des dimensions spécifiées.")
-parser.add_argument('--dim', type=int, default=5, help='Nombre de contraintes.')
 parser.add_argument('--n', type=int, default=30, help='Nombre d\'item.')
+parser.add_argument('--gamma', type=float, default=2.25, help='Gamma.')
 parser.add_argument('--ep_cla', type=int, default=0, help='Nombre d\'epochs pour l\'entraînement classique. (0 pour ne pas l\'exécuter)')
 parser.add_argument('--ep_ld', type=int, default=0, help='Nombre d\'epochs pour l\'entraînement LD. (0 pour ne pas l\'exécuter)')
 parser.add_argument('--ep_sg', type=int, default=0, help='Nombre d\'epochs pour l\'entraînement SG. (0 pour ne pas l\'exécuter)')
@@ -68,25 +68,28 @@ def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test,
         return
     
     if verbose:
-        print(f"Loaded test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        print(f"Loading test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     try:
-        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        test_set = ImportDataset(f"datasets/test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
-   
-    # Construction du dataloader
-    train_loader = train_set.get_dataloader(batch_size=batch_size, shuffle=True)
-    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
-
+    
     # Paramètres du problème
     cov = train_set.get_cov(tensor=True)
+   
+    # Construction du dataloader
+    if verbose:
+        print(f"Getting train dataloader")
+    train_loader = train_set.get_dataloader(batch_size=batch_size, shuffle=True)
+    if verbose:
+        print(f"Getting test dataloader")
+    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Modèle, optimiseur et scheduleur
     optimizer = optim.Adam(model.parameters(), lr)
-    if schedulerType == "None":
-        scheduler = None
-    elif schedulerType == "StepLR":
+    scheduler = None
+    if schedulerType == "StepLR":
         scheduler = optim.lr_scheduler.StepLR(optimizer, sched_step_size, sched_gamma)
     elif schedulerType == "ReduceLROnPlateau":
         if jobtype == "LD" or jobtype == "SG": patience = 15
@@ -114,85 +117,92 @@ def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test,
             print("Training the model with dynamic mu and LD bound as loss...")
 
         train_SG(model, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
-
+                    IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
+                    verbose=verbose)
         
-
-
     # Enregistrement du modèle
     if save_model:
         if jobtype == "LD":
             if verbose:
-                print("Saving the model to models/LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'models/LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print("Saving the model to models/LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f"imle/models/LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
         elif jobtype == "classic":
             if verbose:
-                print("Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print("Saving the model to models/{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f"imle/models/{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
         elif jobtype == "SG":
             if verbose:
-                print("Saving the model to models/SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'models/SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print("Saving the model to models/SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f"imle/models/SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
     
     # Fin de l'exécution
     if run is not None:
         run.finish()
 
-
-### EXÉCUTION DES EXPÉRIENCES ###
+### PARAMÈTRES ###
 args = parser.parse_args()
 
-#Choix des dimensions du problème
+# Paramètres du problème
 num_feat = 200
 num_data_train = 500 # Taille du dataset d'entraînement
 num_data_test = 100 # Taille du dataset de test
+num_item = [args.n]
+gamma = args.gamma
+gamma_str = str(gamma).replace('.', '-')
 
+# Paramètres LD
 epochs_LD = args.ep_ld
-epochs_classic = args.ep_cla
-epochs_SG = args.ep_sg
-lr_LD = 0.001
-lr_classic = 0.001
-lr_SG = 0.002
+lr_LD = 10
 IMLE_n_samples_LD = 10
-IMLE_n_samples_classic = 10
 IMLE_sigma_LD = 1
-IMLE_sigma_classic = 1
 IMLE_lambd_LD = 10
-IMLE_lambd_classic = 10
-schedulerType_LD = "OneCycleLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
-schedulerType_classic = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
-schedulerType_SG = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
+schedulerType_LD = "None" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 IMLE_processes_LD = 1
+
+# Paramètres Classic
+epochs_classic = args.ep_cla
+lr_classic = 0.001
+IMLE_n_samples_classic = 10
+IMLE_sigma_classic = 1
+IMLE_lambd_classic = 10
+schedulerType_classic = "None" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
 IMLE_processes_classic = 1
+
+# Paramètres SG
+epochs_SG = args.ep_sg
+lr_SG = 10
+IMLE_n_samples_SG = 10
+IMLE_sigma_SG = 1
+IMLE_lambd_SG = 10
+schedulerType_SG = "StepLR" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", "None"
+IMLE_processes_SG = 1
+
+# Paramètres modèle
+hidden_layer = 100
 dropout = 0.2
 
 
-d = args.dim
-n = args.n
+### EXÉCUTION DES EXPÉRIENCES ###
 
-# Choix dimension modèle
-hidden_layer = 100
-
-print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique, {epochs_LD} epochs pour le modèle LD et {epochs_SG} pour le modèle avec SG de mu sur {d} contraintes et {n} items.")
-
-
-dim = [args.dim]
-num_item = [args.n]
-for d in dim:
-    for n in num_item:
-        ### AVEC LD ###
+for n in num_item:
+    
+    
+    ### AVEC LD ###
+    if epochs_LD > 0:
+        print(f"Entrainement sur {epochs_LD} epochs pour le modèle LD sur {n} items.")
         model = CustomMLP([num_feat,hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
                 'dir': "./",
-                'name': f"LD_{d}_{num_feat}_{n}_{num_data_train}",
-                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'name': f"LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+                'group': f"{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
                 'job_type': "LD",
                 'config': {
                     "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
                     "dropout": dropout,
-                    "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
-                    "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
+                    "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                    "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                     "batch_size": 32,
                     "epochs": epochs_LD,
                     "learning_rate": lr_LD,
@@ -206,24 +216,30 @@ for d in dim:
                     "IMLE_processes": IMLE_processes_LD,
                 }
         }
-        if epochs_LD > 0:
-            run_train(model, "LD", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_LD, lr=lr_LD,schedulerType=schedulerType_LD, verbose=True, wandbarg=wandbarg,
-                    IMLE_n_samples=IMLE_n_samples_LD, IMLE_sigma=IMLE_sigma_LD, IMLE_lambd=IMLE_lambd_LD, IMLE_processes=IMLE_processes_LD)
-        
-        ### SANS LD ###
+        run_train(
+            model, "LD", num_feat, n, num_data_train, num_data_test, gamma=gamma,
+            epochs = epochs_LD, lr = lr_LD, schedulerType = schedulerType_LD,
+            IMLE_n_samples = IMLE_n_samples_LD, IMLE_sigma = IMLE_sigma_LD, IMLE_lambd = IMLE_lambd_LD, IMLE_processes = IMLE_processes_LD, 
+            verbose = True, wandbarg = wandbarg
+            )
+    
+    
+    ### SANS LD ###
+    if epochs_classic > 0:
+        print(f"Entrainement sur {epochs_classic} epochs pour le modèle classique {n} items.")
         model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
                 'dir': "./",
-                'name': f"classic_{d}_{num_feat}_{n}_{num_data_train}",
-                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'name': f"classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+                'group': f"{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
                 'job_type': "classic",
                 'config': {
                     "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
                     "dropout": dropout,
-                    "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
-                    "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
+                    "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                    "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                     "batch_size": 32,
                     "epochs": epochs_classic,
                     "learning_rate": lr_classic,
@@ -237,24 +253,30 @@ for d in dim:
                     "IMLE_processes": IMLE_processes_classic,
                 }
         }
-        if epochs_classic > 0:
-            run_train(model, "classic", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
-                    IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic)
-            
-        ### MU DYNAMIQUE ###
+        run_train(
+            model, "classic", num_feat, n, num_data_train, num_data_test, gamma=gamma, 
+            epochs = epochs_classic, lr = lr_classic, schedulerType = schedulerType_classic,
+            IMLE_n_samples = IMLE_n_samples_classic, IMLE_sigma = IMLE_sigma_classic, IMLE_lambd = IMLE_lambd_classic, IMLE_processes = IMLE_processes_classic, 
+            verbose=True, wandbarg=wandbarg
+            )
+        
+        
+    ### MU DYNAMIQUE ###
+    if epochs_SG > 0:
+        print(f"Entrainement sur {epochs_SG} pour le modèle avec SG de mu sur {n} items.")
         model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
                 'dir': "./",
-                'name': f"SG_{d}_{num_feat}_{n}_{num_data_train}",
-                'group': f"{d}_{num_feat}_{n}_{num_data_train}",
+                'name': f"SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+                'group': f"{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
                 'job_type': "SG",
                 'config': {
                     "architecture": f"MLP_{[num_feat, hidden_layer, n]}",
                     "dropout": dropout,
-                    "dataset_train": f"train_{d}_{num_feat}_{n}_{num_data_train}.txt",
-                    "dataset_test": f"test_{d}_{num_feat}_{n}_{num_data_test}.txt",
+                    "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                    "dataset_test": f"test_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                     "batch_size": 32,
                     "epochs": epochs_SG,
                     "learning_rate": lr_SG,
@@ -269,11 +291,12 @@ for d in dim:
                     "step_mu": args.step_mu,
                     "n_iter_mu": args.n_iter_mu
                 }
-        }
-
-        if epochs_SG > 0:
-            run_train(model, "SG", d, num_feat, n, num_data_train, num_data_test, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
-                    IMLE_n_samples=IMLE_n_samples_classic, IMLE_sigma=IMLE_sigma_classic, IMLE_lambd=IMLE_lambd_classic, IMLE_processes=IMLE_processes_classic, step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
-
-                    sched_step_size=300, sched_gamma=0.5)
+        }        
+        run_train(
+            model, "LD", num_feat, n, num_data_train, num_data_test, gamma=gamma, 
+            epochs = epochs_SG, lr = lr_SG, schedulerType = schedulerType_SG, sched_step_size = 20, sched_gamma = 0.1,
+            IMLE_n_samples = IMLE_n_samples_SG, IMLE_sigma = IMLE_sigma_SG, IMLE_lambd = IMLE_lambd_SG, IMLE_processes = IMLE_processes_SG, 
+            step_mu = args.step_mu, n_iter_mu = args.n_iter_mu,
+            verbose = True, wandbarg = wandbarg
+            ) 
 
