@@ -296,7 +296,7 @@ def train_LD(model, method, run, dataloader_train, dataloader_test, optimizer, s
         total_duration = end_time - start_time
         run.log({"total_duration": total_duration})
 
-def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
+def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, principal_lin=True,
         IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
         SPO_solve_ratio = 1, SPO_reduction = 'mean', SPO_processes = 1,
         verbose=False, step_mu=10, n_iter_mu = 100):
@@ -327,11 +327,11 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
     
 
     if method == "imle":
-        solver = Solveur_lin(cov.shape[0], maximize=True)
+        solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=True)
         gen = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                 two_sides=IMLE_two_sides, processes=IMLE_processes)
     elif method == "spo":
-        solver = Solveur_lin(cov.shape[0], maximize=False)
+        solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=False)
         gen = SPOPlus(solver, solve_ratio = SPO_solve_ratio, reduction = SPO_reduction, processes = SPO_processes)
 
     for epoch in range(epochs):
@@ -350,7 +350,7 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
 
             # Mise à jour de mu_global
             if epoch % step_mu == 0:
-                mu_list = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i].detach().cpu().numpy(), cov, gamma, n_stocks, n_iter_mu, mu_tilde[i].detach().cpu().numpy()) for i in range(z.size(0)))
+                mu_list = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i].detach().cpu().numpy(), cov, gamma, n_stocks, n_iter_mu, mu_tilde[i].detach().cpu().numpy(), principal_lin) for i in range(z.size(0)))
                 mu_np = np.stack(mu_list)
                 mu_tilde = torch.tensor(mu_np, device=device, dtype=torch.float32)
                 mu_global[idx] = mu_tilde
@@ -448,12 +448,13 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
         run.log({"total_duration": total_duration})
         
         
-def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, mu0):
+def optimize_single_instance(c_i, cov, gamma, num_item, num_iter, mu0, principal_lin):
     optimizer = Optimization_X_mu_portfolio(
         num_item=num_item,
         c=c_i,
         cov=cov,
         gamma=gamma,
+        principal_lin=principal_lin
     )
     optimizer.optim_mu(mu0 = mu0, max_iter=num_iter)
     return optimizer.get_mu()

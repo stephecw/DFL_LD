@@ -1,0 +1,14 @@
+{"time":"2025-05-06T13:06:44.635971889-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250506_130644-s4bxarko/logs/debug-core.log"}
+{"time":"2025-05-06T13:06:44.77740873-04:00","level":"INFO","msg":"created new stream","id":"s4bxarko"}
+{"time":"2025-05-06T13:06:44.777500763-04:00","level":"INFO","msg":"stream: started","id":"s4bxarko"}
+{"time":"2025-05-06T13:06:44.777579764-04:00","level":"INFO","msg":"handler: started","stream_id":"s4bxarko"}
+{"time":"2025-05-06T13:06:44.777633468-04:00","level":"INFO","msg":"sender: started","stream_id":"s4bxarko"}
+{"time":"2025-05-06T13:06:44.77758071-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"s4bxarko"}
+{"time":"2025-05-06T13:06:44.784211985-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-06T13:06:47.023863554-04:00","level":"INFO","msg":"stream: closing","id":"s4bxarko"}
+{"time":"2025-05-06T13:06:47.023919266-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-06T13:06:47.02440746-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-06T13:06:47.024505523-04:00","level":"INFO","msg":"handler: closed","stream_id":"s4bxarko"}
+{"time":"2025-05-06T13:06:47.024526924-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"s4bxarko"}
+{"time":"2025-05-06T13:06:47.024566603-04:00","level":"INFO","msg":"sender: closed","stream_id":"s4bxarko"}
+{"time":"2025-05-06T13:06:47.025057635-04:00","level":"INFO","msg":"stream: closed","id":"s4bxarko"}

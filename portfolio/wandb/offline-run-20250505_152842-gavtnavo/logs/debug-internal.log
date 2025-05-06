@@ -1,0 +1,14 @@
+{"time":"2025-05-05T15:28:42.833262672-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250505_152842-gavtnavo/logs/debug-core.log"}
+{"time":"2025-05-05T15:28:42.967413122-04:00","level":"INFO","msg":"created new stream","id":"gavtnavo"}
+{"time":"2025-05-05T15:28:42.96747639-04:00","level":"INFO","msg":"stream: started","id":"gavtnavo"}
+{"time":"2025-05-05T15:28:42.967541519-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"gavtnavo"}
+{"time":"2025-05-05T15:28:42.967548536-04:00","level":"INFO","msg":"handler: started","stream_id":"gavtnavo"}
+{"time":"2025-05-05T15:28:42.967554899-04:00","level":"INFO","msg":"sender: started","stream_id":"gavtnavo"}
+{"time":"2025-05-05T15:28:42.989916456-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-05T15:28:45.696077074-04:00","level":"INFO","msg":"stream: closing","id":"gavtnavo"}
+{"time":"2025-05-05T15:28:45.696137831-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-05T15:28:45.69663493-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-05T15:28:45.696743954-04:00","level":"INFO","msg":"handler: closed","stream_id":"gavtnavo"}
+{"time":"2025-05-05T15:28:45.696753228-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"gavtnavo"}
+{"time":"2025-05-05T15:28:45.696781689-04:00","level":"INFO","msg":"sender: closed","stream_id":"gavtnavo"}
+{"time":"2025-05-05T15:28:46.680297849-04:00","level":"INFO","msg":"stream: closed","id":"gavtnavo"}

@@ -1,0 +1,15 @@
+{"time":"2025-05-06T10:10:57.425595816-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250506_101057-38wipove/logs/debug-core.log"}
+{"time":"2025-05-06T10:10:57.552796263-04:00","level":"INFO","msg":"created new stream","id":"38wipove"}
+{"time":"2025-05-06T10:10:57.552917484-04:00","level":"INFO","msg":"stream: started","id":"38wipove"}
+{"time":"2025-05-06T10:10:57.552936202-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"38wipove"}
+{"time":"2025-05-06T10:10:57.552951749-04:00","level":"INFO","msg":"handler: started","stream_id":"38wipove"}
+{"time":"2025-05-06T10:10:57.552987183-04:00","level":"INFO","msg":"sender: started","stream_id":"38wipove"}
+{"time":"2025-05-06T10:10:57.575516141-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-06T10:11:04.725691766-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-06T10:11:04.72624243-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-06T10:11:04.726987278-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-06T10:11:05.734397426-04:00","level":"INFO","msg":"stream: closing","id":"38wipove"}
+{"time":"2025-05-06T10:11:05.734434358-04:00","level":"INFO","msg":"handler: closed","stream_id":"38wipove"}
+{"time":"2025-05-06T10:11:05.734455006-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"38wipove"}
+{"time":"2025-05-06T10:11:05.734482546-04:00","level":"INFO","msg":"sender: closed","stream_id":"38wipove"}
+{"time":"2025-05-06T10:11:05.751723608-04:00","level":"INFO","msg":"stream: closed","id":"38wipove"}
