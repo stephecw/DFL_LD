@@ -1,0 +1,57 @@
+_wandb:
+    value:
+        cli_version: 0.18.0
+        m: []
+        python_version: 3.11.4
+        t:
+            "1":
+                - 1
+                - 5
+                - 53
+                - 55
+            "3":
+                - 4
+                - 13
+                - 16
+                - 23
+                - 55
+            "4": 3.11.4
+            "5": 0.18.0
+            "8":
+                - 5
+            "12": 0.18.0
+            "13": linux-x86_64
+IMLE_lambd:
+    value: 10
+IMLE_n_samples:
+    value: 10
+IMLE_processes:
+    value: 1
+IMLE_sigma:
+    value: 1
+IMLE_two_sides:
+    value: false
+architecture:
+    value: MLP_[200, 100, 100]
+batch_size:
+    value: 32
+dataset_test:
+    value: test_5_200_100_100.txt
+dataset_train:
+    value: train_5_200_100_500.txt
+dropout:
+    value: 0.2
+epochs:
+    value: 300
+learning_rate:
+    value: 0.002
+n_iter_mu:
+    value: 30
+sched_gamma:
+    value: 0.5
+sched_step_size:
+    value: 150
+schedulerType:
+    value: StepLR
+step_mu:
+    value: 10
