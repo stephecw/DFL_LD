@@ -19,15 +19,16 @@ class gurobi_portfolio_solver(optModel):
         self.num_item = num_item
         self.maximize = gp.GRB.MAXIMIZE if maximize else gp.GRB.MINIMIZE
         model = gp.Model("qp")
-        model.setParam('OutputFlag', 0)
+        model.setParam('OutputFlag', 1)
 
-        x = model.addMVar(shape= num_item, lb=0.0, vtype=GRB.CONTINUOUS, name="w")
+        x = model.addMVar(shape=num_item, lb=0.0, vtype=GRB.CONTINUOUS, name="w")
         model.addConstr(x @ cov @ x <= gamma*np.mean(cov) , "2")
+        model.printStats()
+        model.setParam('OutputFlag', 0)
         self.model = model
         self.x = x
     
     def setObj(self, price):
-        print(torch.mean(torch.abs(price)))
         self.c = price.detach().cpu().numpy()
         
     
@@ -43,13 +44,15 @@ class gurobi_portfolio_solver(optModel):
 
         if model.status==2:
             sol = x.x
-            sol[sol < 1e-4] = 0
+            sol[sol < 1e-12] = 0
             return sol, None
         else:
             print(self.c)
             print(model.status)
+            model.setParam('OutputFlag', 1)
             model.printStats()
             model.printQuality()
+            model.setParam('OutputFlag', 0)
             raise Exception("Optimal Solution not found")   
         
     def solution_fromtorch(self, y_torch):

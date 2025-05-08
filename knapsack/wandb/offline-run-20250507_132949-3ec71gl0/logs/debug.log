@@ -1,0 +1,33 @@
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_setup.py:_flush():77] Current SDK version is 0.18.0
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_setup.py:_flush():77] Configure stats pid to 2727447
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_setup.py:_flush():77] Loading settings from /home/hugoper/.config/wandb/settings
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_setup.py:_flush():77] Loading settings from /home/hugoper/projet/DFL_LD/knapsack/wandb/settings
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_setup.py:_flush():77] Loading settings from environment variables: {}
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_setup.py:_flush():77] Applying setup settings: {'_disable_service': False}
+2025-05-07 13:29:49,666 WARNING MainThread:2727447 [wandb_setup.py:_flush():77] Could not find program at -m imle.run_experiments
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_setup.py:_flush():77] Inferring run settings from compute environment: {'program_relpath': None, 'program': '-m imle.run_experiments'}
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_init.py:_log_setup():525] Logging user logs to ./wandb/offline-run-20250507_132949-3ec71gl0/logs/debug.log
+2025-05-07 13:29:49,666 INFO    MainThread:2727447 [wandb_init.py:_log_setup():526] Logging internal logs to ./wandb/offline-run-20250507_132949-3ec71gl0/logs/debug-internal.log
+2025-05-07 13:29:49,667 INFO    MainThread:2727447 [wandb_init.py:init():609] calling init triggers
+2025-05-07 13:29:49,667 INFO    MainThread:2727447 [wandb_init.py:init():616] wandb.init called with sweep_config: {}
+config: {'architecture': 'MLP_[200, 100, 100]', 'dropout': 0.2, 'dataset_train': 'train_5_200_100_500.txt', 'dataset_test': 'test_5_200_100_100.txt', 'batch_size': 32, 'epochs': 300, 'learning_rate': 0.002, 'schedulerType': 'StepLR', 'sched_step_size': 150, 'sched_gamma': 0.5, 'IMLE_n_samples': 10, 'IMLE_sigma': 1, 'IMLE_lambd': 10, 'IMLE_two_sides': False, 'IMLE_processes': 1, 'step_mu': 10, 'n_iter_mu': 30}
+2025-05-07 13:29:49,667 INFO    MainThread:2727447 [wandb_init.py:init():659] starting backend
+2025-05-07 13:29:49,667 INFO    MainThread:2727447 [wandb_init.py:init():663] setting up manager
+2025-05-07 13:29:49,737 INFO    MainThread:2727447 [backend.py:_multiprocessing_setup():105] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-05-07 13:29:50,065 INFO    MainThread:2727447 [wandb_init.py:init():671] backend started and connected
+2025-05-07 13:29:50,074 INFO    MainThread:2727447 [wandb_init.py:init():766] updated telemetry
+2025-05-07 13:29:50,075 INFO    MainThread:2727447 [wandb_init.py:init():799] communicating run to backend with 90.0 second timeout
+2025-05-07 13:29:50,082 INFO    MainThread:2727447 [wandb_init.py:init():850] starting run threads in backend
+2025-05-07 13:29:57,048 INFO    MainThread:2727447 [wandb_run.py:_console_start():2466] atexit reg
+2025-05-07 13:29:57,049 INFO    MainThread:2727447 [wandb_run.py:_redirect():2312] redirect: wrap_raw
+2025-05-07 13:29:57,049 INFO    MainThread:2727447 [wandb_run.py:_redirect():2377] Wrapping output streams.
+2025-05-07 13:29:57,049 INFO    MainThread:2727447 [wandb_run.py:_redirect():2402] Redirects installed.
+2025-05-07 13:29:57,313 INFO    MainThread:2727447 [wandb_init.py:init():893] run started, returning control to user process
+2025-05-07 16:30:42,007 INFO    MainThread:2727447 [wandb_run.py:_finish():2163] finishing run hugoper-polytechnique-montr-al/DFL_LD/3ec71gl0
+2025-05-07 16:30:42,036 INFO    MainThread:2727447 [wandb_run.py:_atexit_cleanup():2427] got exitcode: 0
+2025-05-07 16:30:42,038 INFO    MainThread:2727447 [wandb_run.py:_restore():2409] restore
+2025-05-07 16:30:42,038 INFO    MainThread:2727447 [wandb_run.py:_restore():2415] restore done
+2025-05-07 16:30:42,038 INFO    MainThread:2727447 [wandb_run.py:_on_finish():2680] communicating current version
+2025-05-07 16:30:42,231 INFO    MainThread:2727447 [wandb_run.py:_on_finish():2689] got version response 
+2025-05-07 16:30:43,625 INFO    MainThread:2727447 [wandb_run.py:_footer_history_summary_info():4104] rendering history
+2025-05-07 16:30:43,626 INFO    MainThread:2727447 [wandb_run.py:_footer_history_summary_info():4136] rendering summary
