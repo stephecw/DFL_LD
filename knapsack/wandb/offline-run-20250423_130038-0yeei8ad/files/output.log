@@ -1,6 +1,0 @@
-Loading train_5_200_30_500.txt
-Training the model with regret as loss...
-Num of cores: 1
-Epoch 1 | loss: 18.4382
-Epoch 2 | loss: 17.8246
-Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth
