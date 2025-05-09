@@ -83,6 +83,7 @@ class ImportDataset:
         num_data : int : Nombre de données.
         """
         return self.dim, self.num_feat, self.num_item, self.num_data
+    
     def get_capacities(self, tensor=False):
         """
         Retourne les capacités du dataset.
