@@ -88,7 +88,7 @@ def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train,
     test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Paramètres du problème
-    cov = 1e5*train_set.get_cov()
+    cov = train_set.get_cov()
 
     def is_positive_definite_cholesky(cov: np.ndarray) -> bool:
         """
