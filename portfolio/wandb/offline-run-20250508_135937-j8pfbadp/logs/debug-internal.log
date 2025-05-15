@@ -1,0 +1,14 @@
+{"time":"2025-05-08T13:59:37.687174968-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250508_135937-j8pfbadp/logs/debug-core.log"}
+{"time":"2025-05-08T13:59:37.830453669-04:00","level":"INFO","msg":"created new stream","id":"j8pfbadp"}
+{"time":"2025-05-08T13:59:37.830540817-04:00","level":"INFO","msg":"stream: started","id":"j8pfbadp"}
+{"time":"2025-05-08T13:59:37.830611286-04:00","level":"INFO","msg":"handler: started","stream_id":"j8pfbadp"}
+{"time":"2025-05-08T13:59:37.830605049-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"j8pfbadp"}
+{"time":"2025-05-08T13:59:37.830655102-04:00","level":"INFO","msg":"sender: started","stream_id":"j8pfbadp"}
+{"time":"2025-05-08T13:59:37.868006011-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-08T14:00:14.92751624-04:00","level":"INFO","msg":"stream: closing","id":"j8pfbadp"}
+{"time":"2025-05-08T14:00:14.927565184-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-08T14:00:14.92804046-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-08T14:00:14.928174821-04:00","level":"INFO","msg":"handler: closed","stream_id":"j8pfbadp"}
+{"time":"2025-05-08T14:00:14.928194633-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"j8pfbadp"}
+{"time":"2025-05-08T14:00:14.928217916-04:00","level":"INFO","msg":"sender: closed","stream_id":"j8pfbadp"}
+{"time":"2025-05-08T14:00:14.92861048-04:00","level":"INFO","msg":"stream: closed","id":"j8pfbadp"}

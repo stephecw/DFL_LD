@@ -1,0 +1,15 @@
+{"time":"2025-05-10T16:06:34.209896308-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250510_160631-smsbloqj/logs/debug-core.log"}
+{"time":"2025-05-10T16:06:34.67491523-04:00","level":"INFO","msg":"created new stream","id":"smsbloqj"}
+{"time":"2025-05-10T16:06:34.674992834-04:00","level":"INFO","msg":"stream: started","id":"smsbloqj"}
+{"time":"2025-05-10T16:06:34.675043556-04:00","level":"INFO","msg":"handler: started","stream_id":"smsbloqj"}
+{"time":"2025-05-10T16:06:34.67504935-04:00","level":"INFO","msg":"sender: started","stream_id":"smsbloqj"}
+{"time":"2025-05-10T16:06:34.67504396-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"smsbloqj"}
+{"time":"2025-05-10T16:06:34.688719906-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-10T16:31:56.92879171-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-10T16:31:57.024117618-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-10T16:31:57.024987069-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-10T16:31:58.030710021-04:00","level":"INFO","msg":"stream: closing","id":"smsbloqj"}
+{"time":"2025-05-10T16:31:58.030736475-04:00","level":"INFO","msg":"handler: closed","stream_id":"smsbloqj"}
+{"time":"2025-05-10T16:31:58.030753933-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"smsbloqj"}
+{"time":"2025-05-10T16:31:58.030762761-04:00","level":"INFO","msg":"sender: closed","stream_id":"smsbloqj"}
+{"time":"2025-05-10T16:31:58.031110477-04:00","level":"INFO","msg":"stream: closed","id":"smsbloqj"}

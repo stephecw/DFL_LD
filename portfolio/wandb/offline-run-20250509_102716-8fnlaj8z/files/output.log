@@ -1,0 +1,102 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/test_50_100_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 0 | loss: 0.1202
+Eval Epoch 0 | Regret moyen : 0.0298 | ‖μ_global - μ_data‖_F : 78.8807 | Regret relatif moyen : 0.2207
+Epoch 1 | loss: 0.1052
+Epoch 2 | loss: 0.0941
+Epoch 3 | loss: 0.0889
+Epoch 4 | loss: 0.0853
+Epoch 5 | loss: 0.0823
+Eval Epoch 5 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 78.8807 | Regret relatif moyen : 0.2063
+Epoch 6 | loss: 0.0790
+Epoch 7 | loss: 0.0748
+Epoch 8 | loss: 0.0704
+Epoch 9 | loss: 0.0678
+Epoch 10 | loss: 0.0699
+Eval Epoch 10 | Regret moyen : 0.0264 | ‖μ_global - μ_data‖_F : 165.2775 | Regret relatif moyen : 0.1959
+Epoch 11 | loss: 0.0626
+Epoch 12 | loss: 0.0604
+Epoch 13 | loss: 0.0578
+Epoch 14 | loss: 0.0556
+Epoch 15 | loss: 0.0546
+Eval Epoch 15 | Regret moyen : 0.0260 | ‖μ_global - μ_data‖_F : 165.2775 | Regret relatif moyen : 0.1931
+Epoch 16 | loss: 0.0528
+Epoch 17 | loss: 0.0515
+Epoch 18 | loss: 0.0501
+Epoch 19 | loss: 0.0500
+Epoch 20 | loss: 0.0504
+Eval Epoch 20 | Regret moyen : 0.0257 | ‖μ_global - μ_data‖_F : 254.5879 | Regret relatif moyen : 0.1909
+Epoch 21 | loss: 0.0483
+Epoch 22 | loss: 0.0468
+Epoch 23 | loss: 0.0459
+Epoch 24 | loss: 0.0449
+Epoch 25 | loss: 0.0436
+Eval Epoch 25 | Regret moyen : 0.0257 | ‖μ_global - μ_data‖_F : 254.5879 | Regret relatif moyen : 0.1909
+Epoch 26 | loss: 0.0438
+Epoch 27 | loss: 0.0439
+Epoch 28 | loss: 0.0421
+Epoch 29 | loss: 0.0426
+Epoch 30 | loss: 0.0433
+Eval Epoch 30 | Regret moyen : 0.0255 | ‖μ_global - μ_data‖_F : 339.6477 | Regret relatif moyen : 0.1895
+Epoch 31 | loss: 0.0414
+Epoch 32 | loss: 0.0407
+Epoch 33 | loss: 0.0410
+Epoch 34 | loss: 0.0402
+Epoch 35 | loss: 0.0395
+Eval Epoch 35 | Regret moyen : 0.0255 | ‖μ_global - μ_data‖_F : 339.6477 | Regret relatif moyen : 0.1896
+Epoch 36 | loss: 0.0393
+Epoch 37 | loss: 0.0388
+Epoch 38 | loss: 0.0381
+Epoch 39 | loss: 0.0380
+Epoch 40 | loss: 0.0383
+Eval Epoch 40 | Regret moyen : 0.0256 | ‖μ_global - μ_data‖_F : 423.1285 | Regret relatif moyen : 0.1897
+Epoch 41 | loss: 0.0375
+Epoch 42 | loss: 0.0372
+Epoch 43 | loss: 0.0375
+Epoch 44 | loss: 0.0364
+Epoch 45 | loss: 0.0361
+Eval Epoch 45 | Regret moyen : 0.0257 | ‖μ_global - μ_data‖_F : 423.1285 | Regret relatif moyen : 0.1905
+Epoch 46 | loss: 0.0356
+Epoch 47 | loss: 0.0355
+Epoch 48 | loss: 0.0358
+Epoch 49 | loss: 0.0355
+Epoch 50 | loss: 0.0366
+Eval Epoch 50 | Regret moyen : 0.0257 | ‖μ_global - μ_data‖_F : 505.1497 | Regret relatif moyen : 0.1904
+Epoch 51 | loss: 0.0353
+Epoch 52 | loss: 0.0350
+Epoch 53 | loss: 0.0350
+Epoch 54 | loss: 0.0343
+Epoch 55 | loss: 0.0343
+Eval Epoch 55 | Regret moyen : 0.0258 | ‖μ_global - μ_data‖_F : 505.1497 | Regret relatif moyen : 0.1910
+Epoch 56 | loss: 0.0338
+Epoch 57 | loss: 0.0339
+Epoch 58 | loss: 0.0339
+Epoch 59 | loss: 0.0330
+Epoch 60 | loss: 0.0337
+Eval Epoch 60 | Regret moyen : 0.0258 | ‖μ_global - μ_data‖_F : 584.7496 | Regret relatif moyen : 0.1910
+Epoch 61 | loss: 0.0343
+Epoch 62 | loss: 0.0337
+Epoch 63 | loss: 0.0327
+Epoch 64 | loss: 0.0334
+Epoch 65 | loss: 0.0333
+Eval Epoch 65 | Regret moyen : 0.0258 | ‖μ_global - μ_data‖_F : 584.7496 | Regret relatif moyen : 0.1912
+Epoch 66 | loss: 0.0327
+Epoch 67 | loss: 0.0321
+Epoch 68 | loss: 0.0334
+Epoch 69 | loss: 0.0325
+Epoch 70 | loss: 0.0328
+Eval Epoch 70 | Regret moyen : 0.0258 | ‖μ_global - μ_data‖_F : 665.3245 | Regret relatif moyen : 0.1910
+Epoch 71 | loss: 0.0323
+Epoch 72 | loss: 0.0327
+Epoch 73 | loss: 0.0325
+Epoch 74 | loss: 0.0327
+Epoch 75 | loss: 0.0318
+Eval Epoch 75 | Regret moyen : 0.0259 | ‖μ_global - μ_data‖_F : 665.3245 | Regret relatif moyen : 0.1917
+Epoch 76 | loss: 0.0318
+Epoch 77 | loss: 0.0316
+Epoch 78 | loss: 0.0314
+Epoch 79 | loss: 0.0316
+Saving the model to models/SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth

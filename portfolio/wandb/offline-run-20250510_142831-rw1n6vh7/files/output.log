@@ -1,0 +1,58 @@
+Loading /quad/train_100_500_200_2-25.txt
+Loading /quad/test_100_100_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
+Num of cores: 1
+Epoch 0 | loss: 0.2076
+Eval Epoch 0 | Regret moyen : 0.0302 | ‖μ_global - μ_data‖_F : 130.9040 | Regret relatif moyen : 0.2346
+Epoch 1 | loss: 0.1835
+Epoch 2 | loss: 0.1623
+Epoch 3 | loss: 0.1550
+Epoch 4 | loss: 0.1517
+Epoch 5 | loss: 0.1476
+Eval Epoch 5 | Regret moyen : 0.0298 | ‖μ_global - μ_data‖_F : 130.9040 | Regret relatif moyen : 0.2311
+Epoch 6 | loss: 0.1435
+Epoch 7 | loss: 0.1393
+Epoch 8 | loss: 0.1345
+Epoch 9 | loss: 0.1293
+Epoch 10 | loss: 0.1376
+Eval Epoch 10 | Regret moyen : 0.0283 | ‖μ_global - μ_data‖_F : 305.3748 | Regret relatif moyen : 0.2193
+Epoch 11 | loss: 0.1221
+Epoch 12 | loss: 0.1185
+Epoch 13 | loss: 0.1147
+Epoch 14 | loss: 0.1114
+Epoch 15 | loss: 0.1090
+Eval Epoch 15 | Regret moyen : 0.0277 | ‖μ_global - μ_data‖_F : 305.3748 | Regret relatif moyen : 0.2149
+Epoch 16 | loss: 0.1066
+Epoch 17 | loss: 0.1045
+Epoch 18 | loss: 0.1015
+Epoch 19 | loss: 0.1002
+Epoch 20 | loss: 0.1067
+Eval Epoch 20 | Regret moyen : 0.0275 | ‖μ_global - μ_data‖_F : 459.9943 | Regret relatif moyen : 0.2133
+Epoch 21 | loss: 0.0982
+Epoch 22 | loss: 0.0972
+Epoch 23 | loss: 0.0952
+Epoch 24 | loss: 0.0945
+Epoch 25 | loss: 0.0933
+Eval Epoch 25 | Regret moyen : 0.0275 | ‖μ_global - μ_data‖_F : 459.9943 | Regret relatif moyen : 0.2134
+Epoch 26 | loss: 0.0921
+Epoch 27 | loss: 0.0909
+Epoch 28 | loss: 0.0888
+Epoch 29 | loss: 0.0885
+Epoch 30 | loss: 0.0936
+Eval Epoch 30 | Regret moyen : 0.0273 | ‖μ_global - μ_data‖_F : 600.3153 | Regret relatif moyen : 0.2116
+Epoch 31 | loss: 0.0882
+Epoch 32 | loss: 0.0864
+Epoch 33 | loss: 0.0863
+Epoch 34 | loss: 0.0861
+Epoch 35 | loss: 0.0857
+Eval Epoch 35 | Regret moyen : 0.0274 | ‖μ_global - μ_data‖_F : 600.3153 | Regret relatif moyen : 0.2130
+Epoch 36 | loss: 0.0839
+Epoch 37 | loss: 0.0843
+Epoch 38 | loss: 0.0837
+Epoch 39 | loss: 0.0835
+Epoch 40 | loss: 0.0875
+Eval Epoch 40 | Regret moyen : 0.0274 | ‖μ_global - μ_data‖_F : 739.1186 | Regret relatif moyen : 0.2124
+Epoch 41 | loss: 0.0848
+Epoch 42 | loss: 0.0824
+Epoch 43 | loss: 0.0831
+Epoch 44 | loss: 0.0823

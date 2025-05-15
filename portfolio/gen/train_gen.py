@@ -3,9 +3,10 @@ from torch import nn
 import numpy as np
 from pyepo.model.grb import portfolioModel
 from pyepo.func import implicitMLE, SPOPlus
+#from gurobi_solver_hugo import gurobi_portfolio_solver
 
 
-from my_solver import Solveur_lin, Solveur_quad, gurobi_portfolio_solver
+from my_solver import Solveur_lin, Solveur_quad, gb_portfolio_solver
 
 from opti_X_mu import Optimization_X_mu_portfolio
 from joblib import Parallel, delayed
@@ -36,7 +37,7 @@ def get_learning_rate(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
-def train(model, method, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20, 
+def train(model, method, run, dataloader_train, dataloader_test, optimizer, scheduler, cov, gamma, epochs=20,
           IMLE_n_samples=10, IMLE_sigma=1.0, IMLE_lambd=10, IMLE_two_sides=False, IMLE_processes=1,
           SPO_solve_ratio = 1, SPO_reduction = 'mean', SPO_processes = 1,
           verbose=False):
@@ -70,7 +71,7 @@ def train(model, method, run, dataloader_train, dataloader_test, optimizer, sche
         gen = implicitMLE(solver, n_samples=IMLE_n_samples, sigma=IMLE_sigma, lambd=IMLE_lambd,
                         two_sides=IMLE_two_sides, processes=IMLE_processes)
     elif method == "spo":
-        solver = gurobi_portfolio_solver(n_stocks = cov.shape[0], cov = cov, gamma = gamma, maximize=False)
+        solver = gb_portfolio_solver(n_stocks = cov.shape[0], cov = cov, gamma = gamma, maximize=False)
         gen = SPOPlus(solver, solve_ratio = SPO_solve_ratio, reduction = SPO_reduction, processes = SPO_processes)
 
     for epoch in range(epochs):
@@ -90,10 +91,11 @@ def train(model, method, run, dataloader_train, dataloader_test, optimizer, sche
                 # Regret = c · (w - wp)
                 loss = torch.sum(c * (x - xp), dim=1).mean()
             elif method == "spo":
+                pred_cost = -cp
                 true_cost = -c.detach()
                 true_sol = x.detach()
                 obj_opt = (true_cost*true_sol).sum(dim=1)  
-                loss = gen(-cp, true_cost, true_sol, obj_opt)
+                loss = gen(pred_cost, true_cost, true_sol, obj_opt)
 
             optimizer.zero_grad()
             loss.backward()
@@ -123,18 +125,20 @@ def train(model, method, run, dataloader_train, dataloader_test, optimizer, sche
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
 
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
             
-        if epoch % 5 == 0:    
+        if epoch % 5 == 0 :    
             with torch.no_grad():
                 model.eval()
                 total_regret = 0
+                total_regret_relatif = 0
                 total_count = 0
                 eval_solver = portfolioModel(num_assets=cov.shape[0],covariance = cov, gamma=gamma)
                 for z, c, x, _, _ in dataloader_test:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # prédiction des coûts [batch, n]
                     batch_regrets = []
+                    batch_regrets_relatifs = []
 
                     for i in range(z.size(0)):
                         c_numpy = c_hat[i].detach().cpu().numpy()
@@ -148,18 +152,23 @@ def train(model, method, run, dataloader_train, dataloader_test, optimizer, sche
                                             device=device)
 
                         regret = torch.dot(c_true, x_true - x_hat_tensor)
+                        regret_relatif = regret / torch.dot(c_true, x_true)
                         batch_regrets.append(regret)
+                        batch_regrets_relatifs.append(regret_relatif)
 
                     batch_regrets = torch.stack(batch_regrets)
+                    batch_regrets_relatifs = torch.stack(batch_regrets_relatifs)
                     total_regret += batch_regrets.sum().item()
+                    total_regret_relatif += batch_regrets_relatifs.sum().item()
                     total_count += z.size(0)
                 
             mean_regret = total_regret / total_count
+            mean_regret_relatif = total_regret_relatif / total_count
             if run is not None:
                 # Enregistrement des résultats dans wandb
-                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time})
+                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time, "regret_relatif": mean_regret_relatif})
             if verbose:
-                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f}")
+                print(f"Eval Epoch {epoch} | Regret moyen : {mean_regret:.4f} | Regret relatif moyen : {mean_regret_relatif:.4f}")
             
     if run is not None:   
         end_time = time.time()
@@ -322,7 +331,7 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
 
     n_stocks = cov.shape[0]
 
-    mu_global = torch.ones(len(dataloader_train.dataset), n_stocks, device=device, dtype = torch.float32)
+    mu_global = torch.ones(len(dataloader_train.dataset), n_stocks, device=device, dtype = torch.float32) # dataloader_train.dataset.tensors[4].to(device)
     # Créer un solveur i-MLE avec les mu du batch
     
 
@@ -349,8 +358,9 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
             mu_tilde = mu_global[idx]
 
             # Mise à jour de mu_global
-            if epoch % step_mu == 0:
+            if epoch % step_mu == 0 :
                 mu_list = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i].detach().cpu().numpy(), cov, gamma, n_stocks, n_iter_mu, mu_tilde[i].detach().cpu().numpy(), principal_lin) for i in range(z.size(0)))
+                #mu_list = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c[i].detach().cpu().numpy(), cov, gamma, n_stocks, n_iter_mu, mu_tilde[i].detach().cpu().numpy(), principal_lin) for i in range(z.size(0)))
                 mu_np = np.stack(mu_list)
                 mu_tilde = torch.tensor(mu_np, device=device, dtype=torch.float32)
                 mu_global[idx] = mu_tilde
@@ -362,10 +372,23 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
                 profit_modified = c + mu    # shape [batch, n]
                 loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
             elif method == "spo":
+                pred_cost = -c_hat - mu_tilde
                 true_cost = -c.detach()- mu.detach()
+                # eval_solv = Solveur_quad(n_stocks=cov.shape[0], cov=cov, gamma = gamma, maximize=False)
+                # sol_2, obj_2 = [],[]
+                # for j in range (z.shape[0]):
+                #     eval_solv.setObj(true_cost[j])
+                #     sol_j_np, obj_j = eval_solv.solve()
+                #     sol_j = torch.tensor(sol_j_np, dtype=torch.float32, device=device)
+                #     sol_2.append(sol_j)
+                #     obj_2.append(obj_j)
+
+                # sol_3 = torch.stack(sol_2)
+                # obj_3 = torch.tensor(obj_2, dtype=torch.float32, device=device)
                 true_sol = X1.detach()
                 obj_opt = (true_cost*true_sol).sum(dim=1)  
-                loss = gen(-c_hat - mu_tilde, true_cost, true_sol, obj_opt)
+                loss = gen(pred_cost, true_cost, true_sol, obj_opt)
+                # loss = gen(pred_cost, true_cost, sol_3, obj_3)
 
             optimizer.zero_grad()
             loss.backward()
@@ -398,18 +421,20 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration, "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr, "mu_diff": norm_mu_diff})
         
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
                 
         if epoch % 5 == 0:
             with torch.no_grad():
                 model.eval()
                 total_regret = 0
+                total_regret_relatif = 0
                 total_count = 0
                 for z, c, x, _, _ in dataloader_test:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # prédiction des coûts [batch, n]
                     batch_regrets = []
+                    batch_regrets_relatifs = []
 
                     for i in range(z.size(0)):
                         solver_i = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
@@ -424,23 +449,28 @@ def train_SG(model, method, run, dataloader_train, dataloader_test, optimizer, s
                                                 device=device)
 
                         regret = torch.dot(r_true, x_true - x_hat_tensor)
+                        regret_relatif = regret / torch.dot(r_true, x_true)
                         batch_regrets.append(regret)
+                        batch_regrets_relatifs.append(regret_relatif)
 
                     batch_regrets = torch.stack(batch_regrets)
+                    batch_regrets_relatifs = torch.stack(batch_regrets_relatifs)
                     total_regret += batch_regrets.sum().item()
+                    total_regret_relatif += batch_regrets_relatifs.sum().item()
                     total_count += z.size(0)
                 
                 mu_data = dataloader_train.dataset.tensors[4].to(device)
                 mu_diff = torch.norm(mu_data - mu_global, p='fro').item()
 
             mean_regret = total_regret / total_count
+            mean_regret_relatif = total_regret_relatif / total_count
 
 
             if run is not None:
                 # Enregistrement des résultats dans wandb
-                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time, "mu_diff_norm": mu_diff})
+                run.log({"epoch": epoch, "regret": mean_regret, "train_time": train_time, "mu_diff_norm": mu_diff, "regret_relatif": mean_regret_relatif})
             if verbose:
-                print(f"Eval Epoch {epoch+1} | Regret moyen : {mean_regret:.4f} | ‖μ_global - μ_data‖_F : {mu_diff:.4f}")
+                print(f"Eval Epoch {epoch} | Regret moyen : {mean_regret:.4f} | ‖μ_global - μ_data‖_F : {mu_diff:.4f} | Regret relatif moyen : {mean_regret_relatif:.4f}")
             
     if run is not None:   
         end_time = time.time()
