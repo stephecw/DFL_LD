@@ -6,6 +6,9 @@ import numpy as np
 import torch
 import gurobipy as gp
 from gurobipy import GRB
+from joblib import Parallel, delayed
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def solve_sp(X2, mu,cov,gamma, maximize= True, tol= 1e-6) :
@@ -179,4 +182,24 @@ class Optimization_X_mu_portfolio:
             print("Sous-problème principal : Contrainte linéaire")
         else:
             print("Sous-problème principal : Contrainte quadratique")
+
+    def optim_mu_batch(self, mu0_big=None, verbose=False, lr=0.1, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
+        """
+        Optimisation de mu par Adam.
+        lr : float : Taux d'apprentissage
+        beta1 : float : Premier paramètre de moment
+        beta2 : float : Deuxième paramètre de moment
+        eps : float : Petit nombre pour éviter la division par zéro
+        max_iter : int : Nombre maximum d'itérations
+        """
+        mu_list = Parallel(n_jobs=-1)(delayed(utile)(self, mu0=mu0_big[i], verbose=verbose, lr=lr, beta1=beta1, beta2=beta2, eps=eps, max_iter=max_iter) for i in range(mu0_big.shape[0]))
+        mu_np = np.stack(mu_list)
+        mu_torch = torch.tensor(mu_np, device=device, dtype=torch.float32)
+        return mu_torch
+    
+def utile(opti_X_mu, mu0=None, verbose=False, lr=0.1, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000):
+    if mu0 is not None:
+        opti_X_mu.mu = mu0
+    opti_X_mu.optim_mu(lr=lr, beta1=beta1, beta2=beta2, eps=eps, max_iter=max_iter, verbose=verbose)
+    return opti_X_mu.get_mu()
 
