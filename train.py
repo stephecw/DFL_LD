@@ -8,10 +8,9 @@ def get_learning_rate(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
-
 def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, scheduler,
           epochs, time_limit, test_freq,
-          run, verbose=False, patience= 10, min_delta= 1e-6):
+          run, verbose=False):
     """
     Training a PFL-model by minimizing the MSE.
 
@@ -81,7 +80,7 @@ def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, 
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_eval:
+                for z, c, x, _, _ in dataloader_test:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # cost prediction [batch, n]
 
@@ -224,13 +223,11 @@ def train_classic(model, diff_method, test_solver, dataloader_train, dataloader_
     if run is not None:
         end_time = time.time()
         total_duration = end_time - start_time
-        run.log({"total_duration": total_duration, "best_epoch": best_epoch, "best_relat_regret": best_relat_regret})
+        run.log({"total_duration": total_duration})
 
-
-def train_LD(model, solver_train, solver_eval, run, dataloader_train, dataloader_eval, optimizer, scheduler,
-          epochs, time_limit,
-          diff_method, diff_method_arg,
-          verbose=False, patience= 10, min_delta= 1e-6):
+def train_LD(model, diff_method, test_solver, dataloader_train, dataloader_test, optimizer, scheduler,
+          epochs, time_limit, test_freq,
+          run, verbose=False):
     """
     Training a DFL-model by minimizing LD loss.
 
@@ -249,20 +246,13 @@ def train_LD(model, solver_train, solver_eval, run, dataloader_train, dataloader
         run: wandb logfile
         verbose: bool: If True, print training info
     """
-    time_monitoring = run is not None or time_limit is not None
-    best_relat_regret = float("inf")
-    epochs_no_improvement = 0
-    best_model_state = None
-    best_epoch = 0
 
-    
-    # Créer un solveur i-MLE avec les mu du batch
-    if diff_method == "IMLE":
-        diff = implicitMLE(solver_train, **diff_method_arg)
-    elif diff_method == "SPOPlus":
-        diff = SPOPlus(solver_train, **diff_method_arg)
+    monitoring = run is not None or time_limit is not None
 
-    if time_monitoring:
+    diff = diff_method
+    test_solver = test_solver
+
+    if monitoring:
         start_time = time.time()
         train_time = 0
 
@@ -276,19 +266,9 @@ def train_LD(model, solver_train, solver_eval, run, dataloader_train, dataloader
         total_grad_norm = 0.0
         for z, c, x, X1, mu in dataloader_train:
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
-            c_hat = model(z)  # prédiction des profits ĉ
-
-
-            # Résolution avec i-MLE
-            mu_sum = mu.sum(dim=1)# shape [batch, n]
-            if diff_method == "IMLE":
-                X1p = diff(c_hat + mu_sum).to(device)   # x̂ obtenu avec solve_main_problem
-                # (c + sum mu_i for i ≥ 2) · (w - x̂)
-                profit_modified = c + mu_sum     # shape [batch, n]
-                loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
-            elif diff_method == "SPOPlus":
-                loss = diff(-c_hat - mu_sum, -c - mu_sum, X1.float(), (-(c + mu_sum) * X1).sum(dim=1)).to(device)
-            
+            c_hat = model(z)
+            mu_sum = torch.sum(mu, dim=1) # Shape (batch_size, num_item)
+            loss = diff(c_hat + mu_sum, c + mu_sum, X1).to(device)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -319,15 +299,14 @@ def train_LD(model, solver_train, solver_eval, run, dataloader_train, dataloader
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_eval:
+                for z, c, x, _, _ in dataloader_test:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # cost prediction [batch, n]
 
                     for i in range(z.size(0)):
-                        model_i = solver_eval
                         c_numpy = c_hat[i].detach().cpu().numpy()
-                        model_i.setObj(c_numpy)
-                        x_hat_np, _ = model_i.solve()
+                        test_solver.setObj(c_numpy)
+                        x_hat_np, _ = test_solver.solve()
                         x_true = x[i].to(dtype=torch.float32, device=device)
                         c_true = c[i].to(dtype=torch.float32, device=device)
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
@@ -336,52 +315,31 @@ def train_LD(model, solver_train, solver_eval, run, dataloader_train, dataloader
                         relat_regrets.append(relat_regret)
 
                 relat_regrets = torch.stack(relat_regrets)
+                mean_relat_regret = relat_regrets.mean().item()
+                std_relat_regret = relat_regrets.std().item()
+                if run is not None:
+                    # Log results in wandb
+                    run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
+                            "Std relative regret": std_relat_regret, "train_time": train_time})
+                if verbose:
+                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
 
-                    
-            mean_relat_regret = relat_regrets.mean().item()
-            std_relat_regret = relat_regrets.std().item()
-            if run is not None:
-                # Enregistrement des résultats dans wandb
-                run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
-            if verbose:
-                print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret:.4f}")
-            
-            # Early stopping
-            if mean_relat_regret < best_relat_regret - min_delta:
-                best_relat_regret = mean_relat_regret
-                epochs_no_improvement = 0
-                best_model_state = { k: v.cpu().clone() for k,v in model.state_dict().items() }
-                best_epoch = epoch
-            else:
-                epochs_no_improvement += 1
-                if epochs_no_improvement >= patience:
-                    print(f"Arrêt précoce à l'époque {epoch} | Meilleur regret relatif : {best_relat_regret:.4f}")
-                    break
-                
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
                 print("Time limit reached, stopping training.")
                 return
-    
-    # Charger le meilleur état du modèle
-    if best_model_state is not None:
-        device = next(model.parameters()).device
-        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
-            
-    if run is not None:   
+
+    if run is not None:
         end_time = time.time()
         total_duration = end_time - start_time
-        run.log({"total_duration": total_duration, "best_epoch": best_epoch, "best_relat_regret": best_relat_regret})
+        run.log({"total_duration": total_duration})
 
-
-
-def train_SG(model, solver_train, solver_eval, optimizer_mu, mu_init, run, dataloader_train, dataloader_eval, optimizer, scheduler,
-          epochs, time_limit,
-          diff_method, diff_method_arg,
-          step_mu=10, num_iter_mu = 100,
-          verbose=False, patience= 10, min_delta= 1e-6):
-
+def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test, optimizer, scheduler,
+          epochs, time_limit, test_freq,
+          step_mu, num_iter_mu, optimizer_mu,
+          num_items, dim,
+          run, verbose=False):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
@@ -408,22 +366,12 @@ def train_SG(model, solver_train, solver_eval, optimizer_mu, mu_init, run, datal
         verbose: bool: If True, print training info
     """
 
-    time_monitoring = run is not None or time_limit is not None
-    best_relat_regret = float("inf")
-    epochs_no_improvement = 0
-    best_model_state = None
-    best_epoch = 0
-    
-    # Créer un solveur i-MLE avec les mu du batch
-    if diff_method == "IMLE":
-        diff = implicitMLE(solver_train, **diff_method_arg)
-    elif diff_method == "SPOPlus":
-        diff = SPOPlus(solver_train, **diff_method_arg)
+    monitoring = run is not None or time_limit is not None
 
-    mu_global = mu_init.clone().to(device)
-    
-    if time_monitoring:
-        import time
+    diff = diff_method
+    test_solver = test_solver
+
+    if monitoring:
         start_time = time.time()
         train_time = 0
 
@@ -439,29 +387,20 @@ def train_SG(model, solver_train, solver_eval, optimizer_mu, mu_init, run, datal
         total_grad_norm = 0.0
         for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train):
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
-            c_hat = model(z)  # prediction ĉ
+            c_hat = model(z)  # prediction ĉ
             idx = (batch_idx * dataloader_train.batch_size + torch.arange(z.size(0), device=device))
             mu_tilde = mu_global[idx] # select mu associated with the batch
 
             # Update mu_global
             if epoch % step_mu == 0:
-                optimizer_mu = optimizer_mu
-                optimizer_mu.optim_mu_batch(mu0 = mu_tilde.clone(), verbose=False, max_iter=num_iter_mu)
+                optimizer_mu.optim_mu(verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
 
-
             # Forward and Backward pass
-            mu_tilde_sum = mu_tilde.sum(dim=1)
-            mu_sum = mu.sum(dim=1)
-            if diff_method == "IMLE":
-                X1p = diff(c_hat + mu_tilde_sum).to(device)   # x̂ obtenu avec solve_main_problem
-                # (c + sum mu_i for i ≥ 2) · (w - x̂)
-                profit_modified = c + mu_sum     # shape [batch, n]
-                loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
-            elif diff_method == "SPOPlus":
-                loss = diff(-c_hat - mu_tilde_sum, -c + mu_sum, X1.float(), (-(c + mu_tilde_sum) * X1).sum(dim=1)).to(device)
-            
+            mu_tilde_sum = mu_tilde.sum(dim=1) # Shape (batch_size, num_item)
+            mu_sum = mu.sum(dim=1) # Shape (batch_size, num_item)
+            loss = diff(c_hat + mu_tilde_sum, c + mu_sum, X1).to(device)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -493,15 +432,14 @@ def train_SG(model, solver_train, solver_eval, optimizer_mu, mu_init, run, datal
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_eval:
+                for z, c, x, _, _ in dataloader_test:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # cost prediction [batch, n]
 
                     for i in range(z.size(0)):
-                        model_i = solver_eval
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         test_solver.setObj(c_numpy)
-                        x_hat_np, _ = solver.solve()
+                        x_hat_np, _ = test_solver.solve()
                         x_true = x[i].to(dtype=torch.float32, device=device)
                         c_true = c[i].to(dtype=torch.float32, device=device)
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
@@ -513,7 +451,7 @@ def train_SG(model, solver_train, solver_eval, optimizer_mu, mu_init, run, datal
                 mu_data = dataloader_train.dataset.tensors[4].to(device)
                 mu_diff = torch.norm(mu_data - mu_global, p='fro').item()
 
-                relat_regrets = torch.stack(relat_regrets) 
+                relat_regrets = torch.stack(relat_regrets)
                 mean_relat_regret = relat_regrets.mean().item()
                 std_relat_regret = relat_regrets.std().item()
                 if run is not None:
@@ -523,32 +461,14 @@ def train_SG(model, solver_train, solver_eval, optimizer_mu, mu_init, run, datal
                             "train_time": train_time})
                 if verbose:
                     print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
-            
-            # Early stopping
-            if mean_relat_regret < best_relat_regret - min_delta:
-                best_relat_regret = mean_relat_regret
-                epochs_no_improvement = 0
-                best_model_state = { k: v.cpu().clone() for k,v in model.state_dict().items() }
-                best_epoch = epoch
-            else:
-                epochs_no_improvement += 1
-                if epochs_no_improvement >= patience:
-                    print(f"Arrêt précoce à l'époque {epoch} | Meilleur regret relatif : {best_relat_regret:.4f}")
-                    break
-                
+
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
                 print("Time limit reached, stopping training.")
                 return
 
-    # Charger le meilleur état du modèle
-    if best_model_state is not None:
-        device = next(model.parameters()).device
-        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
-            
-    if run is not None:   
+    if run is not None:
         end_time = time.time()
         total_duration = end_time - start_time
-        run.log({"total_duration": total_duration, "best_epoch": best_epoch, "best_relat_regret": best_relat_regret})
-
+        run.log({"total_duration": total_duration})
