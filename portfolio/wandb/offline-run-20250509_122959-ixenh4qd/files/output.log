@@ -1,0 +1,365 @@
+Loading /quad/train_100_500_200_2-25.txt
+Loading /quad/test_100_100_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
+Num of cores: 1
+Epoch 0 | loss: 1.9936
+Eval Epoch 0 | Regret moyen : 0.0301 | ‖μ_global - μ_data‖_F : 141.5961 | Regret relatif moyen : 0.2339
+Epoch 1 | loss: 1.3959
+Epoch 2 | loss: 1.3338
+Epoch 3 | loss: 1.2816
+Epoch 4 | loss: 1.2382
+Epoch 5 | loss: 1.2153
+Eval Epoch 5 | Regret moyen : 0.0288 | ‖μ_global - μ_data‖_F : 141.5961 | Regret relatif moyen : 0.2238
+Epoch 6 | loss: 1.1898
+Epoch 7 | loss: 1.1631
+Epoch 8 | loss: 1.1376
+Epoch 9 | loss: 1.1224
+Epoch 10 | loss: 1.1019
+Eval Epoch 10 | Regret moyen : 0.0283 | ‖μ_global - μ_data‖_F : 141.5961 | Regret relatif moyen : 0.2198
+Epoch 11 | loss: 1.0975
+Epoch 12 | loss: 1.0636
+Epoch 13 | loss: 1.0596
+Epoch 14 | loss: 1.0355
+Epoch 15 | loss: 0.8847
+Eval Epoch 15 | Regret moyen : 0.0283 | ‖μ_global - μ_data‖_F : 236.3321 | Regret relatif moyen : 0.2196
+Epoch 16 | loss: 0.9112
+Epoch 17 | loss: 0.8655
+Epoch 18 | loss: 0.8260
+Epoch 19 | loss: 0.8013
+Epoch 20 | loss: 0.7907
+Eval Epoch 20 | Regret moyen : 0.0285 | ‖μ_global - μ_data‖_F : 236.3321 | Regret relatif moyen : 0.2210
+Epoch 21 | loss: 0.8036
+Epoch 22 | loss: 0.7975
+Epoch 23 | loss: 0.7811
+Epoch 24 | loss: 0.7744
+Epoch 25 | loss: 0.7794
+Eval Epoch 25 | Regret moyen : 0.0284 | ‖μ_global - μ_data‖_F : 236.3321 | Regret relatif moyen : 0.2203
+Epoch 26 | loss: 0.7608
+Epoch 27 | loss: 0.7570
+Epoch 28 | loss: 0.7495
+Epoch 29 | loss: 0.7411
+Epoch 30 | loss: 0.8755
+Eval Epoch 30 | Regret moyen : 0.0280 | ‖μ_global - μ_data‖_F : 374.2695 | Regret relatif moyen : 0.2165
+Epoch 31 | loss: 1.0810
+Epoch 32 | loss: 0.9510
+Epoch 33 | loss: 0.9426
+Epoch 34 | loss: 0.9285
+Epoch 35 | loss: 0.9105
+Eval Epoch 35 | Regret moyen : 0.0282 | ‖μ_global - μ_data‖_F : 374.2695 | Regret relatif moyen : 0.2185
+Epoch 36 | loss: 0.8828
+Epoch 37 | loss: 0.8933
+Epoch 38 | loss: 0.8949
+Epoch 39 | loss: 0.8692
+Epoch 40 | loss: 0.8940
+Eval Epoch 40 | Regret moyen : 0.0282 | ‖μ_global - μ_data‖_F : 374.2695 | Regret relatif moyen : 0.2182
+Epoch 41 | loss: 0.8775
+Epoch 42 | loss: 0.8684
+Epoch 43 | loss: 0.8642
+Epoch 44 | loss: 0.8762
+Epoch 45 | loss: 0.8904
+Eval Epoch 45 | Regret moyen : 0.0280 | ‖μ_global - μ_data‖_F : 520.1449 | Regret relatif moyen : 0.2171
+Epoch 46 | loss: 1.1867
+Epoch 47 | loss: 1.0498
+Epoch 48 | loss: 1.0082
+Epoch 49 | loss: 1.0129
+Epoch 50 | loss: 0.9906
+Eval Epoch 50 | Regret moyen : 0.0282 | ‖μ_global - μ_data‖_F : 520.1449 | Regret relatif moyen : 0.2190
+Epoch 51 | loss: 0.9843
+Epoch 52 | loss: 0.9832
+Epoch 53 | loss: 1.0044
+Epoch 54 | loss: 0.9761
+Epoch 55 | loss: 0.9865
+Eval Epoch 55 | Regret moyen : 0.0282 | ‖μ_global - μ_data‖_F : 520.1449 | Regret relatif moyen : 0.2191
+Epoch 56 | loss: 0.9763
+Epoch 57 | loss: 0.9770
+Epoch 58 | loss: 0.9602
+Epoch 59 | loss: 0.9728
+Epoch 60 | loss: 0.9310
+Eval Epoch 60 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 671.0450 | Regret relatif moyen : 0.2159
+Epoch 61 | loss: 1.2959
+Epoch 62 | loss: 1.1379
+Epoch 63 | loss: 1.1098
+Epoch 64 | loss: 1.0938
+Epoch 65 | loss: 1.0814
+Eval Epoch 65 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 671.0450 | Regret relatif moyen : 0.2169
+Epoch 66 | loss: 1.0913
+Epoch 67 | loss: 1.0851
+Epoch 68 | loss: 1.1107
+Epoch 69 | loss: 1.0794
+Epoch 70 | loss: 1.0729
+Eval Epoch 70 | Regret moyen : 0.0280 | ‖μ_global - μ_data‖_F : 671.0450 | Regret relatif moyen : 0.2169
+Epoch 71 | loss: 1.1012
+Epoch 72 | loss: 1.0754
+Epoch 73 | loss: 1.0905
+Epoch 74 | loss: 1.0961
+Epoch 75 | loss: 0.9633
+Eval Epoch 75 | Regret moyen : 0.0276 | ‖μ_global - μ_data‖_F : 822.6055 | Regret relatif moyen : 0.2139
+Epoch 76 | loss: 1.3764
+Epoch 77 | loss: 1.2082
+Epoch 78 | loss: 1.1635
+Epoch 79 | loss: 1.1619
+Epoch 80 | loss: 1.1885
+Eval Epoch 80 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 822.6055 | Regret relatif moyen : 0.2158
+Epoch 81 | loss: 1.1880
+Epoch 82 | loss: 1.1577
+Epoch 83 | loss: 1.1426
+Epoch 84 | loss: 1.1489
+Epoch 85 | loss: 1.1488
+Eval Epoch 85 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 822.6055 | Regret relatif moyen : 0.2162
+Epoch 86 | loss: 1.1685
+Epoch 87 | loss: 1.1911
+Epoch 88 | loss: 1.1279
+Epoch 89 | loss: 1.1615
+Epoch 90 | loss: 0.9794
+Eval Epoch 90 | Regret moyen : 0.0277 | ‖μ_global - μ_data‖_F : 980.1329 | Regret relatif moyen : 0.2149
+Epoch 91 | loss: 1.4600
+Epoch 92 | loss: 1.2749
+Epoch 93 | loss: 1.2465
+Epoch 94 | loss: 1.2814
+Epoch 95 | loss: 1.2306
+Eval Epoch 95 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 980.1329 | Regret relatif moyen : 0.2160
+Epoch 96 | loss: 1.2468
+Epoch 97 | loss: 1.2916
+Epoch 98 | loss: 1.2493
+Epoch 99 | loss: 1.2734
+Epoch 100 | loss: 1.2469
+Eval Epoch 100 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 980.1329 | Regret relatif moyen : 0.2166
+Epoch 101 | loss: 1.1932
+Epoch 102 | loss: 1.1777
+Epoch 103 | loss: 1.1923
+Epoch 104 | loss: 1.1770
+Epoch 105 | loss: 1.0319
+Eval Epoch 105 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 1118.8943 | Regret relatif moyen : 0.2157
+Epoch 106 | loss: 1.2659
+Epoch 107 | loss: 1.2433
+Epoch 108 | loss: 1.1978
+Epoch 109 | loss: 1.2233
+Epoch 110 | loss: 1.2284
+Eval Epoch 110 | Regret moyen : 0.0280 | ‖μ_global - μ_data‖_F : 1118.8943 | Regret relatif moyen : 0.2169
+Epoch 111 | loss: 1.1648
+Epoch 112 | loss: 1.1871
+Epoch 113 | loss: 1.1789
+Epoch 114 | loss: 1.2069
+Epoch 115 | loss: 1.1815
+Eval Epoch 115 | Regret moyen : 0.0280 | ‖μ_global - μ_data‖_F : 1118.8943 | Regret relatif moyen : 0.2167
+Epoch 116 | loss: 1.2087
+Epoch 117 | loss: 1.1955
+Epoch 118 | loss: 1.1665
+Epoch 119 | loss: 1.1600
+Epoch 120 | loss: 1.0399
+Eval Epoch 120 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1258.9414 | Regret relatif moyen : 0.2163
+Epoch 121 | loss: 1.2907
+Epoch 122 | loss: 1.2921
+Epoch 123 | loss: 1.2808
+Epoch 124 | loss: 1.3188
+Epoch 125 | loss: 1.2523
+Eval Epoch 125 | Regret moyen : 0.0280 | ‖μ_global - μ_data‖_F : 1258.9414 | Regret relatif moyen : 0.2172
+Epoch 126 | loss: 1.2879
+Epoch 127 | loss: 1.2837
+Epoch 128 | loss: 1.2787
+Epoch 129 | loss: 1.2676
+Epoch 130 | loss: 1.2587
+Eval Epoch 130 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1258.9414 | Regret relatif moyen : 0.2165
+Epoch 131 | loss: 1.2477
+Epoch 132 | loss: 1.2621
+Epoch 133 | loss: 1.2860
+Epoch 134 | loss: 1.2490
+Epoch 135 | loss: 1.0514
+Eval Epoch 135 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 1398.6014 | Regret relatif moyen : 0.2154
+Epoch 136 | loss: 1.3807
+Epoch 137 | loss: 1.3452
+Epoch 138 | loss: 1.3399
+Epoch 139 | loss: 1.3131
+Epoch 140 | loss: 1.3260
+Eval Epoch 140 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1398.6014 | Regret relatif moyen : 0.2161
+Epoch 141 | loss: 1.3171
+Epoch 142 | loss: 1.3013
+Epoch 143 | loss: 1.2820
+Epoch 144 | loss: 1.3140
+Epoch 145 | loss: 1.2844
+Eval Epoch 145 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1398.6014 | Regret relatif moyen : 0.2161
+Epoch 146 | loss: 1.3501
+Epoch 147 | loss: 1.2749
+Epoch 148 | loss: 1.3155
+Epoch 149 | loss: 1.3088
+Epoch 150 | loss: 1.1107
+Eval Epoch 150 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 1536.6163 | Regret relatif moyen : 0.2155
+Epoch 151 | loss: 1.3842
+Epoch 152 | loss: 1.4193
+Epoch 153 | loss: 1.3616
+Epoch 154 | loss: 1.3995
+Epoch 155 | loss: 1.3430
+Eval Epoch 155 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1536.6163 | Regret relatif moyen : 0.2160
+Epoch 156 | loss: 1.3965
+Epoch 157 | loss: 1.3648
+Epoch 158 | loss: 1.3840
+Epoch 159 | loss: 1.4090
+Epoch 160 | loss: 1.3655
+Eval Epoch 160 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1536.6163 | Regret relatif moyen : 0.2159
+Epoch 161 | loss: 1.3864
+Epoch 162 | loss: 1.3972
+Epoch 163 | loss: 1.4140
+Epoch 164 | loss: 1.3992
+Epoch 165 | loss: 1.0970
+Eval Epoch 165 | Regret moyen : 0.0277 | ‖μ_global - μ_data‖_F : 1681.9930 | Regret relatif moyen : 0.2149
+Epoch 166 | loss: 1.4924
+Epoch 167 | loss: 1.4705
+Epoch 168 | loss: 1.5010
+Epoch 169 | loss: 1.4536
+Epoch 170 | loss: 1.4505
+Eval Epoch 170 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1681.9930 | Regret relatif moyen : 0.2161
+Epoch 171 | loss: 1.4560
+Epoch 172 | loss: 1.4911
+Epoch 173 | loss: 1.4229
+Epoch 174 | loss: 1.4284
+Epoch 175 | loss: 1.4576
+Eval Epoch 175 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1681.9930 | Regret relatif moyen : 0.2161
+Epoch 176 | loss: 1.4443
+Epoch 177 | loss: 1.4380
+Epoch 178 | loss: 1.4351
+Epoch 179 | loss: 1.4370
+Epoch 180 | loss: 1.1356
+Eval Epoch 180 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1822.5961 | Regret relatif moyen : 0.2160
+Epoch 181 | loss: 1.5027
+Epoch 182 | loss: 1.5218
+Epoch 183 | loss: 1.4664
+Epoch 184 | loss: 1.5126
+Epoch 185 | loss: 1.5459
+Eval Epoch 185 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1822.5961 | Regret relatif moyen : 0.2163
+Epoch 186 | loss: 1.4917
+Epoch 187 | loss: 1.4278
+Epoch 188 | loss: 1.4916
+Epoch 189 | loss: 1.4690
+Epoch 190 | loss: 1.5029
+Eval Epoch 190 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1822.5961 | Regret relatif moyen : 0.2162
+Epoch 191 | loss: 1.4238
+Epoch 192 | loss: 1.4441
+Epoch 193 | loss: 1.4859
+Epoch 194 | loss: 1.4898
+Epoch 195 | loss: 1.1919
+Eval Epoch 195 | Regret moyen : 0.0277 | ‖μ_global - μ_data‖_F : 1976.6602 | Regret relatif moyen : 0.2151
+Epoch 196 | loss: 1.6036
+Epoch 197 | loss: 1.5975
+Epoch 198 | loss: 1.6192
+Epoch 199 | loss: 1.5537
+Epoch 200 | loss: 1.5764
+Eval Epoch 200 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 1976.6602 | Regret relatif moyen : 0.2158
+Epoch 201 | loss: 1.5515
+Epoch 202 | loss: 1.5734
+Epoch 203 | loss: 1.5554
+Epoch 204 | loss: 1.5745
+Epoch 205 | loss: 1.4800
+Eval Epoch 205 | Regret moyen : 0.0279 | ‖μ_global - μ_data‖_F : 1976.6602 | Regret relatif moyen : 0.2160
+Epoch 206 | loss: 1.5379
+Epoch 207 | loss: 1.5326
+Epoch 208 | loss: 1.5534
+Epoch 209 | loss: 1.5228
+Epoch 210 | loss: 1.2368
+Eval Epoch 210 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2115.0068 | Regret relatif moyen : 0.2154
+Epoch 211 | loss: 1.5952
+Epoch 212 | loss: 1.6110
+Epoch 213 | loss: 1.5428
+Epoch 214 | loss: 1.5918
+Epoch 215 | loss: 1.5699
+Eval Epoch 215 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2115.0068 | Regret relatif moyen : 0.2157
+Epoch 216 | loss: 1.5625
+Epoch 217 | loss: 1.5950
+Epoch 218 | loss: 1.6369
+Epoch 219 | loss: 1.6187
+Epoch 220 | loss: 1.5942
+Eval Epoch 220 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2115.0068 | Regret relatif moyen : 0.2159
+Epoch 221 | loss: 1.5280
+Epoch 222 | loss: 1.5733
+Epoch 223 | loss: 1.6091
+Epoch 224 | loss: 1.5535
+Epoch 225 | loss: 1.2590
+Eval Epoch 225 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2255.1970 | Regret relatif moyen : 0.2153
+Epoch 226 | loss: 1.6201
+Epoch 227 | loss: 1.5984
+Epoch 228 | loss: 1.6300
+Epoch 229 | loss: 1.6641
+Epoch 230 | loss: 1.6603
+Eval Epoch 230 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2255.1970 | Regret relatif moyen : 0.2157
+Epoch 231 | loss: 1.6746
+Epoch 232 | loss: 1.5909
+Epoch 233 | loss: 1.6256
+Epoch 234 | loss: 1.5985
+Epoch 235 | loss: 1.6212
+Eval Epoch 235 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2255.1970 | Regret relatif moyen : 0.2160
+Epoch 236 | loss: 1.6329
+Epoch 237 | loss: 1.6331
+Epoch 238 | loss: 1.5804
+Epoch 239 | loss: 1.6262
+Epoch 240 | loss: 1.2530
+Eval Epoch 240 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2401.7415 | Regret relatif moyen : 0.2155
+Epoch 241 | loss: 1.6460
+Epoch 242 | loss: 1.6698
+Epoch 243 | loss: 1.7293
+Epoch 244 | loss: 1.6766
+Epoch 245 | loss: 1.6444
+Eval Epoch 245 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2401.7415 | Regret relatif moyen : 0.2153
+Epoch 246 | loss: 1.6495
+Epoch 247 | loss: 1.6257
+Epoch 248 | loss: 1.7170
+Epoch 249 | loss: 1.6791
+Epoch 250 | loss: 1.7180
+Eval Epoch 250 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2401.7415 | Regret relatif moyen : 0.2158
+Epoch 251 | loss: 1.6688
+Epoch 252 | loss: 1.7203
+Epoch 253 | loss: 1.6387
+Epoch 254 | loss: 1.6071
+Epoch 255 | loss: 1.2988
+Eval Epoch 255 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2551.2734 | Regret relatif moyen : 0.2153
+Epoch 256 | loss: 1.7147
+Epoch 257 | loss: 1.7860
+Epoch 258 | loss: 1.7545
+Epoch 259 | loss: 1.7853
+Epoch 260 | loss: 1.7891
+Eval Epoch 260 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2551.2734 | Regret relatif moyen : 0.2155
+Epoch 261 | loss: 1.7212
+Epoch 262 | loss: 1.7444
+Epoch 263 | loss: 1.8092
+Epoch 264 | loss: 1.7586
+Epoch 265 | loss: 1.7072
+Eval Epoch 265 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2551.2734 | Regret relatif moyen : 0.2160
+Epoch 266 | loss: 1.8011
+Epoch 267 | loss: 1.7217
+Epoch 268 | loss: 1.7838
+Epoch 269 | loss: 1.7142
+Epoch 270 | loss: 1.3805
+Eval Epoch 270 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2694.3445 | Regret relatif moyen : 0.2155
+Epoch 271 | loss: 1.7567
+Epoch 272 | loss: 1.7762
+Epoch 273 | loss: 1.7573
+Epoch 274 | loss: 1.7678
+Epoch 275 | loss: 1.8246
+Eval Epoch 275 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2694.3445 | Regret relatif moyen : 0.2157
+Epoch 276 | loss: 1.7706
+Epoch 277 | loss: 1.8270
+Epoch 278 | loss: 1.7845
+Epoch 279 | loss: 1.7374
+Epoch 280 | loss: 1.7765
+Eval Epoch 280 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2694.3445 | Regret relatif moyen : 0.2155
+Epoch 281 | loss: 1.7600
+Epoch 282 | loss: 1.7309
+Epoch 283 | loss: 1.7820
+Epoch 284 | loss: 1.7705
+Epoch 285 | loss: 1.3837
+Eval Epoch 285 | Regret moyen : 0.0277 | ‖μ_global - μ_data‖_F : 2843.1387 | Regret relatif moyen : 0.2150
+Epoch 286 | loss: 1.8338
+Epoch 287 | loss: 1.9014
+Epoch 288 | loss: 1.8167
+Epoch 289 | loss: 1.8321
+Epoch 290 | loss: 1.9496
+Eval Epoch 290 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2843.1387 | Regret relatif moyen : 0.2154
+Epoch 291 | loss: 1.9176
+Epoch 292 | loss: 1.8687
+Epoch 293 | loss: 1.8421
+Epoch 294 | loss: 1.7896
+Epoch 295 | loss: 1.8786
+Eval Epoch 295 | Regret moyen : 0.0278 | ‖μ_global - μ_data‖_F : 2843.1387 | Regret relatif moyen : 0.2156
+Epoch 296 | loss: 1.9655
+Epoch 297 | loss: 1.8933
+Epoch 298 | loss: 1.9097
+Epoch 299 | loss: 1.8460
+Saving the model to models/SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth

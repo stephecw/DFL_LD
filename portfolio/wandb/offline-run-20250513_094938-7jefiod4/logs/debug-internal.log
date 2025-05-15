@@ -1,0 +1,15 @@
+{"time":"2025-05-13T09:49:40.454882823-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250513_094938-7jefiod4/logs/debug-core.log"}
+{"time":"2025-05-13T09:49:40.931948032-04:00","level":"INFO","msg":"created new stream","id":"7jefiod4"}
+{"time":"2025-05-13T09:49:40.932033797-04:00","level":"INFO","msg":"stream: started","id":"7jefiod4"}
+{"time":"2025-05-13T09:49:40.932075753-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"7jefiod4"}
+{"time":"2025-05-13T09:49:40.93208311-04:00","level":"INFO","msg":"handler: started","stream_id":"7jefiod4"}
+{"time":"2025-05-13T09:49:40.932091581-04:00","level":"INFO","msg":"sender: started","stream_id":"7jefiod4"}
+{"time":"2025-05-13T09:49:40.938406577-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-13T10:45:13.695497578-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-13T10:45:13.823306892-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-13T10:45:13.831335192-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-13T10:45:14.855834825-04:00","level":"INFO","msg":"stream: closing","id":"7jefiod4"}
+{"time":"2025-05-13T10:45:14.855870855-04:00","level":"INFO","msg":"handler: closed","stream_id":"7jefiod4"}
+{"time":"2025-05-13T10:45:14.855887658-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"7jefiod4"}
+{"time":"2025-05-13T10:45:14.855895777-04:00","level":"INFO","msg":"sender: closed","stream_id":"7jefiod4"}
+{"time":"2025-05-13T10:45:14.856230488-04:00","level":"INFO","msg":"stream: closed","id":"7jefiod4"}

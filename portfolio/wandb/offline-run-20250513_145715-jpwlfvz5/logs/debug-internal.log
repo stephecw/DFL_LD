@@ -1,0 +1,14 @@
+{"time":"2025-05-13T14:57:15.594585819-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250513_145715-jpwlfvz5/logs/debug-core.log"}
+{"time":"2025-05-13T14:57:15.706447412-04:00","level":"INFO","msg":"created new stream","id":"jpwlfvz5"}
+{"time":"2025-05-13T14:57:15.706523123-04:00","level":"INFO","msg":"stream: started","id":"jpwlfvz5"}
+{"time":"2025-05-13T14:57:15.706593805-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"jpwlfvz5"}
+{"time":"2025-05-13T14:57:15.706646194-04:00","level":"INFO","msg":"handler: started","stream_id":"jpwlfvz5"}
+{"time":"2025-05-13T14:57:15.706655183-04:00","level":"INFO","msg":"sender: started","stream_id":"jpwlfvz5"}
+{"time":"2025-05-13T14:57:15.742986412-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-13T14:58:33.437546328-04:00","level":"INFO","msg":"stream: closing","id":"jpwlfvz5"}
+{"time":"2025-05-13T14:58:33.437632421-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-13T14:58:33.438396206-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-13T14:58:33.438488927-04:00","level":"INFO","msg":"handler: closed","stream_id":"jpwlfvz5"}
+{"time":"2025-05-13T14:58:33.438509895-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"jpwlfvz5"}
+{"time":"2025-05-13T14:58:33.438534085-04:00","level":"INFO","msg":"sender: closed","stream_id":"jpwlfvz5"}
+{"time":"2025-05-13T14:58:33.438943554-04:00","level":"INFO","msg":"stream: closed","id":"jpwlfvz5"}

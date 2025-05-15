@@ -1,41 +1,61 @@
 import numpy as np
-from scipy.optimize import minimize
+import gurobipy as gp
+from gurobipy import GRB
 
-def solve_sp(X_2, mu, cov, gamma):
-    # Fonction objective à minimiser (opposé de la fonction à maximiser)
-    def objective(x):
-        return -np.dot(mu, x)
-    
-    # Gradient de la fonction objective (Jacobien)
-    def jacobian(x):
-        return -mu
-    
-    # Hessienne de la fonction objective (nulle pour une fonction linéaire)
-    def hessian(x):
-        return np.zeros((len(x), len(x)))
-    
-    # Jacobien de la contrainte
-    def constraint_jacobian(x):
-        return 2 * np.dot(cov, x)
+import numpy as np
+import torch
+import gurobipy as gp
+from gurobipy import GRB
 
-    # Contrainte quadratique
-    mean = np.mean(cov)
-    def constraint(x):
-        return gamma*mean - np.dot(x.T, np.dot(cov, x))
 
-    # Contraintes de positivité
-    bounds = [(0, None) for _ in range(X_2.shape[0])]
+def solve_sp(X2, mu,cov,gamma, maximize= True, tol= 1e-6) :
+    """
+    Résout   max/min   muᵀ·x
+           s.c.        xᵀ·Cov·x ≤ γ·mean(Cov)
+                       x ≥ 0                         (pas de contrainte Σx = 1 ici)
 
-    # Valeurs initiales
-    x0 = np.ones(X_2.shape[0])  # Utiliser des valeurs initiales raisonnables
+    Paramètres
+    ----------
+    mu       : (n,)  profits (ou coûts si maximize=False)
+    cov      : (n,n) matrice de covariance sym. définie‑positive
+    gamma    : réel  niveau de risque
+    maximize : bool  True  → maximise muᵀ·x
+                       False → minimise muᵀ·x (utile pour SPO+ sur un problème de minimisation)
+    tol      : float seuil de “nettoyage” numérique
 
-    # Contrainte sous forme de dictionnaire
-    constraints = ({'type': 'ineq', 'fun': constraint})
+    Retour
+    ------
+    x_opt    : (n,)  solution optimale comme `np.ndarray`
+    """
+    n = mu.shape[0]
 
-    # Résolution du problème d'optimisation
-    res = minimize(objective, x0, jac=jacobian, hess=hessian, bounds=bounds, constraints=constraints, method='trust-constr', options={'maxiter': 200})
+    # --- Construction du modèle Gurobi ---
+    m = gp.Model("quad_portfolio")
+    m.setParam("OutputFlag", 0)        # silencieux
 
-    return res.x
+    x = m.addMVar(shape=n, lb=0.0, name="w")
+
+    # contrainte de risque quadratique
+    m.addConstr(x @ cov @ x <= gamma * cov.mean(), name="risk")
+
+    # objectif linéaire
+    sense = GRB.MAXIMIZE if maximize else GRB.MINIMIZE
+    m.setObjective(mu @ x, sense)
+
+    # --- Résolution ---
+    m.optimize()
+
+    #feas = m.computeIIS()
+    if m.status == GRB.INFEASIBLE:
+        print("Le problème est infaisable.")
+
+    if m.status != GRB.OPTIMAL:
+        print(m.status)
+        #raise RuntimeError("Gurobi n’a pas trouvé d’optimum.")
+
+    sol = x.X.copy()           # récupère un np.ndarray
+    sol[sol < tol] = 0.0       # nettoyage numérique optionnel
+    return sol
 
 
 class Optimization_X_mu_portfolio:
@@ -78,7 +98,7 @@ class Optimization_X_mu_portfolio:
         else:
             # On résout le sous-problème avec contrainte linéaire, et on le place selon le choix de sous-problème principal
             self.X[1] = np.zeros(self.num_item, dtype=float)
-            self.X[1][np.argmin(self.mu)] = 1.
+            self.X[1][np.argmax(-self.mu)] = 1
             # On résout le sous-problème avec contrainte quadratique, et on le place selon le choix de sous-problème principal
             self.X[int(self.lin)] = solve_sp(self.X[1], self.c + self.mu, self.cov, self.gamma)
 
