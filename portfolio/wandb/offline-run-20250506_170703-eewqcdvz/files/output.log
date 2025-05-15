@@ -1,0 +1,59 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/test_50_100_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: -1.0385
+Eval Epoch 1 | Regret moyen : 0.0309 | ‖μ_global - μ_data‖_F : 92.1269
+Epoch 2 | loss: -3.8925
+Epoch 3 | loss: -9.2202
+Epoch 4 | loss: -17.9699
+Epoch 5 | loss: -30.4111
+Epoch 6 | loss: -47.5664
+Eval Epoch 6 | Regret moyen : 0.0307 | ‖μ_global - μ_data‖_F : 92.1269
+Epoch 7 | loss: -68.9607
+Epoch 8 | loss: -95.7138
+Epoch 9 | loss: -126.4228
+Epoch 10 | loss: -163.1760
+Epoch 11 | loss: -203.2920
+Eval Epoch 11 | Regret moyen : 0.0307 | ‖μ_global - μ_data‖_F : 93.0270
+Epoch 12 | loss: -248.3963
+Epoch 13 | loss: -300.1278
+Epoch 14 | loss: -355.8687
+Epoch 15 | loss: -417.5013
+Epoch 16 | loss: -480.7431
+Eval Epoch 16 | Regret moyen : 0.0307 | ‖μ_global - μ_data‖_F : 93.0270
+Epoch 17 | loss: -551.1637
+Epoch 18 | loss: -631.6000
+Epoch 19 | loss: -709.2539
+Epoch 20 | loss: -794.7086
+Epoch 21 | loss: -875.2494
+Eval Epoch 21 | Regret moyen : 0.0307 | ‖μ_global - μ_data‖_F : 133.0793
+Epoch 22 | loss: -976.9800
+Epoch 23 | loss: -1077.0810
+Epoch 24 | loss: -1182.0891
+Epoch 25 | loss: -1280.5392
+Epoch 26 | loss: -1400.6204
+Eval Epoch 26 | Regret moyen : 0.0307 | ‖μ_global - μ_data‖_F : 133.0793
+Epoch 27 | loss: -1509.8998
+Epoch 28 | loss: -1631.2160
+Epoch 29 | loss: -1748.4563
+Epoch 30 | loss: -1903.4641
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/run_experiments.py", line 281, in <module>
+    run_train(model, method, "SG", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/run_experiments.py", line 125, in run_train
+    train_SG(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, principal_lin,
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/train_gen.py", line 354, in train_SG
+    mu_list = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(c_hat[i].detach().cpu().numpy(), cov, gamma, n_stocks, n_iter_mu, mu_tilde[i].detach().cpu().numpy(), principal_lin) for i in range(z.size(0)))
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/joblib/parallel.py", line 2007, in __call__
+    return output if self.return_generator else list(output)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/joblib/parallel.py", line 1650, in _get_outputs
+    yield from self._retrieve()
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/joblib/parallel.py", line 1762, in _retrieve
+    time.sleep(0.01)
+KeyboardInterrupt

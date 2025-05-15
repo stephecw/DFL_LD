@@ -2,6 +2,7 @@ import torch
 from torch import optim
 from data_import import ImportDataset
 from gen.train_gen import train, train_LD, train_SG
+import numpy as np
 
 from gen.train_gen import CustomMLP
 
@@ -87,7 +88,21 @@ def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train,
     test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Paramètres du problème
-    cov = train_set.get_cov()
+    cov = 1e5*train_set.get_cov()
+
+    def is_positive_definite_cholesky(cov: np.ndarray) -> bool:
+        """
+        envoie True si cov est définie positive (PD) au sens strict,
+        False sinon (semi‑déf. ou indéfinie).
+        """
+        try:
+            np.linalg.cholesky(cov)
+            return True
+        except np.linalg.LinAlgError:
+            return False
+    
+    if not is_positive_definite_cholesky(cov):
+        print("La matrice de covariance n'est pas définie positive.")
 
     # Modèle, optimiseur et scheduleur
     optimizer = optim.Adam(model.parameters(), lr)
@@ -114,7 +129,7 @@ def run_train(model, method, jobtype, gamma, num_feat, num_item, num_data_train,
     elif jobtype == "classic":
         if verbose:
             print("Training the model with regret as loss...")
-        train(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, principal_lin,
+        train(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs,
                     IMLE_n_samples=IMLE_n_samples, IMLE_sigma=IMLE_sigma, IMLE_lambd=IMLE_lambd, IMLE_two_sides=False, IMLE_processes=IMLE_processes,
                     SPO_solve_ratio=SPO_solve_ratio, SPO_reduction=SPO_reduction, SPO_processes=SPO_processes,
                     verbose=verbose)
@@ -167,7 +182,7 @@ epochs_LD = args.ep_ld
 epochs_classic = args.ep_cla
 epochs_SG = args.ep_sg
 lr_LD = 0.001
-lr_classic = 0.001
+lr_classic = 0.002
 lr_SG = 0.002
 IMLE_n_samples_LD = 10
 IMLE_n_samples_classic = 10
@@ -200,7 +215,7 @@ for n in num_item:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD",
             'dir': "./",
-            'name': f"qptl_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'name': f"{method}_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': "LD",
             'config': {
@@ -228,7 +243,7 @@ for n in num_item:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD",
             'dir': "./",
-            'name': f"qptl_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'name': f"{method}_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': "classic",
             'config': {
@@ -242,13 +257,13 @@ for n in num_item:
                 "epochs": epochs_classic,
                 "learning_rate": lr_classic,
                 "schedulerType": schedulerType_classic,
-                "sched_step_size": 100,
-                "sched_gamma": 0.1
+                "sched_step_size": 40,
+                "sched_gamma": 0.5
             }
     }
     if epochs_classic > 0:
         run_train(model, method, "classic", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
-        sched_step_size=100, sched_gamma=0.5)
+        sched_step_size=40, sched_gamma=0.5)
             
     ### MU DYNAMIQUE ###
     model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
@@ -256,7 +271,7 @@ for n in num_item:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD",
             'dir': "./",
-            'name': f"qptl_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'name': f"{method}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': "SG",
             'config': {
@@ -270,7 +285,7 @@ for n in num_item:
                 "epochs": epochs_SG,
                 "learning_rate": lr_SG,
                 "schedulerType": schedulerType_SG,
-                "sched_step_size": 100,
+                "sched_step_size": 40,
                 "sched_gamma": 0.5,
                 "step_mu": args.step_mu,
                 "n_iter_mu": args.n_iter_mu
@@ -280,4 +295,4 @@ for n in num_item:
     if epochs_SG > 0:
         run_train(model, method, "SG", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
                 step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
-                sched_step_size=100, sched_gamma=0.5)
+                sched_step_size=40, sched_gamma=0.5)

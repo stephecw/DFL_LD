@@ -1,0 +1,366 @@
+Loading /quad/train_100_500_200_2-25.txt
+Loading /quad/test_100_100_200_2-25.txt
+Training the model with regret as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 0 | loss: 0.4929
+Eval Epoch 0 | Regret moyen : 0.0284 | Regret relatif moyen : 0.2211
+Epoch 1 | loss: 0.2773
+Epoch 2 | loss: 0.1826
+Epoch 3 | loss: 0.1319
+Epoch 4 | loss: 0.1035
+Epoch 5 | loss: 0.0828
+Eval Epoch 5 | Regret moyen : 0.0246 | Regret relatif moyen : 0.1914
+Epoch 6 | loss: 0.0691
+Epoch 7 | loss: 0.0601
+Epoch 8 | loss: 0.0535
+Epoch 9 | loss: 0.0489
+Epoch 10 | loss: 0.0451
+Eval Epoch 10 | Regret moyen : 0.0243 | Regret relatif moyen : 0.1895
+Epoch 11 | loss: 0.0429
+Epoch 12 | loss: 0.0407
+Epoch 13 | loss: 0.0388
+Epoch 14 | loss: 0.0375
+Epoch 15 | loss: 0.0369
+Eval Epoch 15 | Regret moyen : 0.0238 | Regret relatif moyen : 0.1854
+Epoch 16 | loss: 0.0360
+Epoch 17 | loss: 0.0353
+Epoch 18 | loss: 0.0352
+Epoch 19 | loss: 0.0343
+Epoch 20 | loss: 0.0341
+Eval Epoch 20 | Regret moyen : 0.0234 | Regret relatif moyen : 0.1825
+Epoch 21 | loss: 0.0335
+Epoch 22 | loss: 0.0334
+Epoch 23 | loss: 0.0328
+Epoch 24 | loss: 0.0327
+Epoch 25 | loss: 0.0329
+Eval Epoch 25 | Regret moyen : 0.0234 | Regret relatif moyen : 0.1822
+Epoch 26 | loss: 0.0325
+Epoch 27 | loss: 0.0319
+Epoch 28 | loss: 0.0324
+Epoch 29 | loss: 0.0319
+Epoch 30 | loss: 0.0317
+Eval Epoch 30 | Regret moyen : 0.0233 | Regret relatif moyen : 0.1818
+Epoch 31 | loss: 0.0314
+Epoch 32 | loss: 0.0313
+Epoch 33 | loss: 0.0318
+Epoch 34 | loss: 0.0317
+Epoch 35 | loss: 0.0313
+Eval Epoch 35 | Regret moyen : 0.0234 | Regret relatif moyen : 0.1826
+Epoch 36 | loss: 0.0312
+Epoch 37 | loss: 0.0311
+Epoch 38 | loss: 0.0317
+Epoch 39 | loss: 0.0315
+Epoch 40 | loss: 0.0309
+Eval Epoch 40 | Regret moyen : 0.0233 | Regret relatif moyen : 0.1818
+Epoch 41 | loss: 0.0315
+Epoch 42 | loss: 0.0314
+Epoch 43 | loss: 0.0310
+Epoch 44 | loss: 0.0310
+Epoch 45 | loss: 0.0310
+Eval Epoch 45 | Regret moyen : 0.0231 | Regret relatif moyen : 0.1801
+Epoch 46 | loss: 0.0315
+Epoch 47 | loss: 0.0312
+Epoch 48 | loss: 0.0309
+Epoch 49 | loss: 0.0313
+Epoch 50 | loss: 0.0307
+Eval Epoch 50 | Regret moyen : 0.0232 | Regret relatif moyen : 0.1806
+Epoch 51 | loss: 0.0307
+Epoch 52 | loss: 0.0308
+Epoch 53 | loss: 0.0312
+Epoch 54 | loss: 0.0312
+Epoch 55 | loss: 0.0311
+Eval Epoch 55 | Regret moyen : 0.0233 | Regret relatif moyen : 0.1815
+Epoch 56 | loss: 0.0312
+Epoch 57 | loss: 0.0308
+Epoch 58 | loss: 0.0312
+Epoch 59 | loss: 0.0305
+Epoch 60 | loss: 0.0310
+Eval Epoch 60 | Regret moyen : 0.0232 | Regret relatif moyen : 0.1810
+Epoch 61 | loss: 0.0308
+Epoch 62 | loss: 0.0306
+Epoch 63 | loss: 0.0312
+Epoch 64 | loss: 0.0314
+Epoch 65 | loss: 0.0312
+Eval Epoch 65 | Regret moyen : 0.0233 | Regret relatif moyen : 0.1808
+Epoch 66 | loss: 0.0310
+Epoch 67 | loss: 0.0309
+Epoch 68 | loss: 0.0307
+Epoch 69 | loss: 0.0310
+Epoch 70 | loss: 0.0312
+Eval Epoch 70 | Regret moyen : 0.0234 | Regret relatif moyen : 0.1822
+Epoch 71 | loss: 0.0307
+Epoch 72 | loss: 0.0310
+Epoch 73 | loss: 0.0315
+Epoch 74 | loss: 0.0306
+Epoch 75 | loss: 0.0313
+Eval Epoch 75 | Regret moyen : 0.0233 | Regret relatif moyen : 0.1811
+Epoch 76 | loss: 0.0310
+Epoch 77 | loss: 0.0311
+Epoch 78 | loss: 0.0308
+Epoch 79 | loss: 0.0312
+Epoch 80 | loss: 0.0305
+Eval Epoch 80 | Regret moyen : 0.0235 | Regret relatif moyen : 0.1826
+Epoch 81 | loss: 0.0313
+Epoch 82 | loss: 0.0307
+Epoch 83 | loss: 0.0314
+Epoch 84 | loss: 0.0307
+Epoch 85 | loss: 0.0309
+Eval Epoch 85 | Regret moyen : 0.0233 | Regret relatif moyen : 0.1816
+Epoch 86 | loss: 0.0307
+Epoch 87 | loss: 0.0311
+Epoch 88 | loss: 0.0312
+Epoch 89 | loss: 0.0310
+Epoch 90 | loss: 0.0309
+Eval Epoch 90 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1778
+Epoch 91 | loss: 0.0313
+Epoch 92 | loss: 0.0313
+Epoch 93 | loss: 0.0312
+Epoch 94 | loss: 0.0311
+Epoch 95 | loss: 0.0308
+Eval Epoch 95 | Regret moyen : 0.0232 | Regret relatif moyen : 0.1803
+Epoch 96 | loss: 0.0307
+Epoch 97 | loss: 0.0308
+Epoch 98 | loss: 0.0311
+Epoch 99 | loss: 0.0316
+Epoch 100 | loss: 0.0294
+Eval Epoch 100 | Regret moyen : 0.0231 | Regret relatif moyen : 0.1793
+Epoch 101 | loss: 0.0284
+Epoch 102 | loss: 0.0271
+Epoch 103 | loss: 0.0265
+Epoch 104 | loss: 0.0268
+Epoch 105 | loss: 0.0271
+Eval Epoch 105 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1782
+Epoch 106 | loss: 0.0266
+Epoch 107 | loss: 0.0266
+Epoch 108 | loss: 0.0258
+Epoch 109 | loss: 0.0264
+Epoch 110 | loss: 0.0260
+Eval Epoch 110 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1786
+Epoch 111 | loss: 0.0259
+Epoch 112 | loss: 0.0261
+Epoch 113 | loss: 0.0258
+Epoch 114 | loss: 0.0263
+Epoch 115 | loss: 0.0262
+Eval Epoch 115 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1777
+Epoch 116 | loss: 0.0263
+Epoch 117 | loss: 0.0263
+Epoch 118 | loss: 0.0260
+Epoch 119 | loss: 0.0259
+Epoch 120 | loss: 0.0266
+Eval Epoch 120 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1788
+Epoch 121 | loss: 0.0257
+Epoch 122 | loss: 0.0265
+Epoch 123 | loss: 0.0265
+Epoch 124 | loss: 0.0257
+Epoch 125 | loss: 0.0262
+Eval Epoch 125 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1788
+Epoch 126 | loss: 0.0262
+Epoch 127 | loss: 0.0265
+Epoch 128 | loss: 0.0265
+Epoch 129 | loss: 0.0264
+Epoch 130 | loss: 0.0267
+Eval Epoch 130 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1783
+Epoch 131 | loss: 0.0262
+Epoch 132 | loss: 0.0260
+Epoch 133 | loss: 0.0270
+Epoch 134 | loss: 0.0269
+Epoch 135 | loss: 0.0267
+Eval Epoch 135 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1786
+Epoch 136 | loss: 0.0271
+Epoch 137 | loss: 0.0259
+Epoch 138 | loss: 0.0264
+Epoch 139 | loss: 0.0265
+Epoch 140 | loss: 0.0261
+Eval Epoch 140 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1784
+Epoch 141 | loss: 0.0267
+Epoch 142 | loss: 0.0265
+Epoch 143 | loss: 0.0267
+Epoch 144 | loss: 0.0268
+Epoch 145 | loss: 0.0267
+Eval Epoch 145 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1789
+Epoch 146 | loss: 0.0266
+Epoch 147 | loss: 0.0268
+Epoch 148 | loss: 0.0262
+Epoch 149 | loss: 0.0263
+Epoch 150 | loss: 0.0264
+Eval Epoch 150 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1779
+Epoch 151 | loss: 0.0265
+Epoch 152 | loss: 0.0265
+Epoch 153 | loss: 0.0267
+Epoch 154 | loss: 0.0266
+Epoch 155 | loss: 0.0268
+Eval Epoch 155 | Regret moyen : 0.0231 | Regret relatif moyen : 0.1796
+Epoch 156 | loss: 0.0264
+Epoch 157 | loss: 0.0264
+Epoch 158 | loss: 0.0265
+Epoch 159 | loss: 0.0266
+Epoch 160 | loss: 0.0263
+Eval Epoch 160 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1782
+Epoch 161 | loss: 0.0260
+Epoch 162 | loss: 0.0264
+Epoch 163 | loss: 0.0267
+Epoch 164 | loss: 0.0265
+Epoch 165 | loss: 0.0261
+Eval Epoch 165 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1784
+Epoch 166 | loss: 0.0270
+Epoch 167 | loss: 0.0263
+Epoch 168 | loss: 0.0261
+Epoch 169 | loss: 0.0257
+Epoch 170 | loss: 0.0257
+Eval Epoch 170 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1792
+Epoch 171 | loss: 0.0268
+Epoch 172 | loss: 0.0269
+Epoch 173 | loss: 0.0267
+Epoch 174 | loss: 0.0263
+Epoch 175 | loss: 0.0270
+Eval Epoch 175 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1777
+Epoch 176 | loss: 0.0263
+Epoch 177 | loss: 0.0262
+Epoch 178 | loss: 0.0268
+Epoch 179 | loss: 0.0263
+Epoch 180 | loss: 0.0264
+Eval Epoch 180 | Regret moyen : 0.0231 | Regret relatif moyen : 0.1798
+Epoch 181 | loss: 0.0268
+Epoch 182 | loss: 0.0266
+Epoch 183 | loss: 0.0259
+Epoch 184 | loss: 0.0263
+Epoch 185 | loss: 0.0268
+Eval Epoch 185 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1786
+Epoch 186 | loss: 0.0266
+Epoch 187 | loss: 0.0266
+Epoch 188 | loss: 0.0264
+Epoch 189 | loss: 0.0265
+Epoch 190 | loss: 0.0266
+Eval Epoch 190 | Regret moyen : 0.0230 | Regret relatif moyen : 0.1790
+Epoch 191 | loss: 0.0265
+Epoch 192 | loss: 0.0263
+Epoch 193 | loss: 0.0258
+Epoch 194 | loss: 0.0262
+Epoch 195 | loss: 0.0263
+Eval Epoch 195 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1783
+Epoch 196 | loss: 0.0265
+Epoch 197 | loss: 0.0269
+Epoch 198 | loss: 0.0266
+Epoch 199 | loss: 0.0267
+Epoch 200 | loss: 0.0264
+Eval Epoch 200 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1779
+Epoch 201 | loss: 0.0249
+Epoch 202 | loss: 0.0244
+Epoch 203 | loss: 0.0253
+Epoch 204 | loss: 0.0244
+Epoch 205 | loss: 0.0241
+Eval Epoch 205 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1773
+Epoch 206 | loss: 0.0241
+Epoch 207 | loss: 0.0242
+Epoch 208 | loss: 0.0246
+Epoch 209 | loss: 0.0246
+Epoch 210 | loss: 0.0246
+Eval Epoch 210 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1776
+Epoch 211 | loss: 0.0247
+Epoch 212 | loss: 0.0245
+Epoch 213 | loss: 0.0240
+Epoch 214 | loss: 0.0240
+Epoch 215 | loss: 0.0241
+Eval Epoch 215 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1780
+Epoch 216 | loss: 0.0243
+Epoch 217 | loss: 0.0240
+Epoch 218 | loss: 0.0239
+Epoch 219 | loss: 0.0246
+Epoch 220 | loss: 0.0242
+Eval Epoch 220 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1777
+Epoch 221 | loss: 0.0243
+Epoch 222 | loss: 0.0239
+Epoch 223 | loss: 0.0243
+Epoch 224 | loss: 0.0240
+Epoch 225 | loss: 0.0245
+Eval Epoch 225 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1779
+Epoch 226 | loss: 0.0245
+Epoch 227 | loss: 0.0246
+Epoch 228 | loss: 0.0246
+Epoch 229 | loss: 0.0243
+Epoch 230 | loss: 0.0248
+Eval Epoch 230 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1777
+Epoch 231 | loss: 0.0233
+Epoch 232 | loss: 0.0246
+Epoch 233 | loss: 0.0245
+Epoch 234 | loss: 0.0240
+Epoch 235 | loss: 0.0245
+Eval Epoch 235 | Regret moyen : 0.0227 | Regret relatif moyen : 0.1768
+Epoch 236 | loss: 0.0245
+Epoch 237 | loss: 0.0247
+Epoch 238 | loss: 0.0237
+Epoch 239 | loss: 0.0242
+Epoch 240 | loss: 0.0241
+Eval Epoch 240 | Regret moyen : 0.0226 | Regret relatif moyen : 0.1762
+Epoch 241 | loss: 0.0237
+Epoch 242 | loss: 0.0246
+Epoch 243 | loss: 0.0244
+Epoch 244 | loss: 0.0242
+Epoch 245 | loss: 0.0238
+Eval Epoch 245 | Regret moyen : 0.0227 | Regret relatif moyen : 0.1766
+Epoch 246 | loss: 0.0243
+Epoch 247 | loss: 0.0242
+Epoch 248 | loss: 0.0241
+Epoch 249 | loss: 0.0243
+Epoch 250 | loss: 0.0242
+Eval Epoch 250 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1773
+Epoch 251 | loss: 0.0245
+Epoch 252 | loss: 0.0241
+Epoch 253 | loss: 0.0243
+Epoch 254 | loss: 0.0252
+Epoch 255 | loss: 0.0243
+Eval Epoch 255 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1778
+Epoch 256 | loss: 0.0251
+Epoch 257 | loss: 0.0244
+Epoch 258 | loss: 0.0247
+Epoch 259 | loss: 0.0242
+Epoch 260 | loss: 0.0246
+Eval Epoch 260 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1776
+Epoch 261 | loss: 0.0243
+Epoch 262 | loss: 0.0250
+Epoch 263 | loss: 0.0250
+Epoch 264 | loss: 0.0241
+Epoch 265 | loss: 0.0242
+Eval Epoch 265 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1776
+Epoch 266 | loss: 0.0238
+Epoch 267 | loss: 0.0243
+Epoch 268 | loss: 0.0245
+Epoch 269 | loss: 0.0245
+Epoch 270 | loss: 0.0245
+Eval Epoch 270 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1778
+Epoch 271 | loss: 0.0242
+Epoch 272 | loss: 0.0243
+Epoch 273 | loss: 0.0243
+Epoch 274 | loss: 0.0246
+Epoch 275 | loss: 0.0247
+Eval Epoch 275 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1780
+Epoch 276 | loss: 0.0237
+Epoch 277 | loss: 0.0244
+Epoch 278 | loss: 0.0238
+Epoch 279 | loss: 0.0236
+Epoch 280 | loss: 0.0249
+Eval Epoch 280 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1778
+Epoch 281 | loss: 0.0238
+Epoch 282 | loss: 0.0244
+Epoch 283 | loss: 0.0246
+Epoch 284 | loss: 0.0242
+Epoch 285 | loss: 0.0245
+Eval Epoch 285 | Regret moyen : 0.0229 | Regret relatif moyen : 0.1778
+Epoch 286 | loss: 0.0240
+Epoch 287 | loss: 0.0241
+Epoch 288 | loss: 0.0249
+Epoch 289 | loss: 0.0244
+Epoch 290 | loss: 0.0247
+Eval Epoch 290 | Regret moyen : 0.0228 | Regret relatif moyen : 0.1778
+Epoch 291 | loss: 0.0247
+Epoch 292 | loss: 0.0244
+Epoch 293 | loss: 0.0247
+Epoch 294 | loss: 0.0239
+Epoch 295 | loss: 0.0243
+Eval Epoch 295 | Regret moyen : 0.0227 | Regret relatif moyen : 0.1765
+Epoch 296 | loss: 0.0245
+Epoch 297 | loss: 0.0247
+Epoch 298 | loss: 0.0241
+Epoch 299 | loss: 0.0244
+Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth

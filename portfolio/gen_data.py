@@ -90,6 +90,7 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     # Données aléatoires
     cov, Z, c = data.portfolio.genData(total_data, num_feat, num_item, deg=4, noise_level=1, seed=135)
     gamma = gam  # risk_level = gamma * mean(cov[i])
+    cov = 1e5*cov
     
     # Résolution exacte du problème (x*)
     if verbose:
