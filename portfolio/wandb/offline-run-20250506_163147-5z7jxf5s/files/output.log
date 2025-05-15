@@ -1,0 +1,28 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/test_50_100_200_2-25.txt
+Training the model with regret as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 1 | loss: 0.5151
+Eval Epoch 1 | Regret moyen : 0.0304
+Epoch 2 | loss: 0.3512
+Epoch 3 | loss: 0.2638
+Epoch 4 | loss: 0.2089
+Epoch 5 | loss: 0.1720
+Saving the model to models/{dim}_{num_feat}_{num_item}_{num_data_train}.pth
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/run_experiments.py", line 250, in <module>
+    run_train(model, method, "classic", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_classic, lr=lr_classic,schedulerType=schedulerType_classic, verbose=True, wandbarg=wandbarg,
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/run_experiments.py", line 143, in run_train
+    torch.save(model.state_dict(), f'models/{method}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/serialization.py", line 943, in save
+    with _open_zipfile_writer(f) as opened_zipfile:
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/serialization.py", line 810, in _open_zipfile_writer
+    return container(name_or_buffer)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/serialization.py", line 781, in __init__
+    super().__init__(torch._C.PyTorchFileWriter(self.name, _compute_crc32))
+RuntimeError: Parent directory models does not exist.

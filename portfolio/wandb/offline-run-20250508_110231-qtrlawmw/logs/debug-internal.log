@@ -1,0 +1,15 @@
+{"time":"2025-05-08T11:02:31.698924054-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250508_110231-qtrlawmw/logs/debug-core.log"}
+{"time":"2025-05-08T11:02:31.834422823-04:00","level":"INFO","msg":"created new stream","id":"qtrlawmw"}
+{"time":"2025-05-08T11:02:31.834483423-04:00","level":"INFO","msg":"stream: started","id":"qtrlawmw"}
+{"time":"2025-05-08T11:02:31.834496969-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"qtrlawmw"}
+{"time":"2025-05-08T11:02:31.834558078-04:00","level":"INFO","msg":"handler: started","stream_id":"qtrlawmw"}
+{"time":"2025-05-08T11:02:31.834561634-04:00","level":"INFO","msg":"sender: started","stream_id":"qtrlawmw"}
+{"time":"2025-05-08T11:02:31.84891674-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-08T11:08:37.105339395-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-08T11:08:37.105905606-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-08T11:08:37.106653791-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-08T11:08:38.113009758-04:00","level":"INFO","msg":"stream: closing","id":"qtrlawmw"}
+{"time":"2025-05-08T11:08:38.113038362-04:00","level":"INFO","msg":"handler: closed","stream_id":"qtrlawmw"}
+{"time":"2025-05-08T11:08:38.113071552-04:00","level":"INFO","msg":"sender: closed","stream_id":"qtrlawmw"}
+{"time":"2025-05-08T11:08:38.113071636-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"qtrlawmw"}
+{"time":"2025-05-08T11:08:38.113407772-04:00","level":"INFO","msg":"stream: closed","id":"qtrlawmw"}
