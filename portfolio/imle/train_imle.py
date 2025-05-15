@@ -197,7 +197,6 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
             
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prédiction des profits ĉ
-            print(c_)
 
             # Résolution avec i-MLE
             X1p = imle(c_hat + mu).to(device)   # x̂ obtenu avec solve_main_problem
