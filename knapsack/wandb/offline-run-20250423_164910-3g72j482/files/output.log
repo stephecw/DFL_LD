@@ -1,9 +1,0 @@
-Loading train_10_200_30_500.txt
-Loaded test_10_200_30_500.txt
-Training the model with regret as loss...
-Num of cores: 1
-Epoch 1 | loss: 15.9150
-Eval Epoch 1 | Regret moyen : 13.3600
-Epoch 2 | loss: 14.8824
-Eval Epoch 2 | Regret moyen : 11.6800
-Epoch 3 | loss: 13.9968
