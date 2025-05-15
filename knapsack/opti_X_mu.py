@@ -146,8 +146,6 @@ class OptimizationModel:
             self.val_actuelle = self.B()
         return self.val_actuelle
 
-
-
 class OptimizationBatchModel:
     def __init__(self, num_item, dim, c_batch, weights, capacities, mu_init=None, device="cuda"):
         """
