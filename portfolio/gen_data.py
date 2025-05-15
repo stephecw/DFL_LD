@@ -90,7 +90,7 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     # Données aléatoires
     cov, Z, c = data.portfolio.genData(total_data, num_feat, num_item, deg=4, noise_level=1, seed=135)
     gamma = gam  # risk_level = gamma * mean(cov[i])
-    cov = 1e5*cov
+    cov2 = 1e5*cov
     
     # Résolution exacte du problème (x*)
     if verbose:
@@ -109,7 +109,7 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     if verbose:
         print("Résolution approchée des mu et X° ...")
     # Parallélisation de l'optimisation de mu et X°
-    results = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(i, c[i], cov, gamma, num_item, num_iter, principal_lin) for i in range(total_data))
+    results = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(i, c[i], cov2, gamma, num_item, num_iter, principal_lin) for i in range(total_data))
     X, mu = zip(*results)
     X = np.array(X)
     mu = np.array(mu)
