@@ -1,9 +1,6 @@
 import torch
 from torch import nn
-from pyepo.model.grb import knapsackModel
-import gurobipy as gp
 from pyepo.func import implicitMLE, SPOPlus
-from opti_X_mu import OptimizationBatchModel
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -35,10 +32,10 @@ def get_learning_rate(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
-def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, 
+def train(model, optmodel_train, optmodel_eval, run, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit,
           diff_method, diff_method_arg,
-          verbose=False):
+          verbose=False, patience= 10, min_delta= 1e-6):
     """
         Entraînement du modèle avec i-MLE classique
         model: modèle prédictif des profits
@@ -57,14 +54,16 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
     time_monitoring = run is not None or time_limit is not None
+    best_relat_regret = float("inf")
+    epochs_no_improvement = 0
+    best_model_state = None
+    best_epoch = 0
     
-    # multiKPModel prend en charge plusieurs contraintes
-    optmodel = knapsackModel(weights=weights, capacity=capacities)
     # i-MLE avec solveur exact multi-contrainte
     if diff_method == "IMLE":
-        diff = implicitMLE(optmodel, **diff_method_arg)
+        diff = implicitMLE(optmodel_train, **diff_method_arg)
     elif diff_method == "SPOPlus":
-        diff = SPOPlus(optmodel, **diff_method_arg)
+        diff = SPOPlus(optmodel_eval, **diff_method_arg)
 
     if time_monitoring:
         import time
@@ -86,7 +85,7 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
                 x_hat = diff(c_hat).to(device)   # x̂ obtenu avec solve_main_problem
                 loss = torch.sum(c * (x - x_hat), dim=1).mean()
             elif diff_method == "SPOPlus":
-                loss = diff(c_hat, c, x.float(), (c * x).sum(dim=1)).to(device)
+                loss = diff(-c_hat, -c, x.float(), (-c * x).sum(dim=1)).to(device)
 
             optimizer.zero_grad()
             loss.backward()
@@ -122,12 +121,12 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
                 total_regret = 0
                 total_count = 0
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_test:
+                for z, c, x, _, _ in dataloader_eval:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # prédiction des coûts [batch, n]
                     
                     for i in range(z.size(0)):
-                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        model_i = optmodel_eval
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         model_i.setObj(c_numpy)
                         x_hat_np, _ = model_i.solve()
@@ -150,6 +149,18 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
                 run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
             if verbose:
                 print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret:.4f}")
+
+            # Early stopping
+            if mean_relat_regret < best_relat_regret - min_delta:
+                best_relat_regret = mean_relat_regret
+                epochs_no_improvement = 0
+                best_model_state = { k: v.cpu().clone() for k,v in model.state_dict().items() }
+                best_epoch = epoch
+            else:
+                epochs_no_improvement += 1
+                if epochs_no_improvement >= patience:
+                    print(f"Arrêt précoce à l'époque {epoch} | Meilleur regret relatif : {best_relat_regret:.4f}")
+                    break
                 
         # Check time limit
         if time_limit is not None:
@@ -157,16 +168,23 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
                 print("Limite de temps atteinte, arrêt de l'entraînement.")
                 return
             
+    # Charger le meilleur état du modèle
+    if best_model_state is not None:
+        device = next(model.parameters()).device
+        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
+            
     if run is not None:   
         end_time = time.time()
         total_duration = end_time - start_time
-        run.log({"total_duration": total_duration})
+        run.log({"total_duration": total_duration, "best_epoch": best_epoch, "best_relat_regret": best_relat_regret})
 
 
-def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, 
+
+
+def train_LD(model, solver_train, solver_eval, run, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit,
           diff_method, diff_method_arg,
-          verbose=False):
+          verbose=False, patience= 10, min_delta= 1e-6):
     """
         Entraînement du modèle avec la décomposition lagrangienne
         model: modèle prédictif des profits
@@ -185,13 +203,17 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
     time_monitoring = run is not None or time_limit is not None
+    best_relat_regret = float("inf")
+    epochs_no_improvement = 0
+    best_model_state = None
+    best_epoch = 0
+
     
     # Créer un solveur i-MLE avec les mu du batch
-    solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
     if diff_method == "IMLE":
-        diff = implicitMLE(solver, **diff_method_arg)
+        diff = implicitMLE(solver_train, **diff_method_arg)
     elif diff_method == "SPOPlus":
-        diff = SPOPlus(solver, **diff_method_arg)
+        diff = SPOPlus(solver_train, **diff_method_arg)
 
     if time_monitoring:
         import time
@@ -218,7 +240,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                 profit_modified = c + mu_sum     # shape [batch, n]
                 loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
             elif diff_method == "SPOPlus":
-                loss = diff(c_hat + mu_sum, c + mu_sum, X1.float(), ((c + mu_sum) * X1).sum(dim=1)).to(device)
+                loss = diff(-c_hat - mu_sum, -c - mu_sum, X1.float(), (-(c + mu_sum) * X1).sum(dim=1)).to(device)
             
             optimizer.zero_grad()
             loss.backward()
@@ -254,12 +276,12 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                 total_regret = 0
                 total_count = 0
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_test:
+                for z, c, x, _, _ in dataloader_eval:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # prédiction des coûts [batch, n]
                     
                     for i in range(z.size(0)):
-                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        model_i = solver_eval
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         model_i.setObj(c_numpy)
                         x_hat_np, _ = model_i.solve()
@@ -282,24 +304,41 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                 run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
             if verbose:
                 print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret:.4f}")
+            
+            # Early stopping
+            if mean_relat_regret < best_relat_regret - min_delta:
+                best_relat_regret = mean_relat_regret
+                epochs_no_improvement = 0
+                best_model_state = { k: v.cpu().clone() for k,v in model.state_dict().items() }
+                best_epoch = epoch
+            else:
+                epochs_no_improvement += 1
+                if epochs_no_improvement >= patience:
+                    print(f"Arrêt précoce à l'époque {epoch} | Meilleur regret relatif : {best_relat_regret:.4f}")
+                    break
                 
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
                 print("Limite de temps atteinte, arrêt de l'entraînement.")
                 return
+    
+    # Charger le meilleur état du modèle
+    if best_model_state is not None:
+        device = next(model.parameters()).device
+        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
             
     if run is not None:   
         end_time = time.time()
         total_duration = end_time - start_time
-        run.log({"total_duration": total_duration})
+        run.log({"total_duration": total_duration, "best_epoch": best_epoch, "best_relat_regret": best_relat_regret})
 
 
-def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, 
+def train_SG(model, solver_train, solver_eval, optimizer_mu, mu_init, run, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit,
           diff_method, diff_method_arg,
           step_mu=10, num_iter_mu = 100,
-          verbose=False):
+          verbose=False, patience= 10, min_delta= 1e-6):
     """
         Entraînement du modèle avec la décomposition lagrangienne
         model: modèle prédictif des profits
@@ -318,18 +357,18 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
         verbose: bool : Si True, affiche les détails de l'entraînement
     """
     time_monitoring = run is not None or time_limit is not None
+    best_relat_regret = float("inf")
+    epochs_no_improvement = 0
+    best_model_state = None
+    best_epoch = 0
     
     # Créer un solveur i-MLE avec les mu du batch
-    solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
     if diff_method == "IMLE":
-        diff = implicitMLE(solver, **diff_method_arg)
+        diff = implicitMLE(solver_train, **diff_method_arg)
     elif diff_method == "SPOPlus":
-        diff = SPOPlus(solver, **diff_method_arg)
-        
-    dim = weights.shape[0]
-    n_items = weights.shape[1]
+        diff = SPOPlus(solver_train, **diff_method_arg)
 
-    mu_global = torch.ones(len(dataloader_train.dataset), dim - 1, n_items, device=device, dtype = torch.float32)
+    mu_global = mu_init.clone().to(device)
     
     if time_monitoring:
         import time
@@ -352,29 +391,22 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             # Mise à jour de mu_global
             if epoch % step_mu == 0:
-                optimizer_mu = OptimizationBatchModel(
-                    mu_init=mu_tilde.clone(),
-                    num_item=n_items,
-                    dim=dim,
-                    c_batch=c_hat.detach(),
-                    weights=weights,
-                    capacities=capacities
-                )
-                optimizer_mu.optim_mu(verbose=False, max_iter=num_iter_mu)
-
+                optimizer_mu = optimizer_mu
+                optimizer_mu.optim_mu_batch(mu0 = mu_tilde.clone(), verbose=False, max_iter=num_iter_mu)
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
 
 
             # Résolution avec i-MLE
             mu_tilde_sum = mu_tilde.sum(dim=1)
+            mu_sum = mu.sum(dim=1)
             if diff_method == "IMLE":
                 X1p = diff(c_hat + mu_tilde_sum).to(device)   # x̂ obtenu avec solve_main_problem
                 # (c + sum mu_i for i ≥ 2) · (w - x̂)
                 profit_modified = c + mu_sum     # shape [batch, n]
                 loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
             elif diff_method == "SPOPlus":
-                loss = diff(c_hat + mu_tilde_sum, c + mu_tilde_sum, X1.float(), ((c + mu_tilde_sum) * X1).sum(dim=1)).to(device)
+                loss = diff(-c_hat - mu_tilde_sum, -c + mu_sum, X1.float(), (-(c + mu_tilde_sum) * X1).sum(dim=1)).to(device)
             
             optimizer.zero_grad()
             loss.backward()
@@ -410,12 +442,12 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                 total_regret = 0
                 total_count = 0
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_test:
+                for z, c, x, _, _ in dataloader_eval:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # prédiction des coûts [batch, n]
                     
                     for i in range(z.size(0)):
-                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        model_i = solver_eval
                         c_numpy = c_hat[i].detach().cpu().numpy()
                         model_i.setObj(c_numpy)
                         x_hat_np, _ = model_i.solve()
@@ -441,14 +473,31 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                 run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
             if verbose:
                 print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret:.4f}")
+            
+            # Early stopping
+            if mean_relat_regret < best_relat_regret - min_delta:
+                best_relat_regret = mean_relat_regret
+                epochs_no_improvement = 0
+                best_model_state = { k: v.cpu().clone() for k,v in model.state_dict().items() }
+                best_epoch = epoch
+            else:
+                epochs_no_improvement += 1
+                if epochs_no_improvement >= patience:
+                    print(f"Arrêt précoce à l'époque {epoch} | Meilleur regret relatif : {best_relat_regret:.4f}")
+                    break
                 
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
                 print("Limite de temps atteinte, arrêt de l'entraînement.")
                 return
+    
+    # Charger le meilleur état du modèle
+    if best_model_state is not None:
+        device = next(model.parameters()).device
+        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
             
     if run is not None:   
         end_time = time.time()
         total_duration = end_time - start_time
-        run.log({"total_duration": total_duration})
+        run.log({"total_duration": total_duration, "best_epoch": best_epoch, "best_relat_regret": best_relat_regret})
