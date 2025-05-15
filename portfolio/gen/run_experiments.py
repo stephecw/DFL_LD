@@ -285,7 +285,7 @@ for n in num_item:
                 "epochs": epochs_SG,
                 "learning_rate": lr_SG,
                 "schedulerType": schedulerType_SG,
-                "sched_step_size": 40,
+                "sched_step_size": 300,
                 "sched_gamma": 0.5,
                 "step_mu": args.step_mu,
                 "n_iter_mu": args.n_iter_mu
@@ -295,4 +295,4 @@ for n in num_item:
     if epochs_SG > 0:
         run_train(model, method, "SG", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
                 step_mu=args.step_mu, n_iter_mu=args.n_iter_mu,
-                sched_step_size=40, sched_gamma=0.5)
+                sched_step_size=300, sched_gamma=0.5)
