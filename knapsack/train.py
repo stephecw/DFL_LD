@@ -62,9 +62,9 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
     optmodel = knapsackModel(weights=weights, capacity=capacities)
     # i-MLE avec solveur exact multi-contrainte
     if diff_method == "IMLE":
-        diff = implicitMLE(optmodel, *diff_method_arg)
+        diff = implicitMLE(optmodel, **diff_method_arg)
     elif diff_method == "SPOPlus":
-        diff = SPOPlus(optmodel, *diff_method_arg)
+        diff = SPOPlus(optmodel, **diff_method_arg)
 
     if time_monitoring:
         import time
@@ -81,11 +81,12 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
         
         for z, c, x, X1, mu in dataloader_train:
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
-            cp = model(z)
-            xp = diff(cp).to(device)
-
-            # Regret = c · (w - wp)
-            loss = torch.sum(c * (x - xp), dim=1).mean()
+            c_hat = model(z)
+            if diff_method == "IMLE":
+                x_hat = diff(c_hat).to(device)   # x̂ obtenu avec solve_main_problem
+                loss = torch.sum(c * (x - x_hat), dim=1).mean()
+            elif diff_method == "SPOPlus":
+                loss = diff(c_hat, c, x.float(), (c * x).sum(dim=1)).to(device)
 
             optimizer.zero_grad()
             loss.backward()
@@ -115,41 +116,41 @@ def train(model, run, dataloader_train, dataloader_test, optimizer, scheduler, w
 
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
-            
-        with torch.no_grad():
-            model.eval()
-            total_regret = 0
-            total_count = 0
-            relat_regrets = []
-            for z, c, x, _, _ in dataloader_test:
-                z, c, x = [t.to(device) for t in (z, c, x)]
-                c_hat = model(z)  # prédiction des coûts [batch, n]
+        if diff_method != "SPOPlus" or epoch % 5 == 0: 
+            with torch.no_grad():
+                model.eval()
+                total_regret = 0
+                total_count = 0
+                relat_regrets = []
+                for z, c, x, _, _ in dataloader_test:
+                    z, c, x = [t.to(device) for t in (z, c, x)]
+                    c_hat = model(z)  # prédiction des coûts [batch, n]
+                    
+                    for i in range(z.size(0)):
+                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        c_numpy = c_hat[i].detach().cpu().numpy()
+                        model_i.setObj(c_numpy)
+                        x_hat_np, _ = model_i.solve()
+
+                        x_true = x[i].to(dtype=torch.float32, device=device)
+                        c_true = c[i].to(dtype=torch.float32, device=device)
+
+                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                                                device=device)
+
+                        relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
+                        relat_regrets.append(relat_regret)
+
+                relat_regrets = torch.stack(relat_regrets)
+                    
+            mean_relat_regret = relat_regrets.mean().item()
+            std_relat_regret = relat_regrets.std().item()
+            if run is not None:
+                # Enregistrement des résultats dans wandb
+                run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
+            if verbose:
+                print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret:.4f}")
                 
-                for i in range(z.size(0)):
-                    model_i = knapsackModel(weights=weights, capacity=capacities)
-                    c_numpy = c_hat[i].detach().cpu().numpy()
-                    model_i.setObj(c_numpy)
-                    x_hat_np, _ = model_i.solve()
-
-                    x_true = x[i].to(dtype=torch.float32, device=device)
-                    c_true = c[i].to(dtype=torch.float32, device=device)
-
-                    x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
-                                            device=device)
-
-                    relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
-                    relat_regrets.append(relat_regret)
-
-            relat_regrets = torch.stack(relat_regrets)
-                
-        mean_relat_regret = relat_regrets.mean().item()
-        std_relat_regret = relat_regrets.std().item()
-        if run is not None:
-            # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
-        if verbose:
-            print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret,:.4f}")
-            
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
@@ -188,9 +189,9 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
     # Créer un solveur i-MLE avec les mu du batch
     solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
     if diff_method == "IMLE":
-        diff = implicitMLE(solver, *diff_method_arg)
+        diff = implicitMLE(solver, **diff_method_arg)
     elif diff_method == "SPOPlus":
-        diff = SPOPlus(solver, *diff_method_arg)
+        diff = SPOPlus(solver, **diff_method_arg)
 
     if time_monitoring:
         import time
@@ -211,12 +212,14 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
             # Résolution avec i-MLE
             mu_sum = mu.sum(dim=1)# shape [batch, n]
-            X1p = diff(c_hat + mu_sum).to(device)   # x̂ obtenu avec solve_main_problem
-
-            # (c + sum mu_i for i ≥ 2) · (w - x̂)
-            profit_modified = c + mu_sum     # shape [batch, n]
-            loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
-
+            if diff_method == "IMLE":
+                X1p = diff(c_hat + mu_sum).to(device)   # x̂ obtenu avec solve_main_problem
+                # (c + sum mu_i for i ≥ 2) · (w - x̂)
+                profit_modified = c + mu_sum     # shape [batch, n]
+                loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
+            elif diff_method == "SPOPlus":
+                loss = diff(c_hat + mu_sum, c + mu_sum, X1.float(), ((c + mu_sum) * X1).sum(dim=1)).to(device)
+            
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -244,40 +247,42 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
-        with torch.no_grad():
-            model.eval()
-            total_regret = 0
-            total_count = 0
-            relat_regrets = []
-            for z, c, x, _, _ in dataloader_test:
-                z, c, x = [t.to(device) for t in (z, c, x)]
-                c_hat = model(z)  # prédiction des coûts [batch, n]
-                
-                for i in range(z.size(0)):
-                    model_i = knapsackModel(weights=weights, capacity=capacities)
-                    c_numpy = c_hat[i].detach().cpu().numpy()
-                    model_i.setObj(c_numpy)
-                    x_hat_np, _ = model_i.solve()
-
-                    x_true = x[i].to(dtype=torch.float32, device=device)
-                    c_true = c[i].to(dtype=torch.float32, device=device)
-
-                    x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
-                                            device=device)
-
-                    relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
-                    relat_regrets.append(relat_regret)
-
-            relat_regrets = torch.stack(relat_regrets)
-                
-        mean_relat_regret = relat_regrets.mean().item()
-        std_relat_regret = relat_regrets.std().item()
-        if run is not None:
-            # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
-        if verbose:
-            print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret,:.4f}")
             
+        if epoch % 5 == 0:
+            with torch.no_grad():
+                model.eval()
+                total_regret = 0
+                total_count = 0
+                relat_regrets = []
+                for z, c, x, _, _ in dataloader_test:
+                    z, c, x = [t.to(device) for t in (z, c, x)]
+                    c_hat = model(z)  # prédiction des coûts [batch, n]
+                    
+                    for i in range(z.size(0)):
+                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        c_numpy = c_hat[i].detach().cpu().numpy()
+                        model_i.setObj(c_numpy)
+                        x_hat_np, _ = model_i.solve()
+
+                        x_true = x[i].to(dtype=torch.float32, device=device)
+                        c_true = c[i].to(dtype=torch.float32, device=device)
+
+                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                                                device=device)
+
+                        relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
+                        relat_regrets.append(relat_regret)
+
+                relat_regrets = torch.stack(relat_regrets)
+                    
+            mean_relat_regret = relat_regrets.mean().item()
+            std_relat_regret = relat_regrets.std().item()
+            if run is not None:
+                # Enregistrement des résultats dans wandb
+                run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
+            if verbose:
+                print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret:.4f}")
+                
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
@@ -293,7 +298,7 @@ def train_LD(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler, weights, capacities, 
           epochs, time_limit,
           diff_method, diff_method_arg,
-          step_mu=10, n_iter_mu = 100,
+          step_mu=10, num_iter_mu = 100,
           verbose=False):
     """
         Entraînement du modèle avec la décomposition lagrangienne
@@ -317,9 +322,9 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
     # Créer un solveur i-MLE avec les mu du batch
     solver = knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0))
     if diff_method == "IMLE":
-        diff = implicitMLE(solver, *diff_method_arg)
+        diff = implicitMLE(solver, **diff_method_arg)
     elif diff_method == "SPOPlus":
-        diff = SPOPlus(solver, *diff_method_arg)
+        diff = SPOPlus(solver, **diff_method_arg)
         
     dim = weights.shape[0]
     n_items = weights.shape[1]
@@ -355,20 +360,22 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
                     weights=weights,
                     capacities=capacities
                 )
-                optimizer_mu.optim_mu(verbose=False, max_iter=n_iter_mu)
+                optimizer_mu.optim_mu(verbose=False, max_iter=num_iter_mu)
 
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
 
 
             # Résolution avec i-MLE
-            X1p = diff(c_hat + mu_tilde.sum(dim=1)).to(device)   # x̂ obtenu avec solve_main_problem
-
-            # (c + sum mu_i for i ≥ 2) · (w - x̂)
-            mu_sum = mu.sum(dim=1)  # shape [batch, n]
-            profit_modified = c + mu_sum     # shape [batch, n]
-            loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
-
+            mu_tilde_sum = mu_tilde.sum(dim=1)
+            if diff_method == "IMLE":
+                X1p = diff(c_hat + mu_tilde_sum).to(device)   # x̂ obtenu avec solve_main_problem
+                # (c + sum mu_i for i ≥ 2) · (w - x̂)
+                profit_modified = c + mu_sum     # shape [batch, n]
+                loss = torch.sum(profit_modified * (X1 - X1p), dim=1).mean()
+            elif diff_method == "SPOPlus":
+                loss = diff(c_hat + mu_tilde_sum, c + mu_tilde_sum, X1.float(), ((c + mu_tilde_sum) * X1).sum(dim=1)).to(device)
+            
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -396,43 +403,45 @@ def train_SG(model, run, dataloader_train, dataloader_test, optimizer, scheduler
 
         if verbose:
             print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
-        with torch.no_grad():
-            model.eval()
-            total_regret = 0
-            total_count = 0
-            relat_regrets = []
-            for z, c, x, _, _ in dataloader_test:
-                z, c, x = [t.to(device) for t in (z, c, x)]
-                c_hat = model(z)  # prédiction des coûts [batch, n]
+        
+        if epoch % 5 == 0:
+            with torch.no_grad():
+                model.eval()
+                total_regret = 0
+                total_count = 0
+                relat_regrets = []
+                for z, c, x, _, _ in dataloader_test:
+                    z, c, x = [t.to(device) for t in (z, c, x)]
+                    c_hat = model(z)  # prédiction des coûts [batch, n]
+                    
+                    for i in range(z.size(0)):
+                        model_i = knapsackModel(weights=weights, capacity=capacities)
+                        c_numpy = c_hat[i].detach().cpu().numpy()
+                        model_i.setObj(c_numpy)
+                        x_hat_np, _ = model_i.solve()
+
+                        x_true = x[i].to(dtype=torch.float32, device=device)
+                        c_true = c[i].to(dtype=torch.float32, device=device)
+
+                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
+                                                device=device)
+
+                        relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
+                        relat_regrets.append(relat_regret)
+
+                # Calcul de la norme de la différence entre mu et mu_tilde
+                mu_data = dataloader_train.dataset.tensors[4].to(device)
+                mu_diff = torch.norm(mu_data - mu_global, p='fro').item()  
+                relat_regrets = torch.stack(relat_regrets)
+                    
+            mean_relat_regret = relat_regrets.mean().item()
+            std_relat_regret = relat_regrets.std().item()
+            if run is not None:
+                # Enregistrement des résultats dans wandb
+                run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
+            if verbose:
+                print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret:.4f}")
                 
-                for i in range(z.size(0)):
-                    model_i = knapsackModel(weights=weights, capacity=capacities)
-                    c_numpy = c_hat[i].detach().cpu().numpy()
-                    model_i.setObj(c_numpy)
-                    x_hat_np, _ = model_i.solve()
-
-                    x_true = x[i].to(dtype=torch.float32, device=device)
-                    c_true = c[i].to(dtype=torch.float32, device=device)
-
-                    x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32,
-                                            device=device)
-
-                    relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
-                    relat_regrets.append(relat_regret)
-
-            # Calcul de la norme de la différence entre mu et mu_tilde
-            mu_data = dataloader_train.dataset.tensors[4].to(device)
-            mu_diff = torch.norm(mu_data - mu_global, p='fro').item()  
-            relat_regrets = torch.stack(relat_regrets)
-                
-        mean_relat_regret = relat_regrets.mean().item()
-        std_relat_regret = relat_regrets.std().item()
-        if run is not None:
-            # Enregistrement des résultats dans wandb
-            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret, "Std relative regret": std_relat_regret, "train_time": train_time})
-        if verbose:
-            print(f"Eval Epoch {epoch} | Regret relatif moyen : {mean_relat_regret,:.4f}")
-            
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:

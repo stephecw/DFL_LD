@@ -149,7 +149,7 @@ class OptimizationModel:
 
 
 class OptimizationBatchModel:
-    def __init__(self, num_item, dim_global, dim_principal, c_batch, weights, capacities, mu_init=None, device="cuda"):
+    def __init__(self, num_item, dim, c_batch, weights, capacities, mu_init=None, device="cuda"):
         """
         Batch-compatible optimization model for Lagrangian decomposition of multi-dimensional knapsack.
 
@@ -163,8 +163,7 @@ class OptimizationBatchModel:
             mu_init : [B, m-1, n] — initialisation facultative
         """
         self.n_items = num_item
-        self.dim_global = dim_global
-        self.dim_principal = dim_principal
+        self.dim = dim
         self.batch_size = c_batch.shape[0]
         self.device = device
 
@@ -175,11 +174,11 @@ class OptimizationBatchModel:
 
         # Variables
         if mu_init is None:
-            self.mu = torch.ones((self.batch_size, dim_global - dim_principal, num_item), dtype=torch.float32, device=device)
+            self.mu = torch.ones((self.batch_size, dim - 1, num_item), dtype=torch.float32, device=device)
         else:
             self.mu = mu_init.to(device)
 
-        self.X = torch.zeros((self.batch_size, dim_global - dim_principal + 1, num_item), dtype=torch.int32, device=device)
+        self.X = torch.zeros((self.batch_size, dim, num_item), dtype=torch.int32, device=device)
         self.vals = torch.zeros(self.batch_size, dtype=torch.float32, device=device)
 
         # Format problèmes pour solve_knapsack_gpu_batch
@@ -191,7 +190,7 @@ class OptimizationBatchModel:
         """
         problems = []
         for i in range(self.batch_size):
-            problem = [self.dim_global - self., self.n_items]
+            problem = [self.dim, self.n_items]
             problem += list(self.c[i].cpu().numpy())
             problem += list(self.capacity.cpu().numpy())
             problem += list(self.weights.cpu().numpy().flatten())
