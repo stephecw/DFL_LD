@@ -1,14 +1,12 @@
 import numpy as np
 import torch
 import pyepo
-import pyepo.data as data
 from pyepo.model.grb import knapsackModel
 from opti_X_mu import OptimizationBatchModel
 
 
 def f(x, c):
     return torch.dot(c, x)
-
 
 def write_dataset_file(fname, dim, num_feat, num_item, num_data, capacities, weights, Z, c, x_star_array, X, mu):
     with open(fname, 'w') as f:
@@ -27,15 +25,16 @@ def write_dataset_file(fname, dim, num_feat, num_item, num_data, capacities, wei
             f.write(line)
 
 
-def gen_datafile(num_data_train, num_data_test, num_feat, num_item, dim, verbose=False):
+def gen_datafile(num_data_train, num_data_test, num_feat, num_item, dim_global, dim_principal, verbose=False):
     total_data = num_data_train + num_data_test
 
     if verbose:
         print(f"➡ Génération de {total_data} instances ({num_data_train} train, {num_data_test} test)")
-        print(f"➡ Dimensions : {dim} contraintes, {num_item} items, {num_feat} features")
+        print(f"➡ Dimensions : {dim_global} contraintes, {num_item} items, {num_feat} features")
+        print(f"➡ Dimensions du sous problème principal : {dim_principal} contraintes")
 
     # Données aléatoires (poids/capacités identiques pour tout le dataset)
-    weights, Z, c = pyepo.data.knapsack.genData(total_data, num_feat, num_item, dim, deg=4, noise_width=0, seed=135)
+    weights, Z, c = pyepo.data.knapsack.genData(total_data, num_feat, num_item, dim_global, deg=4, noise_width=0, seed=135)
     capacities = np.random.random() * 0.1 + 0.2 * np.sum(weights, axis=1)
 
     # Résolution exacte du problème (x*)
@@ -51,12 +50,13 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, dim, verbose
 
     # Optimisation µ
     if verbose:
-        print("  Optimisation de mu via GPU...")
+        print(" Optimisation de mu via GPU...")
 
     c_tensor = torch.tensor(c, dtype=torch.float32)
     optimizer = OptimizationBatchModel(
         num_item=num_item,
-        dim=dim,
+        dim_global=dim_global,
+        dim_principal=dim_principal,
         c_batch=c_tensor,
         weights=weights,
         capacities=capacities,

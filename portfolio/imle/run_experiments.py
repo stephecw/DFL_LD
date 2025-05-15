@@ -78,8 +78,9 @@ def run_train(model, jobtype, num_feat, num_item, num_data_train, num_data_test,
         return
     
     # Paramètres du problème
-    cov = train_set.get_cov(tensor=False)
-   
+    cov = train_set.get_cov(tensor=False)*10000
+    print(np.mean(cov))
+    print(np.dot(np.ones(50)/50, np.dot(cov, np.ones(50)/50)))
     # Construction du dataloader
     if verbose:
         print(f"Getting train dataloader")
@@ -155,7 +156,7 @@ principal_lin = False if args.lin == 0 else True
 
 # Paramètres LD
 epochs_LD = args.ep_ld
-lr_LD = 10
+lr_LD = 0.0001
 IMLE_n_samples_LD = 10
 IMLE_sigma_LD = 1
 IMLE_lambd_LD = 10
@@ -191,7 +192,7 @@ for n in num_item:
     ### AVEC LD ###
     if epochs_LD > 0:
         print(f"Entrainement sur {epochs_LD} epochs pour le modèle LD sur {n} items.")
-        model = CustomMLP([num_feat,hidden_layer, n], dropout=dropout).to(device)
+        model = CustomMLP([num_feat, hidden_layer, n], dropout=dropout).to(device)
         wandbarg = {
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
