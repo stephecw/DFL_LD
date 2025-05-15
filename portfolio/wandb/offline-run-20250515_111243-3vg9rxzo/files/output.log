@@ -1,0 +1,51 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/test_50_100_200_2-25.txt
+Training the model with dynamic mu and LD bound as loss...
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Epoch 0 | loss: 0.1201
+Eval Epoch 0 | Regret moyen : 0.0292 | ‖μ_global - μ_data‖_F : 64.9265 | Regret relatif moyen : 0.2163
+Epoch 1 | loss: 0.1045
+Epoch 2 | loss: 0.0942
+Epoch 3 | loss: 0.0887
+Epoch 4 | loss: 0.0850
+solution pas optimale | statut :  11
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/run_experiments.py", line 296, in <module>
+    run_train(model, method, "SG", gamma, num_feat, n, num_data_train, num_data_test, principal_lin=principal_lin, epochs=epochs_SG, lr=lr_SG,schedulerType=schedulerType_SG, verbose=True, wandbarg=wandbarg,
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/run_experiments.py", line 140, in run_train
+    train_SG(model, method, run, train_loader, test_loader, optimizer, scheduler, cov, gamma, epochs, principal_lin,
+  File "/home/stephecw/projet/DFL_LD/portfolio/gen/train_gen.py", line 370, in train_SG
+    X1p = gen(c_hat + mu_tilde).to(device)   # x̂ obtenu avec solve_main_problem
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/nn/modules/module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/pyepo/func/perturbed.py", line 284, in forward
+    sols = self.imle.apply(pred_cost, self)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/torch/autograd/function.py", line 575, in apply
+    return super().apply(*args, **kwargs)  # type: ignore[misc]
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/pyepo/func/perturbed.py", line 314, in forward
+    ptb_sols = _solve_or_cache(ptb_c, module)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/pyepo/func/perturbed.py", line 458, in _solve_or_cache
+    ptb_sols = _solve_in_pass(ptb_c, module.optmodel, module.processes, module.pool)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/pyepo/func/perturbed.py", line 497, in _solve_in_pass
+    optmodel.setObj(ptb_c[j,i])
+  File "/home/stephecw/projet/DFL_LD/portfolio/my_solver.py", line 57, in setObj
+    self.qp_model.setObjective(c_np @ self.qp_w, sense)
+  File "src/gurobipy/mvar.pxi", line 422, in gurobipy._matrixapi.MVar.__rmatmul__
+  File "src/gurobipy/mlinexpr.pxi", line 333, in gurobipy._matrixapi.MLinExpr._from_matmul_right
+  File "src/gurobipy/mlinexpr.pxi", line 256, in gurobipy._matrixapi.MLinExpr._from_compact_affine_expr
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/scipy/sparse/_compressed.py", line 94, in __init__
+    coo = self._coo_container(arg1, dtype=dtype)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/scipy/sparse/_coo.py", line 91, in __init__
+    index_dtype = self._get_index_dtype(maxval=max(self._shape))
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/scipy/sparse/_base.py", line 1388, in _get_index_dtype
+    return get_index_dtype(arrays,
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/scipy/sparse/_sputils.py", line 308, in get_index_dtype
+    int32min = np.int32(np.iinfo(np.int32).min)
+KeyboardInterrupt
