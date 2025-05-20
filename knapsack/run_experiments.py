@@ -1,8 +1,15 @@
 import torch
 from torch import optim
+
+from pyepo.model.grb import knapsackModel
+
 from data_tools.data_import import ImportDataset
 from train import train_MSE, train_classic, train_LD, train_SG
 from models_class import CustomMLP
+from diff_methods import I_MLE, SPOPlus
+from opti_X_mu import OptimizationBatchModel
+from knapsack.solver import solver_X_1D_knapsack
+
 import argparse
 
 # Define command line arguments
@@ -22,7 +29,7 @@ print("→ Training on:", device)
 def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_test,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
-              diff_method, diff_method_arg,
+              diff_method_name=None, diff_method_arg=None,
               step_mu=5, num_iter_mu=15,
               verbose=False, wandbarg=None, time_limit=None, save_model=True):
     """
@@ -58,17 +65,17 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     if verbose:
         print(f"Loading train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
     try:
-        train_set = ImportDataset(f"datasets/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
     except FileNotFoundError:
-        print(f"File not found. Generating dataset with {num_data_train} data.")
+        print(f"File not found.")
         return
 
     if verbose:
         print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     try:
-        test_set = ImportDataset(f"datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
+        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     except FileNotFoundError:
-        print(f"File not found. Generating dataset with {num_data_train} data.")
+        print(f"File not found.")
         return
 
     # Create dataloaders
@@ -88,51 +95,79 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
         scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, **sched_arg)
     elif schedulerType == "OneCycleLR":
         scheduler = optim.lr_scheduler.OneCycleLR(optimizer, **sched_arg)
+        
+    # Solveur to compute regret when testing
+    test_solver = knapsackModel(weights=weights, capacity=capacities)
 
     # Training
     if jobtype == "LD":
+        # Differentiation method for backpropagation when training 
+        if diff_method_name == "IMLE":
+            diff_method = I_MLE(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+        elif diff_method_name == "SPOPlus":
+            diff_method = SPOPlus(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
         if verbose:
             print("Training the model with LD bound as loss...")
-        train_LD(model, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs, time_limit,
-                 diff_method, diff_method_arg,
-                 run, verbose=verbose)
+        train_LD(model, diff_method, test_solver,
+                    train_loader, test_loader, optimizer, scheduler, 
+                    epochs, time_limit, test_freq=1,
+                    run=run, verbose=verbose)
     elif jobtype == "classic":
+        # Differentiation method for backpropagation when training 
+        if diff_method_name == "IMLE":
+            diff_method = I_MLE(knapsackModel(weights, capacities), device, **diff_method_arg)
+        elif diff_method_name == "SPOPlus":
+            diff_method = SPOPlus(knapsackModel(weights, capacities), device, **diff_method_arg)
         if verbose:
             print("Training the model with regret as loss...")
-        train_classic(model, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs, time_limit,
-                diff_method, diff_method_arg,
-                run, verbose=verbose)
+        train_classic(model, diff_method, test_solver, 
+                        train_loader, test_loader, optimizer, scheduler, 
+                        epochs, time_limit, test_freq=1,
+                        run=run, verbose=verbose)
     elif jobtype == "SG":
+        # Differentiation method for backpropagation when training 
+        if diff_method_name == "IMLE":
+            diff_method = I_MLE(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+        elif diff_method_name == "SPOPlus":
+            diff_method = SPOPlus(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+        # Optimizer for mu
+        solvers = [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(dim)]
+        optimizer_mu = OptimizationBatchModel(solvers, device)
+
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
-        train_SG(model, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs, time_limit,
-                 diff_method, diff_method_arg,
-                 step_mu=step_mu, num_iter_mu=num_iter_mu,
-                 run=run, verbose=verbose)
+        train_SG(model, diff_method, test_solver, 
+                    train_loader, test_loader, optimizer, scheduler, 
+                    epochs, time_limit, test_freq=1,
+                    step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
+                    num_items=num_item, dim=dim,
+                    run=run, verbose=verbose)
     elif jobtype == "MSE":
         if verbose:
             print("Training the model with MSE as loss")
-        train_MSE(model, train_loader, test_loader, optimizer, scheduler, weights, capacities, epochs, time_limit,
-                 run, verbose=verbose)
+        train_MSE(model, test_solver, 
+                    train_loader, test_loader, optimizer, scheduler,
+                    epochs, time_limit, test_freq=1,
+                    run=run, verbose=verbose)
 
     # Save model
     if save_model:
         if jobtype == "LD":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/{diff_method_name}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
         elif jobtype == "classic":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/{diff_method_name}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
         elif jobtype == "SG":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/{diff_method_name}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
         elif jobtype == "MSE":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/{diff_method_name}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
 
     # End execution
     if run is not None:
@@ -204,8 +239,7 @@ sched_arg_MSE = {'step_size':100,
                      'gamma':0.5
                      }
 
-print(f"Training for {epochs_classic} epochs for classic model, {epochs_LD} epochs for LD model, {epochs_SG} \
-    for SG model with mu and {epochs_MSE} for MSE model on {dim} constraints and {num_item} items.")
+print(f"Training for {epochs_classic} epochs for classic model, {epochs_LD} epochs for LD model, {epochs_SG} for SG model with mu and {epochs_MSE} for MSE model on {dim} constraints and {num_item} items.")
 
 ### EXECUTION ###
 ## LD ##
@@ -236,7 +270,7 @@ if epochs_LD > 0:
     run_train(model, "LD", dim, num_feat, num_item, num_data_train, num_data_test,
             batch_size=batch_size_LD, epochs=epochs_LD, lr=lr_LD,
             schedulerType=schedulerType_LD, sched_arg=sched_arg_LD,
-            diff_method=diff_method_LD, diff_method_arg=diff_method_arg_LD,
+            diff_method_name=diff_method_LD, diff_method_arg=diff_method_arg_LD,
             verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD)
 
 ## Classic ##
@@ -267,7 +301,7 @@ if epochs_classic > 0:
     run_train(model, "classic", dim, num_feat, num_item, num_data_train, num_data_test,
             batch_size=batch_size_classic, epochs=epochs_classic, lr=lr_classic,
             schedulerType=schedulerType_classic, sched_arg=sched_arg_classic,
-            diff_method=diff_method_classic, diff_method_arg=diff_method_arg_classic,
+            diff_method_name=diff_method_classic, diff_method_arg=diff_method_arg_classic,
             verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic)
 
 ## SG ##
@@ -300,7 +334,7 @@ if epochs_SG > 0:
     run_train(model, "SG", dim, num_feat, num_item, num_data_train, num_data_test,
             batch_size=batch_size_SG, epochs=epochs_SG, lr=lr_SG,
             schedulerType=schedulerType_SG, sched_arg=sched_arg_SG,
-            diff_method=diff_method_SG, diff_method_arg=diff_method_arg_SG,
+            diff_method_name=diff_method_SG, diff_method_arg=diff_method_arg_SG,
             step_mu=step_mu, num_iter_mu=num_iter_mu,
             verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG)
 
