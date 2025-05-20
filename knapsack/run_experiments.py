@@ -201,7 +201,7 @@ schedulerType_classic = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", Non
 sched_arg_classic = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_classic = "IMLE"  # "StepLR", "SPOPlus"
+diff_method_classic = "SPOPlus"  # "StepLR", "SPOPlus"
 diff_method_arg_classic = { }
 
 # LD parameters
@@ -215,7 +215,7 @@ schedulerType_LD = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_LD = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_LD = "IMLE"  # "IMLE", "SPOPlus"
+diff_method_LD = "SPOPlus"  # "IMLE", "SPOPlus"
 diff_method_arg_LD = { }
 
 # SG parameters
@@ -229,7 +229,7 @@ schedulerType_SG = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_SG = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_SG = "IMLE"  # "IMLE", "SPOPlus"
+diff_method_SG = "SPOPlus"  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {}
 step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
