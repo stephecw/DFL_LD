@@ -1,36 +1,23 @@
 import torch
 
 class OptimizationBatchModel:
-    def __init__(self, solvers, num_items, dim, c_batch, device="cuda"):
+    def __init__(self, solvers, device="cuda"):
         """
         Batch-compatible optimization model for Lagrangian decomposition.
 
         Args:
             solvers: list of solvers to solve each sub-problem of LD
-            num_items: int — number of items
-            dim: int — number of constraints
-            c_batch: [B, num_items] — batch of cost vectors
-            f: objective function in the primal problem
         """
         self.solvers = solvers
-
-        self.n_items = num_items
-        self.dim = dim
-        self.batch_size = c_batch.shape[0]
+        self.dim = len(solvers)
         self.device = device
-
-        # Data
-        self.c = c_batch.clone().to(device)  # [B, n]
-
-        self.X = torch.zeros((self.batch_size, dim, num_items), dtype=torch.int32, device=device)
-        self.vals = torch.zeros(self.batch_size, dtype=torch.float32, device=device)
 
     ### TO DO: Update val ###
 
     def solve_X(self):
-        self.X[0] = self.solvers[0](self.c + self.mu.sum(dim=1))
+        self.X[:,0] = self.solvers[0](self.c + self.mu.sum(dim=1))
         for i in range(1, len(self.solvers)):
-            self.X[i] = self.solvers[i](-self.mu[:, i-1])
+            self.X[:,i] = self.solvers[i](-self.mu[:, i-1])
 
     def gradient(self):
         """
@@ -62,10 +49,14 @@ class OptimizationBatchModel:
             if verbose and t % freq_verb == 0:
                 print(f"→ Iter {t} | Mean B(mu): {self.vals.mean().item():.4f}")
 
-    def optim_mu(self, mu_init=None, verbose=False, **adam_args):
-        # Variables
+    def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
+        self.c = c_batch.clone().to(self.device)  # [B, n]
+        batch_size, num_items = self.c.shape
+        self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.int32, device=self.device)
+        self.vals = torch.zeros(batch_size, dtype=torch.float32, device=self.device)
+
         if mu_init is None:
-            self.mu = torch.ones((self.batch_size, self.dim - 1, self.num_items), dtype=torch.float32, device=self.device)
+            self.mu = torch.ones((batch_size, self.dim - 1, num_items), dtype=torch.float32, device=self.device)
         else:
             self.mu = mu_init.to(self.device)
         self.adam_optimizer(verbose=verbose, **adam_args)

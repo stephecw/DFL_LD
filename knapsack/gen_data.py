@@ -11,14 +11,14 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def write_dataset_file(fname, dim, num_feat, num_item, num_data, capacities, weights, Z, c, x_star_array, X, mu):
     with open(fname, 'w') as f:
-        # En-tête
+        # Constraints (unique for the whole dataset)
         f.write(f"{dim},{num_feat},{num_item},{num_data}\n")
         for i in range(dim):
             line = str(int(capacities[i])) + "," + ",".join(str(int(w)) for w in weights[i][:-1]) + f",{int(weights[i][-1])}\n"
             f.write(line)
+        # Data instances (features, cost, opt primal solution x, opt dual solution X, opt lagr. mult.)
         for i in range(num_data):
-            line = ""
-            line += ",".join(str(Z[i][j]) for j in range(num_feat)) + ","
+            line = ",".join(str(Z[i][j]) for j in range(num_feat)) + ","
             line += ",".join(str(int(c[i][j])) for j in range(num_item)) + ","
             line += ",".join(str(int(x_star_array[i][j])) for j in range(num_item)) + ","
             line += ",".join(str(int(X[i][j])) for j in range(num_item)) + ","
@@ -26,8 +26,9 @@ def write_dataset_file(fname, dim, num_feat, num_item, num_data, capacities, wei
             f.write(line)
 
 def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, verbose=False):
-    total_data = num_data_train + num_data_test
+    
 
+    total_data = num_data_train + num_data_test
     if verbose:
         print(f"➡ Generation of {total_data} instances ({num_data_train} train, {num_data_test} test)")
         print(f"➡ Dimensions : {dim} constraints, {num_items} items, {num_feat} features")
