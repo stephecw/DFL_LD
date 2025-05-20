@@ -22,6 +22,7 @@ parser.add_argument('--ep_mse', type=int, default=0, help='Number of epochs for 
 parser.add_argument('--step_mu', type=int, default=5, help='Number of epochs between mu updates. ')
 parser.add_argument('--n_iter_mu', type=int, default=10, help='Number of iterations for mu optimization. ')
 parser.add_argument('--lin', type= int, default=0, help='0 for the quadratic constraint and 1 for the linear one.')
+parser.add_argument('--method', type=str, default="SPOPlus", help='Differentiation method to use. "IMLE" or "SPOPlus".')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Training on:", device)
@@ -31,7 +32,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None,
               step_mu=5, num_iter_mu=15,
-              verbose=False, wandbarg=None, time_limit=None, save_model=True):
+              verbose=False, wandbarg=None, time_limit=None, eval_freq = 1, save_model=True):
     """
     Main function to load dataset and train the model.
     model: nn.Module: Model to train.
@@ -122,7 +123,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
         train_LD(model, diff_method, eval_solver,
                     train_loader, eval_loader, optimizer, scheduler, 
-                    epochs, time_limit, eval_freq=1,
+                    epochs, time_limit, eval_freq=eval_freq,
                     run=run, verbose=verbose)
     elif jobtype == "classic":
         # Differentiation method for backpropagation when training 
@@ -137,7 +138,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             
         train_classic(model, diff_method, eval_solver, 
                         train_loader, eval_loader, optimizer, scheduler, 
-                        epochs, time_limit, eval_freq=1,
+                        epochs, time_limit, eval_freq=eval_freq,
                         run=run, verbose=verbose)
 
     elif jobtype == "SG":
@@ -164,7 +165,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
         train_SG(model, diff_method, eval_solver, 
                     train_loader, eval_loader, optimizer, scheduler, 
-                    epochs, time_limit, eval_freq=1,
+                    epochs, time_limit, eval_freq=eval_freq,
                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                     mu_global0=mu_global0,
                     run=run, verbose=verbose)
@@ -173,7 +174,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             print("Training the model with MSE as loss")
         train_MSE(model, eval_solver, 
                     train_loader, eval_loader, optimizer, scheduler,
-                    epochs, time_limit, eval_freq=1,
+                    epochs, time_limit, eval_freq=eval_freq,
                     run=run, verbose=verbose)
         
     # Test the model on the test set
@@ -205,6 +206,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
+eval_freq = 1
 
 # Problem dimensions
 num_feat = 200
@@ -227,7 +229,7 @@ schedulerType_classic = "StepLR"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR",
 sched_arg_classic = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_classic = "SPOPlus"  # "StepLR", "SPOPlus"
+diff_method_classic = args.method  # "StepLR", "SPOPlus"
 diff_method_arg_classic = { }
 
 # LD parameters
@@ -241,7 +243,7 @@ schedulerType_LD = "StepLR"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_LD = {'step_size':100,
                 'gamma':0.5
                 }
-diff_method_LD = "SPOPlus"  # "IMLE", "SPOPlus"
+diff_method_LD = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_LD = { }
 principal_lin = False if args.lin == 0 else True
 
@@ -256,7 +258,7 @@ schedulerType_SG = "StepLR"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_SG = {'step_size':100,
                 'gamma':0.5
                 }
-diff_method_SG = "SPOPlus"  # "IMLE", "SPOPlus"
+diff_method_SG = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {}
 step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
@@ -308,7 +310,7 @@ if epochs_LD > 0:
             batch_size=batch_size_LD, epochs=epochs_LD, lr=lr_LD,
             schedulerType=schedulerType_LD, sched_arg=sched_arg_LD,
             diff_method_name=diff_method_LD, diff_method_arg=diff_method_arg_LD,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD, eval_freq=eval_freq)
 
 ## Classic ##
 if epochs_classic > 0:
@@ -339,7 +341,7 @@ if epochs_classic > 0:
             batch_size=batch_size_classic, epochs=epochs_classic, lr=lr_classic,
             schedulerType=schedulerType_classic, sched_arg=sched_arg_classic,
             diff_method_name=diff_method_classic, diff_method_arg=diff_method_arg_classic,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic, eval_freq=eval_freq)
 
 ## SG ##
 if epochs_SG > 0:
@@ -374,7 +376,7 @@ if epochs_SG > 0:
             schedulerType=schedulerType_SG, sched_arg=sched_arg_SG,
             diff_method_name=diff_method_SG, diff_method_arg=diff_method_arg_SG,
             step_mu=step_mu, num_iter_mu=num_iter_mu,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG, eval_freq = eval_freq)
 
 if epochs_MSE > 0:
     model = CustomMLP(model_shape_MSE, dropout=dropout_MSE).to(device)
@@ -401,4 +403,4 @@ if epochs_MSE > 0:
     run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, principal_lin,
             batch_size=batch_size_MSE, epochs=epochs_MSE, lr=lr_MSE,
             schedulerType=schedulerType_MSE, sched_arg=sched_arg_MSE,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=eval_freq)
