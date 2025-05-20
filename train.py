@@ -8,30 +8,35 @@ def get_learning_rate(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
 
-def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, scheduler,
-          epochs, time_limit, test_freq,
-          run, verbose=False):
+def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
+          epochs, time_limit, eval_freq,
+          run, verbose=False, patience=10, min_delta=1e-6):
     """
     Training a PFL-model by minimizing the MSE.
 
     Args:
         model: ML model to train
-        test_solver: solver for the problem, used during test
+        eval_solver: solver for the problem, used during eval
         run: wandb.run for logging results
         dataloader_train: DataLoader for training (z, c, x, X1*(c), mu(c))
-        dataloader_test: DataLoader for test (z, c, x, X1*(c), mu(c))
+        dataloader_eval: DataLoader for eval (z, c, x, X1*(c), mu(c))
         optimizer: PyTorch optimizer for training
         scheduler: PyTorch scheduler
         epochs: max number of training epochs
         time_limit: timeout on training time
-        test_freq: frequency of testing (in epochs)
+        eval_freq: frequency of evaluation (in epochs)
         run: wandb logfile
         verbose: bool: If True, print training info
     """
 
     monitoring = run is not None or time_limit is not None
+    best_relat_regret = float("inf")
+    epochs_no_improvement = 0
+    best_model_state = None
+    best_epoch = 0
 
-    test_solver = test_solver
+
+    eval_solver = eval_solver
     criterion = nn.MSELoss()
 
     if monitoring:
@@ -41,7 +46,6 @@ def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, 
     for epoch in range(epochs):
         if monitoring:
             epoch_start_time = time.time()
-
         ## Training step ##
         model.train()
         total_loss = 0
@@ -75,19 +79,20 @@ def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, 
         if verbose:
             print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
-        ## Testing step (if needed)##
+        ## evaluation step (if needed)##
         if epoch % test_freq == 0:
+
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_test:
+                for z, c, x, _, _ in dataloader_eval:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # cost prediction [batch, n]
 
                     for i in range(z.size(0)):
                         c_numpy = c_hat[i].detach().cpu().numpy()
-                        test_solver.setObj(c_numpy)
-                        x_hat_np, _ = test_solver.solve()
+                        eval_solver.setObj(c_numpy)
+                        x_hat_np, _ = eval_solver.solve()
                         x_true = x[i].to(dtype=torch.float32, device=device)
                         c_true = c[i].to(dtype=torch.float32, device=device)
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
@@ -104,6 +109,18 @@ def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, 
                             "Std relative regret": std_relat_regret, "train_time": train_time})
                 if verbose:
                     print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
+                
+                # Early stopping
+                if mean_relat_regret < best_relat_regret - min_delta:
+                    best_relat_regret = mean_relat_regret
+                    epochs_no_improvement = 0
+                    best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                    best_epoch = epoch
+                else:
+                    epochs_no_improvement += 1
+                    if epochs_no_improvement >= patience:
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        break
 
         # Check time limit
         if time_limit is not None:
@@ -111,37 +128,48 @@ def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, 
                 print("Time limit reached, stopping training.")
                 return
 
-    if run is not None:
-        end_time = time.time()
-        total_duration = end_time - start_time
-        run.log({"total_duration": total_duration})
+    if best_model_state is not None:
+        device = next(model.parameters()).device
+        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
 
-def train_classic(model, diff_method, test_solver, dataloader_train, dataloader_test, optimizer, scheduler,
-          epochs, time_limit, test_freq,
-          run, verbose=False):
+    if run is not None:
+        total_duration = time.time() - start_time
+        run.log({
+            "total_duration": total_duration,
+            "best_epoch": best_epoch,
+            "best_relat_regret": best_relat_regret
+        })
+
+def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
+          epochs, time_limit, eval_freq,
+          run, verbose=False, patience=10, min_delta=1e-6):
     """
     Training a DFL-model by minimizing classical regret loss.
 
     Args:
         model: ML model to train
         diff_method: DFL technique used to compute loss gradient
-        test_solver: solver for the problem, used during test
+        eval_solver: solver for the problem, used during eval
         run: wandb.run for logging results
         dataloader_train: DataLoader for training (z, c, x, X1*(c), mu(c))
-        dataloader_test: DataLoader for test (z, c, x, X1*(c), mu(c))
+        dataloader_eval: DataLoader for eval (z, c, x, X1*(c), mu(c))
         optimizer: PyTorch optimizer for training
         scheduler: PyTorch scheduler
         epochs: max number of training epochs
         time_limit: timeout on training time
-        test_freq: frequency of testing (in epochs)
+        eval_freq: frequency of evaluation (in epochs)
         run: wandb logfile
         verbose: bool: If True, print training info
     """
 
     monitoring = run is not None or time_limit is not None
+    best_relat_regret = float("inf")
+    epochs_no_improvement = 0
+    best_model_state = None
+    best_epoch = 0
 
     diff = diff_method
-    test_solver = test_solver
+    eval_solver = eval_solver
 
     if monitoring:
         start_time = time.time()
@@ -182,21 +210,21 @@ def train_classic(model, diff_method, test_solver, dataloader_train, dataloader_
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
-        ## Testing step (if needed)##
-        if epoch % test_freq == 0:
+        ## evaling step (if needed)##
+        if epoch % eval_freq == 0:
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_test:
+                for z, c, x, _, _ in dataloader_eval:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # cost prediction [batch, n]
 
                     for i in range(z.size(0)):
                         c_numpy = c_hat[i].detach().cpu().numpy()
-                        test_solver.setObj(c_numpy)
-                        x_hat_np, _ = test_solver.solve()
+                        eval_solver.setObj(c_numpy)
+                        x_hat_np, _ = eval_solver.solve()
                         x_true = x[i].to(dtype=torch.float32, device=device)
                         c_true = c[i].to(dtype=torch.float32, device=device)
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
@@ -214,43 +242,66 @@ def train_classic(model, diff_method, test_solver, dataloader_train, dataloader_
                 if verbose:
                     print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
 
+                # Early stopping
+                if mean_relat_regret < best_relat_regret - min_delta:
+                    best_relat_regret = mean_relat_regret
+                    epochs_no_improvement = 0
+                    best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                    best_epoch = epoch
+                else:
+                    epochs_no_improvement += 1
+                    if epochs_no_improvement >= patience:
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        break
+
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
                 print("Time limit reached, stopping training.")
                 return
 
+    if best_model_state is not None:
+        device = next(model.parameters()).device
+        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
+        
     if run is not None:
-        end_time = time.time()
-        total_duration = end_time - start_time
-        run.log({"total_duration": total_duration})
+        total_duration = time.time() - start_time
+        run.log({
+            "total_duration": total_duration,
+            "best_epoch": best_epoch,
+            "best_relat_regret": best_relat_regret
+        })
 
-def train_LD(model, diff_method, test_solver, dataloader_train, dataloader_test, optimizer, scheduler,
-          epochs, time_limit, test_freq,
-          run, verbose=False):
+def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
+          epochs, time_limit, eval_freq,
+          run, verbose=False, patience=10, min_delta=1e-6):
     """
     Training a DFL-model by minimizing LD loss.
 
     Args:
         model: ML model to train
         diff_method: DFL technique used to compute loss gradient
-        test_solver: solver for the problem, used during test
+        eval_solver: solver for the problem, used during eval
         run: wandb.run for logging results
         dataloader_train: DataLoader for training (z, c, x, X1*(c), mu(c))
-        dataloader_test: DataLoader for test (z, c, x, X1*(c), mu(c))
+        dataloader_eval: DataLoader for eval (z, c, x, X1*(c), mu(c))
         optimizer: PyTorch optimizer for training
         scheduler: PyTorch scheduler
         epochs: max number of training epochs
         time_limit: timeout on training time
-        test_freq: frequency of testing (in epochs)
+        eval_freq: frequency of evaluation (in epochs)
         run: wandb logfile
         verbose: bool: If True, print training info
     """
 
     monitoring = run is not None or time_limit is not None
+    best_relat_regret = float("inf")
+    epochs_no_improvement = 0
+    best_model_state = None
+    best_epoch = 0
 
     diff = diff_method
-    test_solver = test_solver
+    eval_solver = eval_solver
 
     if monitoring:
         start_time = time.time()
@@ -292,21 +343,21 @@ def train_LD(model, diff_method, test_solver, dataloader_train, dataloader_test,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
-        ## Testing step (if needed)##
-        if epoch % test_freq == 0:
+        ## evaling step (if needed)##
+        if epoch % eval_freq == 0:
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_test:
+                for z, c, x, _, _ in dataloader_eval:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # cost prediction [batch, n]
 
                     for i in range(z.size(0)):
                         c_numpy = c_hat[i].detach().cpu().numpy()
-                        test_solver.setObj(c_numpy)
-                        x_hat_np, _ = test_solver.solve()
+                        eval_solver.setObj(c_numpy)
+                        x_hat_np, _ = eval_solver.solve()
                         x_true = x[i].to(dtype=torch.float32, device=device)
                         c_true = c[i].to(dtype=torch.float32, device=device)
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
@@ -323,6 +374,18 @@ def train_LD(model, diff_method, test_solver, dataloader_train, dataloader_test,
                             "Std relative regret": std_relat_regret, "train_time": train_time})
                 if verbose:
                     print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
+                
+                # Early stopping
+                if mean_relat_regret < best_relat_regret - min_delta:
+                    best_relat_regret = mean_relat_regret
+                    epochs_no_improvement = 0
+                    best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                    best_epoch = epoch
+                else:
+                    epochs_no_improvement += 1
+                    if epochs_no_improvement >= patience:
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        break
 
         # Check time limit
         if time_limit is not None:
@@ -330,33 +393,40 @@ def train_LD(model, diff_method, test_solver, dataloader_train, dataloader_test,
                 print("Time limit reached, stopping training.")
                 return
 
-    if run is not None:
-        end_time = time.time()
-        total_duration = end_time - start_time
-        run.log({"total_duration": total_duration})
+    if best_model_state is not None:
+        device = next(model.parameters()).device
+        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
 
-def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test, optimizer, scheduler,
-          epochs, time_limit, test_freq,
+    if run is not None:
+        total_duration = time.time() - start_time
+        run.log({
+            "total_duration": total_duration,
+            "best_epoch": best_epoch,
+            "best_relat_regret": best_relat_regret
+        })
+
+def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
+          epochs, time_limit, eval_freq,
           step_mu, num_iter_mu, optimizer_mu,
           num_items, dim,
-          run, verbose=False):
+          run, verbose=False, patience=10, min_delta=1e-6):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
     Args:
         model: ML model to train
         diff_method: DFL technique used to compute loss gradient
-        test_solver: solver for the problem, used during test
+        eval_solver: solver for the problem, used during eval
         run: wandb.run for logging results
         dataloader_train: DataLoader for training (z, c, x, X1*(c), mu(c))
-        dataloader_test: DataLoader for test (z, c, x, X1*(c), mu(c))
+        dataloader_eval: DataLoader for eval (z, c, x, X1*(c), mu(c))
         optimizer: PyTorch optimizer for training
         scheduler: PyTorch scheduler
         epochs: max number of training epochs
         time_limit: timeout on training time
         num_items: number of items
         dim: number of constraints
-        test_freq: frequency of testing (in epochs)
+        eval_freq: frequency of evaling (in epochs)
         step_mu: frequency of updating mu (in epochs)
         num_iter_mu: number of sub-gradient descent steps when updating mu
         optimizer_mu: optimizer object to update mu
@@ -367,9 +437,12 @@ def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test,
     """
 
     monitoring = run is not None or time_limit is not None
-
+    best_relat_regret = float("inf")
+    epochs_no_improvement = 0
+    best_model_state = None
+    best_epoch = 0
     diff = diff_method
-    test_solver = test_solver
+    eval_solver = eval_solver
 
     if monitoring:
         start_time = time.time()
@@ -387,13 +460,13 @@ def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test,
         total_grad_norm = 0.0
         for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train):
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
-            c_hat = model(z)  # prediction ĉ
+            c_hat = model(z)  # prediction ĉ
             idx = (batch_idx * dataloader_train.batch_size + torch.arange(z.size(0), device=device))
             mu_tilde = mu_global[idx] # select mu associated with the batch
 
             # Update mu_global
             if epoch % step_mu == 0:
-                optimizer_mu.optim_mu(c_batch=c_hat.detach(), verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
+                optimizer_mu.optim_mu(c_batch=c_hat.detach(),verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
 
@@ -425,21 +498,21 @@ def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
 
-        ## Testing step (if needed)##
-        if epoch % test_freq == 0:
+        ## evaling step (if needed)##
+        if epoch % eval_freq == 0:
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
-                for z, c, x, _, _ in dataloader_test:
+                for z, c, x, _, _ in dataloader_eval:
                     z, c, x = [t.to(device) for t in (z, c, x)]
                     c_hat = model(z)  # cost prediction [batch, n]
 
                     for i in range(z.size(0)):
                         c_numpy = c_hat[i].detach().cpu().numpy()
-                        test_solver.setObj(c_numpy)
-                        x_hat_np, _ = test_solver.solve()
+                        eval_solver.setObj(c_numpy)
+                        x_hat_np, _ = eval_solver.solve()
                         x_true = x[i].to(dtype=torch.float32, device=device)
                         c_true = c[i].to(dtype=torch.float32, device=device)
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
@@ -461,14 +534,33 @@ def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test,
                             "train_time": train_time})
                 if verbose:
                     print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
+                
+                # Early stopping
+                if mean_relat_regret < best_relat_regret - min_delta:
+                    best_relat_regret = mean_relat_regret
+                    epochs_no_improvement = 0
+                    best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+                    best_epoch = epoch
+                else:
+                    epochs_no_improvement += 1
+                    if epochs_no_improvement >= patience:
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        break
 
         # Check time limit
         if time_limit is not None:
             if train_time > time_limit:
                 print("Time limit reached, stopping training.")
                 return
+    
+    if best_model_state is not None:
+        device = next(model.parameters()).device
+        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
 
     if run is not None:
-        end_time = time.time()
-        total_duration = end_time - start_time
-        run.log({"total_duration": total_duration})
+        total_duration = time.time() - start_time
+        run.log({
+            "total_duration": total_duration,
+            "best_epoch": best_epoch,
+            "best_relat_regret": best_relat_regret
+        })
