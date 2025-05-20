@@ -46,8 +46,6 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
     for epoch in range(epochs):
         if monitoring:
             epoch_start_time = time.time()
-
-
         ## Training step ##
         model.train()
         total_loss = 0
@@ -79,10 +77,11 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
-        ## evaling step (if needed)##
-        if epoch % eval_freq == 0:
+        ## evaluation step (if needed)##
+        if epoch % test_freq == 0:
+
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
@@ -467,7 +466,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 
             # Update mu_global
             if epoch % step_mu == 0:
-                optimizer_mu.optim_mu(verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
+                optimizer_mu.optim_mu(c_batch=c_hat.detach(),verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
 
