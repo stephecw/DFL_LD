@@ -28,6 +28,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
         run: wandb logfile
         verbose: bool: If True, print training info
     """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     monitoring = run is not None or time_limit is not None
     best_relat_regret = float("inf")
@@ -80,7 +81,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
         ## evaluation step (if needed)##
-        if epoch % test_freq == 0:
+        if epoch % eval_freq == 0:
 
             with torch.no_grad():
                 model.eval()
@@ -161,6 +162,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
         run: wandb logfile
         verbose: bool: If True, print training info
     """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     monitoring = run is not None or time_limit is not None
     best_relat_regret = float("inf")
@@ -293,6 +295,7 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         run: wandb logfile
         verbose: bool: If True, print training info
     """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     monitoring = run is not None or time_limit is not None
     best_relat_regret = float("inf")
@@ -435,6 +438,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         run: wandb logfile
         verbose: bool: If True, print training info
     """
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
     monitoring = run is not None or time_limit is not None
     best_relat_regret = float("inf")
