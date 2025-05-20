@@ -66,6 +66,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
         print(f"Loading train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
     try:
         train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+
     except FileNotFoundError:
         print(f"File not found.")
         return
@@ -74,6 +75,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
         print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     try:
         test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
+
     except FileNotFoundError:
         print(f"File not found.")
         return
@@ -108,6 +110,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
             diff_method = SPOPlus(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
         if verbose:
             print("Training the model with LD bound as loss...")
+
         train_LD(model, diff_method, test_solver,
                     train_loader, test_loader, optimizer, scheduler, 
                     epochs, time_limit, test_freq=1,
@@ -120,10 +123,12 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
             diff_method = SPOPlus(knapsackModel(weights, capacities), device, **diff_method_arg)
         if verbose:
             print("Training the model with regret as loss...")
+            
         train_classic(model, diff_method, test_solver, 
                         train_loader, test_loader, optimizer, scheduler, 
                         epochs, time_limit, test_freq=1,
                         run=run, verbose=verbose)
+
     elif jobtype == "SG":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
@@ -136,6 +141,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
 
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
+
         train_SG(model, diff_method, test_solver, 
                     train_loader, test_loader, optimizer, scheduler, 
                     epochs, time_limit, test_freq=1,
@@ -168,6 +174,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
             if verbose:
                 print(f"Saving the model to knapsack/models/{diff_method_name}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
             torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+
 
     # End execution
     if run is not None:
@@ -239,7 +246,9 @@ sched_arg_MSE = {'step_size':100,
                      'gamma':0.5
                      }
 
+
 print(f"Training for {epochs_classic} epochs for classic model, {epochs_LD} epochs for LD model, {epochs_SG} for SG model with mu and {epochs_MSE} for MSE model on {dim} constraints and {num_item} items.")
+
 
 ### EXECUTION ###
 ## LD ##

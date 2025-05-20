@@ -2,6 +2,7 @@ import torch
 from numba import cuda
 
 class solver_X_1D_knapsack():
+
     def __init__(self, weights, capacity, device):
         self.weights = torch.tensor(weights, dtype=torch.int32, device=device)
         self.capacity = torch.tensor([capacity], dtype=torch.int32, device=device)
@@ -12,7 +13,6 @@ class solver_X_1D_knapsack():
         batch_size = c.shape[0]
         self.X = torch.tensor([0]*batch_size*self.num_items, dtype=torch.int32, device=self.device)
         c = c.clone().view(batch_size*self.num_items).to(self.device)
-        
         Ldp = torch.zeros((batch_size, self.capacity.item() + 1, self.num_items + 1), dtype=torch.int32, device=self.device)
         
         dp_knapsack_gpu_batch[batch_size, 1](self.capacity, 

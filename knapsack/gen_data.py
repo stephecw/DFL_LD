@@ -27,6 +27,7 @@ def write_dataset_file(fname, dim, num_feat, num_item, num_data, capacities, wei
 
 def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, verbose=False):
     
+
     total_data = num_data_train + num_data_test
     if verbose:
         print(f"➡ Generation of {total_data} instances ({num_data_train} train, {num_data_test} test)")
