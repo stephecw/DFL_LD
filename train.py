@@ -73,7 +73,7 @@ def train_MSE(model, test_solver, dataloader_train, dataloader_test, optimizer, 
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
         ## Testing step (if needed)##
         if epoch % test_freq == 0:
@@ -182,7 +182,7 @@ def train_classic(model, diff_method, test_solver, dataloader_train, dataloader_
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
         ## Testing step (if needed)##
         if epoch % test_freq == 0:
@@ -292,7 +292,7 @@ def train_LD(model, diff_method, test_solver, dataloader_train, dataloader_test,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
         ## Testing step (if needed)##
         if epoch % test_freq == 0:
@@ -393,7 +393,7 @@ def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test,
 
             # Update mu_global
             if epoch % step_mu == 0:
-                optimizer_mu.optim_mu(verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
+                optimizer_mu.optim_mu(c_batch=c_hat.detach(), verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
 
@@ -425,7 +425,7 @@ def train_SG(model, diff_method, test_solver, dataloader_train, dataloader_test,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
         ## Testing step (if needed)##
         if epoch % test_freq == 0:
