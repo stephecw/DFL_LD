@@ -3,7 +3,7 @@ from torch import optim
 
 from pyepo.model.grb import portfolioModel
 
-from data_tools.data_import import ImportDataset
+from portfolio.data_import import ImportDataset
 from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus
@@ -66,7 +66,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     if verbose:
         print(f"Loading {fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     try:
-        train_set = ImportDataset(f"datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
+        train_set = ImportDataset(f"portfolio/datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
@@ -74,7 +74,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     if verbose:
         print(f"Loading {fold}/eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt")
     try:
-        eval_set = ImportDataset(f"datasets{fold}/eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt")
+        eval_set = ImportDataset(f"portfolio/datasets{fold}/eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
@@ -82,7 +82,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     if verbose:
         print(f"Loading {fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     try:
-        test_set = ImportDataset(f"datasets{fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        test_set = ImportDataset(f"portfolio/datasets{fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
@@ -115,7 +115,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=True)
             diff_method = I_MLE(solver, device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=True)
+            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=False)
             diff_method = SPOPlus(solver, device, **diff_method_arg)
         if verbose:
             print("Training the model with LD bound as loss...")
@@ -130,7 +130,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
             diff_method = I_MLE(solver, device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            solver = gb_portfolio_solver(n_stocks = cov.shape[0], cov = cov, gamma = gamma, maximize=True)
+            solver = gb_portfolio_solver(n_stocks = cov.shape[0], cov = cov, gamma = gamma, maximize=False)
             diff_method = SPOPlus(solver, device, **diff_method_arg)
         if verbose:
             print("Training the model with regret as loss...")
@@ -146,7 +146,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=True)
             diff_method = I_MLE(solver, device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=True)
+            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=False)
             diff_method = SPOPlus(solver, device, **diff_method_arg)
         # Optimizer for mu
         lin_solver = BatchSolverLin(num_item, device)
@@ -157,7 +157,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             solvers = [quad_solver, lin_solver]
         optimizer_mu = OptimizationBatchModel(solvers, device)
 
-        mu_global0 = torch.ones(len(train_loader.dataset), num_item, device=device, dtype = torch.float32).unsqueeze(0)
+        mu_global0 = torch.ones(len(train_loader.dataset), 1, num_item, device=device, dtype=torch.float32)
 
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
@@ -287,8 +287,7 @@ if epochs_LD > 0:
             'dir': "./",
             'name': f"{diff_method_LD}_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'job_type': "LD",
-            'problem': "portfolio",
+            'job_type': "portfolio_LD",
             'principal': "linear" if principal_lin else "quad",
             'config': {
                 "architecture": model_shape_LD,
@@ -320,8 +319,7 @@ if epochs_classic > 0:
             'dir': "./",
             'name': f"{diff_method_classic}_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'job_type': "classic",
-            'problem': "portfolio",
+            'job_type': "portfolio_classic",
             'config': {
                 "architecture": model_shape_classic,
                 "dropout": dropout_classic,
@@ -352,8 +350,7 @@ if epochs_SG > 0:
             'dir': "./",
             'name': f"{diff_method_SG}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'job_type': "SG",
-            'problem': "portfolio",
+            'job_type': "portfolio_SG",
             'config': {
                 "architecture": model_shape_SG,
                 "dropout": dropout_SG,
@@ -387,7 +384,7 @@ if epochs_MSE > 0:
             'dir': "./",
             'name': f"MSE_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'group': f"presentation_05_11",
-            'job_type': "MSE",
+            'job_type': "portfolio_MSE",
             'config': {
                 "architecture": model_shape_MSE,
                 "dropout": dropout_MSE,

@@ -10,7 +10,7 @@ def get_learning_rate(optimizer):
 
 def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=10, min_delta=1e-6):
+          run, verbose=False, patience=10, min_delta=1e-6, device = device):
     """
     Training a PFL-model by minimizing the MSE.
 
@@ -80,7 +80,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
 
         ## evaluation step (if needed)##
-        if epoch % test_freq == 0:
+        if epoch % eval_freq == 0:
 
             with torch.no_grad():
                 model.eval()
@@ -142,7 +142,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
 
 def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=10, min_delta=1e-6):
+          run, verbose=False, patience=10, min_delta=1e-6, device = device):
     """
     Training a DFL-model by minimizing classical regret loss.
 
@@ -274,7 +274,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
 
 def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=10, min_delta=1e-6):
+          run, verbose=False, patience=10, min_delta=1e-6, device = device):
     """
     Training a DFL-model by minimizing LD loss.
 
@@ -409,7 +409,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
           epochs, time_limit, eval_freq,
           step_mu, num_iter_mu, optimizer_mu,
           mu_global0,
-          run, verbose=False, patience=10, min_delta=1e-6):
+          run, verbose=False, patience=10, min_delta=1e-6, device = device):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
