@@ -72,9 +72,9 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
         return
 
     if verbose:
-        print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
+        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     try:
-        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
+        test_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
 
     except FileNotFoundError:
         print(f"File not found.")
@@ -113,7 +113,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
 
         train_LD(model, diff_method, test_solver,
                     train_loader, test_loader, optimizer, scheduler, 
-                    epochs, time_limit, test_freq=1,
+                    epochs, time_limit, eval_freq=1,
                     run=run, verbose=verbose)
     elif jobtype == "classic":
         # Differentiation method for backpropagation when training 
@@ -126,7 +126,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
             
         train_classic(model, diff_method, test_solver, 
                         train_loader, test_loader, optimizer, scheduler, 
-                        epochs, time_limit, test_freq=1,
+                        epochs, time_limit, eval_freq=1,
                         run=run, verbose=verbose)
 
     elif jobtype == "SG":
@@ -144,7 +144,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
 
         train_SG(model, diff_method, test_solver, 
                     train_loader, test_loader, optimizer, scheduler, 
-                    epochs, time_limit, test_freq=1,
+                    epochs, time_limit, eval_freq=1,
                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                     num_items=num_item, dim=dim,
                     run=run, verbose=verbose)
@@ -153,7 +153,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
             print("Training the model with MSE as loss")
         train_MSE(model, test_solver, 
                     train_loader, test_loader, optimizer, scheduler,
-                    epochs, time_limit, test_freq=1,
+                    epochs, time_limit, eval_freq=1,
                     run=run, verbose=verbose)
 
     # Save model
@@ -201,7 +201,7 @@ schedulerType_classic = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", Non
 sched_arg_classic = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_classic = "SPOPlus"  # "StepLR", "SPOPlus"
+diff_method_classic = "IMLE"  # "StepLR", "SPOPlus"
 diff_method_arg_classic = { }
 
 # LD parameters
@@ -215,7 +215,7 @@ schedulerType_LD = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_LD = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_LD = "SPOPlus"  # "IMLE", "SPOPlus"
+diff_method_LD = "IMLE"  # "IMLE", "SPOPlus"
 diff_method_arg_LD = { }
 
 # SG parameters
@@ -229,7 +229,7 @@ schedulerType_SG = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_SG = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_SG = "SPOPlus"  # "IMLE", "SPOPlus"
+diff_method_SG = "IMLE"  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {}
 step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
