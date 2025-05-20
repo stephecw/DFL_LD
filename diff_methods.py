@@ -26,5 +26,5 @@ class SPOPlus():
         self.device = device
     
     def __call__(self, c_hat, c, x):
-        loss = self.spo(c_hat, c, x.float(), (c*x).sum(dim=1)).to(self.device)
+        loss = self.spo(-c_hat, -c, x.float(), -(c*x).sum(dim=1)).to(self.device)
         return loss
