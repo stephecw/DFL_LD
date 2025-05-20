@@ -408,7 +408,7 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
           step_mu, num_iter_mu, optimizer_mu,
-          num_items, dim,
+          mu_global0,
           run, verbose=False, patience=10, min_delta=1e-6):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
@@ -448,7 +448,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         start_time = time.time()
         train_time = 0
 
-    mu_global = torch.ones(len(dataloader_train.dataset), dim - 1, num_items, device=device, dtype=torch.float32)
+    mu_global = mu_global0
 
     for epoch in range(epochs):
         if monitoring:
@@ -564,3 +564,51 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
+
+
+def test(model, test_loader, eval_solver, device, run=None):
+    """
+    Compute mean and std of relative regret on a test set.
+
+    Args:
+        model       : trained nn.Module
+        test_loader : DataLoader yielding (z, c, x, *_)
+        eval_solver : solver with setObj()/solve() interface
+        device      : 'cpu' or 'cuda'
+        run         : optional wandb run for logging
+
+    Returns:
+        mean_relat, std_relat
+    """
+    model.eval()
+    rel_regr = []
+
+    with torch.no_grad():
+        for z, c, x, *_ in test_loader:
+            z, c, x = z.to(device), c.to(device), x.to(device)
+            c_hat = model(z)
+
+            for i in range(z.size(0)):
+                eval_solver.setObj(c_hat[i].cpu().numpy())
+                x_pred_np, _ = eval_solver.solve()
+
+                x_true = x[i].float().cpu()
+                c_true = c[i].float().cpu()
+                x_pred = torch.tensor(x_pred_np, dtype=torch.float32)
+
+                num = torch.dot(c_true, x_true - x_pred)
+                den = torch.dot(c_true, x_true).clamp(min=1e-6)
+                rel_regr.append((num / den).item())
+
+    errs = torch.tensor(rel_regr)
+    mean_relat = errs.mean().item()
+    std_relat  = errs.std().item()
+
+    print(f"Test relative regret: {mean_relat:.4f} ± {std_relat:.4f}")
+    if run:
+        run.log({
+            "test/mean_relative_regret": mean_relat,
+            "test/std_relative_regret": std_relat
+        })
+
+    return mean_relat, std_relat

@@ -3,7 +3,6 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
 from pyepo.model.opt import optModel
-from scipy.optimize import minimize
 
 class Solveur_lin(optModel):
     def __init__(self, num_item, maximize = True):
@@ -114,3 +113,62 @@ class gb_portfolio_solver(optModel):
         sol_t = torch.tensor(sol_np, dtype=self.c.dtype,
                                         device=self.c.device)
         return sol_t, obj_val 
+
+from torch import Tensor
+
+from joblib import Parallel, delayed
+
+
+class BatchSolverLin:
+    """Batch wrapper autour de Solveur_lin."""
+    def __init__(self, num_item: int, maximize: bool = True, device: str = "cpu"):
+        self.device = device
+        # Un solveur (stateless) suffit : on réutilise la même instance
+        self.solver = Solveur_lin(num_item, maximize=maximize)
+
+    def __call__(self, c_batch: Tensor) -> Tensor:
+        """
+        c_batch: (B, n) torch.Tensor
+        return: (B, n) torch.Tensor de 0/1
+        """
+        B, n = c_batch.shape
+        # on va collecter chaque solution
+        sols = []
+        for i in range(B):
+            c_i = c_batch[i].detach().to(self.device)
+            # met à jour l'objectif
+            self.solver.setObj(c_i)
+            sol_i, _ = self.solver.solve()      # sol_i: Tensor(n,)
+            sols.append(sol_i)
+        return torch.stack(sols, dim=0)         # (B, n)
+
+class BatchSolverQuad:
+    """Wrapper qui lance chaque sous‑problème quadratique dans un process séparé."""
+    def __init__(self, n_stocks, cov, gamma, maximize=True, device="cpu", n_jobs=-1):
+        self.n_stocks = n_stocks
+        # on stocke en numpy (pickle-friendly) si nécessaire
+        self.cov = cov.detach().cpu().numpy() if torch.is_tensor(cov) else cov.copy()
+        self.gamma = gamma
+        self.maximize = maximize
+        self.device = device
+        self.n_jobs = n_jobs
+
+    def _solve_one(self, c_i_np):
+        # Reconstruit un solveur Gurobi à l'intérieur du process
+        solver = Solveur_quad(self.n_stocks, self.cov, self.gamma, maximize=self.maximize)
+        solver.setObj(torch.from_numpy(c_i_np))
+        sol_torch, _ = solver.solve()
+        return sol_torch.cpu().numpy()
+
+    def __call__(self, c_batch: torch.Tensor) -> torch.Tensor:
+        """
+        c_batch : (B, n) torch.Tensor
+        -> renvoie sol_batch : (B, n) torch.Tensor
+        """
+        # on passe en numpy pour joblib
+        c_np = c_batch.detach().cpu().numpy()
+        sols = Parallel(n_jobs=self.n_jobs, backend="loky")(
+            delayed(self._solve_one)(c_np[i]) for i in range(c_np.shape[0])
+        )
+        # retour en torch.Tensor sur l'appareil souhaité
+        return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)
