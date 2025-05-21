@@ -1,10 +1,10 @@
 #!/bin/bash
-#SBATCH --time=02:00:00          # Temps d'exécution (1 heure)
+#SBATCH --time=06:00:00          # Temps d'exécution (1 heure)
 #SBATCH --account=def-qcappart   # Remplacez par votre compte
 #SBATCH --mem=4G                 # Mémoire requise (4 Go)
 #SBATCH --cpus-per-task=1        # Nombre de CPU
 #SBATCH --gres=gpu:1             # Si vous avez besoin d'un GPU
-#SBATCH --job-name=job_test    # Nom du job
+#SBATCH --job-name=job_test6    # Nom du job
 #SBATCH --output=output.log     # Fichier de sortie
 #SBATCH --error=error.log
 
@@ -14,4 +14,4 @@ module load python/3.10
 module load scipy-stack
 source ~/env_projet/bin/activate
 
-python -m knapsack.gen_data --n_train 0 --n_test 200 --n 30 --dim 5
+python -m knapsack.gen_data --n_train 0 --n_test 200 --n 100 --dim 10
