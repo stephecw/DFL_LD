@@ -16,10 +16,14 @@ import argparse
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
 parser.add_argument('--dim', type=int, default=5, help='Number of constraints.')
 parser.add_argument('--n', type=int, default=30, help='Number of items.')
-parser.add_argument('--ep_cla', type=int, default=0, help='Number of epochs for classic training. (0 to skip)')
-parser.add_argument('--ep_ld', type=int, default=0, help='Number of epochs for LD training. (0 to skip)')
-parser.add_argument('--ep_sg', type=int, default=0, help='Number of epochs for SG training. (0 to skip)')
-parser.add_argument('--ep_mse', type=int, default=0, help='Number of epochs for MSE training. (0 to skip)')
+parser.add_argument('--ep_cla', type=int, default=0, help='Number of epochs for classic training. (0 to skip, -1 to use time limit)')
+parser.add_argument('--tl_cla', type=int, default=0, help='Time limit for classic training. (0 for doing all epochs)')
+parser.add_argument('--ep_ld', type=int, default=0, help='Number of epochs for LD training. (0 to skip, -1 to use time limit)')
+parser.add_argument('--tl_ld', type=int, default=0, help='Time limit for LD training. (0 for doing all epochs)')
+parser.add_argument('--ep_sg', type=int, default=0, help='Number of epochs for SG training. (0 to skip, -1 to use time limit)')
+parser.add_argument('--tl_sg', type=int, default=0, help='Time limit for SG training. (0 for doing all epochs)')
+parser.add_argument('--ep_mse', type=int, default=0, help='Number of epochs for MSE training. (0 to skip, -1 to use time limit)')
+parser.add_argument('--tl_mse', type=int, default=0, help='Time limit for MSE training. (0 for doing all epochs)')
 parser.add_argument('--step_mu', type=int, default=5, help='Number of epochs between mu updates. (0 to skip)')
 parser.add_argument('--n_iter_mu', type=int, default=10, help='Number of iterations for mu optimization. (0 to skip)')
 
@@ -172,8 +176,8 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
             torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
         elif jobtype == "MSE":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method_name}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'knapsack/models/MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
 
 
     # End execution
@@ -191,8 +195,8 @@ dim = args.dim
 num_item = args.n
 
 # Classic parameters
-epochs_classic = args.ep_cla
-time_limit_classic = 1800
+epochs_classic = args.ep_cla if args.ep_cla >= 0 else int(1e10)
+time_limit_classic = args.tl_cla if args.tl_cla > 0 else int(1e10)
 batch_size_classic = 32
 lr_classic = 0.001
 model_shape_classic = [num_feat, 100, num_item]
@@ -201,12 +205,12 @@ schedulerType_classic = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", Non
 sched_arg_classic = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_classic = "SPOPlus"  # "StepLR", "SPOPlus"
+diff_method_classic = "IMLE"  # "StepLR", "SPOPlus"
 diff_method_arg_classic = { }
 
 # LD parameters
-epochs_LD = args.ep_ld
-time_limit_LD = 1800
+epochs_LD = args.ep_ld if args.ep_ld >= 0 else int(1e10)
+time_limit_LD = args.tl_ld if args.tl_ld > 0 else int(1e10)
 batch_size_LD = 32
 lr_LD = 0.001
 model_shape_LD = [num_feat, 100, num_item]
@@ -215,12 +219,12 @@ schedulerType_LD = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_LD = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_LD = "SPOPlus"  # "IMLE", "SPOPlus"
+diff_method_LD = "IMLE"  # "IMLE", "SPOPlus"
 diff_method_arg_LD = { }
 
 # SG parameters
-epochs_SG = args.ep_sg
-time_limit_SG = 3600
+epochs_SG = args.ep_sg if args.ep_sg >= 0 else int(1e10)
+time_limit_SG = args.tl_sg if args.tl_sg > 0 else int(1e10)
 batch_size_SG = 32
 lr_SG = 0.001
 model_shape_SG = [num_feat, 100, num_item]
@@ -229,14 +233,14 @@ schedulerType_SG = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_SG = {'step_size':100,
                      'gamma':0.5
                      }
-diff_method_SG = "SPOPlus"  # "IMLE", "SPOPlus"
+diff_method_SG = "IMLE"  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {}
 step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
 
 # MSE parameters
-epochs_MSE = args.ep_mse
-time_limit_MSE = 3600
+epochs_MSE = args.ep_mse if args.ep_mse >= 0 else int(1e10)
+time_limit_MSE = args.tl_mse if args.tl_mse > 0 else int(1e10)
 batch_size_MSE = 32
 lr_MSE = 0.001
 model_shape_MSE = [num_feat, 100, num_item]
@@ -259,7 +263,7 @@ if epochs_LD > 0:
             'project': "DFL_LD",
             'dir': "./",
             'name': f"{diff_method_LD}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}",
-            'group': f"presentation_05_11",
+            'group': f"presentation_05_26",
             'job_type': "LD",
             'config': {
                 "architecture": model_shape_LD,
@@ -290,7 +294,7 @@ if epochs_classic > 0:
             'project': "DFL_LD",
             'dir': "./",
             'name': f"{diff_method_classic}_Classic_{dim}_{num_feat}_{num_item}_{num_data_train}",
-            'group': f"presentation_05_11",
+            'group': f"presentation_05_26",
             'job_type': "Classic",
             'config': {
                 "architecture": model_shape_classic,
@@ -321,7 +325,7 @@ if epochs_SG > 0:
             'project': "DFL_LD",
             'dir': "./",
             'name': f"{diff_method_SG}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}",
-            'group': f"presentation_05_11",
+            'group': f"presentation_05_26",
             'job_type': "SG",
             'config': {
                 "architecture": model_shape_SG,
@@ -354,7 +358,7 @@ if epochs_MSE > 0:
             'project': "DFL_LD",
             'dir': "./",
             'name': f"{diff_method_SG}_MSE_{dim}_{num_feat}_{num_item}_{num_data_train}",
-            'group': f"presentation_05_11",
+            'group': f"presentation_05_26",
             'job_type': "MSE",
             'config': {
                 "architecture": model_shape_MSE,
