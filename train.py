@@ -551,6 +551,16 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         if time_limit is not None:
             if train_time > time_limit:
                 print("Time limit reached, stopping training.")
+                if best_model_state is not None:
+                    device = next(model.parameters()).device
+                    model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
+                    if run is not None:
+                        total_duration = time.time() - start_time
+                        run.log({
+                            "total_duration": total_duration,
+                            "best_epoch": best_epoch,
+                            "best_relat_regret": best_relat_regret
+                        })
                 return
     
     if best_model_state is not None:
