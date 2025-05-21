@@ -13,4 +13,4 @@ module load cuda/12.2
 module load python/3.10
 source ../env_projet/bin/activate
 
-python -m knapsack.run_experiments --n 30 --dim 5 --ep_cla -1 --ep_sg -1 --ep_ld -1 --ep_mse -1 --tl_cla 3600 --ep_ld 3600 --ep_mse 3600 
+python -m knapsack.run_experiments --n 30 --dim 5 --ep_cla -1 --ep_sg -1 --ep_ld -1 --ep_mse -1 --tl_cla 3600 --tl_ld 3600 --tl_mse 3600 
