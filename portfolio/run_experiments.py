@@ -206,7 +206,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
-eval_freq = 1
+eval_freq = 5
 
 # Problem dimensions
 num_feat = 200
@@ -226,7 +226,7 @@ lr_classic = 0.002
 model_shape_classic = [num_feat, 100, num_item]
 dropout_classic = 0.2
 schedulerType_classic = "StepLR"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_classic = {'step_size':100,
+sched_arg_classic = {'step_size':70,
                      'gamma':0.5
                      }
 diff_method_classic = args.method  # "StepLR", "SPOPlus"
@@ -234,13 +234,13 @@ diff_method_arg_classic = { }
 
 # LD parameters
 epochs_LD = args.ep_ld
-time_limit_LD = 600
+time_limit_LD = 1800
 batch_size_LD = 32
 lr_LD = 0.002
 model_shape_LD = [num_feat, 100, num_item]
 dropout_LD = 0.2
 schedulerType_LD = "StepLR"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_LD = {'step_size':100,
+sched_arg_LD = {'step_size':70,
                 'gamma':0.5
                 }
 diff_method_LD = args.method  # "IMLE", "SPOPlus"
@@ -255,7 +255,7 @@ lr_SG = 0.002
 model_shape_SG = [num_feat, 100, num_item]
 dropout_SG = 0.2
 schedulerType_SG = "StepLR"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_SG = {'step_size':100,
+sched_arg_SG = {'step_size':150,
                 'gamma':0.5
                 }
 diff_method_SG = args.method  # "IMLE", "SPOPlus"
@@ -265,13 +265,13 @@ num_iter_mu = args.n_iter_mu
 
 # MSE parameters
 epochs_MSE = args.ep_mse
-time_limit_MSE = 3600
+time_limit_MSE = 600
 batch_size_MSE = 32
-lr_MSE = 0.001
+lr_MSE = 0.002
 model_shape_MSE = [num_feat, 100, num_item]
 dropout_MSE = 0.2
 schedulerType_MSE = None  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_MSE = {'step_size':100,
+sched_arg_MSE = {'step_size':200,
                      'gamma':0.5
                      }
 
