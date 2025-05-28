@@ -1,0 +1,1 @@
+{"train_loss": 0.002342035142646637, "epoch_duration": 2.0837321281433105, "train_time": 1020.7676136493683, "_runtime": 1034.15939896, "_step": 543, "epoch": 493, "grad_norm": 0.010895072261300993, "lr": 0.002, "_timestamp": 1748369636.2242832, "Mean relative regret": 0.1577523648738861, "Std relative regret": 0.0455058328807354}

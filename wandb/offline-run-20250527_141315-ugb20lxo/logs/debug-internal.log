@@ -1,0 +1,7 @@
+{"time":"2025-05-27T14:13:16.371519903-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250527_141315-ugb20lxo/logs/debug-core.log"}
+{"time":"2025-05-27T14:13:16.509723594-04:00","level":"INFO","msg":"created new stream","id":"ugb20lxo"}
+{"time":"2025-05-27T14:13:16.509835041-04:00","level":"INFO","msg":"stream: started","id":"ugb20lxo"}
+{"time":"2025-05-27T14:13:16.51021504-04:00","level":"INFO","msg":"handler: started","stream_id":"ugb20lxo"}
+{"time":"2025-05-27T14:13:16.51030628-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"ugb20lxo"}
+{"time":"2025-05-27T14:13:16.510519244-04:00","level":"INFO","msg":"sender: started","stream_id":"ugb20lxo"}
+{"time":"2025-05-27T14:13:16.529275448-04:00","level":"INFO","msg":"Starting system monitor"}

@@ -46,13 +46,15 @@ class OptimizationBatchModel:
 
             self.mu = self.mu - lr * m_hat / (torch.sqrt(v_hat) + eps)
 
+            self.vals = (self.c * self.X[:,0]).sum(dim=1) + (self.mu * (self.X[:, 0].unsqueeze(1) - self.X[:, 1:])).sum(dim=2).sum(dim=1)
+
             if verbose and t % freq_verb == 0:
-                print(f"→ Iter {t} | Mean B(mu): {self.vals.mean().item():.4f}")
+                print(f"→ Iter {t} | Mean B(mu): {self.vals.mean().item():.4f} | ")
 
     def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
         self.c = c_batch.clone().to(self.device)  # [B, n]
         batch_size, num_items = self.c.shape
-        self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.int32, device=self.device)
+        self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.float32, device=self.device)
         self.vals = torch.zeros(batch_size, dtype=torch.float32, device=self.device)
 
         if mu_init is None:

@@ -127,4 +127,9 @@ class ImportDataset:
         """
         dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=shuffle)
         return dataloader
+    def get_mu(self):
+        """
+        Retourne le vecteur mu du problème de portfolio.
+        """
+        return self.mu_tensor
 

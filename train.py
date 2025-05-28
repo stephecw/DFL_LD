@@ -61,10 +61,14 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
                 if param.grad is not None:
                     total_grad_norm += param.grad.norm().item() ** 2
             total_loss += loss.item()
-        if scheduler is not None:
-            scheduler.step()
 
         mean_loss = total_loss / len(dataloader_train)
+
+        if scheduler is not None:
+            if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                scheduler.step(mean_loss)
+            else:
+                scheduler.step()
 
         if monitoring:
             epoch_end_time = time.time()
@@ -194,10 +198,15 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
                 if param.grad is not None:
                     total_grad_norm += param.grad.norm().item() ** 2
             total_loss += loss.item()
-        if scheduler is not None:
-            scheduler.step()
 
         mean_loss = total_loss / len(dataloader_train)
+        if scheduler is not None:
+            if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                scheduler.step(mean_loss)
+            else:
+                scheduler.step()
+
+
 
         if monitoring:
             epoch_end_time = time.time()
@@ -327,10 +336,13 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                 if param.grad is not None:
                     total_grad_norm += param.grad.norm().item() ** 2
             total_loss += loss.item()
-        if scheduler is not None:
-            scheduler.step()
 
         mean_loss = total_loss / len(dataloader_train)
+        if scheduler is not None:
+            if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                scheduler.step(mean_loss)
+            else:
+                scheduler.step()
 
         if monitoring:
             epoch_end_time = time.time()
@@ -482,10 +494,13 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             for param in model.parameters():
                 if param.grad is not None:
                     total_grad_norm += param.grad.norm().item() ** 2
-        if scheduler is not None:
-            scheduler.step()
 
         mean_loss = total_loss / len(dataloader_train)
+        if scheduler is not None:
+            if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                scheduler.step(mean_loss)
+            else:
+                scheduler.step()
 
         if monitoring:
             epoch_end_time = time.time()
@@ -533,7 +548,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                             "Std relative regret": std_relat_regret, "norm_diff_mu": mu_diff,
                             "train_time": train_time})
                 if verbose:
-                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
+                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f} | norm_diff_mu: {mu_diff:.4f}")
                 
                 # Early stopping
                 if mean_relat_regret < best_relat_regret - min_delta:
@@ -545,6 +560,8 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                     epochs_no_improvement += 1
                     if epochs_no_improvement >= patience:
                         print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        if run is not None:
+                            run.log({"training_status": "early_stopping"})
                         break
 
         # Check time limit
@@ -559,7 +576,8 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                         run.log({
                             "total_duration": total_duration,
                             "best_epoch": best_epoch,
-                            "best_relat_regret": best_relat_regret
+                            "best_relat_regret": best_relat_regret,
+                            "training_status": "time_limit"
                         })
                 return
     
