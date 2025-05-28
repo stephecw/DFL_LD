@@ -27,7 +27,7 @@ parser.add_argument('--method', type=str, default="SPOPlus", help='Differentiati
 parser.add_argument('--n_samples', type=int, default=10, help='Number of samples for IMLE. Only used if method is "IMLE".')
 parser.add_argument('--lambda_imle', type=float, default=0.1, help='Lambda for IMLE. Only used if method is "IMLE".')
 parser.add_argument('--sigma', type=float, default=0.1, help='Sigma for IMLE. Only used if method is "IMLE".')
-parser.add_argument('--out_file', type=str, default='results.csv',
+parser.add_argument('--out_file', type=str, default='portfolio/results.csv',
                     help='Chemin du fichier CSV où stocker les résultats.')
 parser.add_argument('time_limit', type=int, default=300, help='Time limit for training in seconds. Default is 300 seconds.')
 
