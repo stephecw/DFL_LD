@@ -3,7 +3,7 @@ import torch
 import pyepo
 from pyepo.model.grb import knapsackModel
 from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack
+from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
 
 import argparse
 
@@ -25,7 +25,7 @@ def write_dataset_file(fname, dim, num_feat, num_item, num_data, capacities, wei
             line += ",".join(str(mu[i][j]) for j in range(num_item*(dim-1) - 1)) + f",{mu[i][-1]}\n"
             f.write(line)
 
-def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, verbose=False):
+def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, keep = 1,verbose=False):
     
 
     total_data = num_data_train + num_data_test
@@ -54,7 +54,12 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, verbos
         print(" Optimisation of mu via GPU...")
 
     c_tensor = torch.tensor(c, dtype=torch.float32)
-    solvers = [solver_X_1D_knapsack( weights[i], capacities[i], device) for i in range(dim)]
+    solvers = []
+    if keep == 1:
+        solvers= [solver_X_1D_knapsack(weights[0], capacities[0], device)]
+    else:
+        solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
+    solvers = solvers + [solver_X_1D_knapsack( weights[i], capacities[i], device) for i in range(keep,dim)]
     optimizer = OptimizationBatchModel(
         solvers=solvers,
         device=device
@@ -94,6 +99,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_test', type=int, default=100, help='Number of test data points')
     parser.add_argument('--n_feat', type=int, default=200, help='Number of features')
     parser.add_argument('--n_iter', type=int, default=500, help='Number of iterations for the optimization of mu. (0 to skip execution)')
+    parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem')
 
 
     # Parameters
