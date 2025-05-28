@@ -82,5 +82,5 @@ for n in ns:
                         'n_iter_mu':      n_iter_mu
                     }
                     content = template.format(**flags)
-                    with open(f"jobs/{jobname}.sh", 'w') as f:
+                    with open(f"jobs_portfolio/{jobname}.sh", 'w') as f:
                         f.write(content)
