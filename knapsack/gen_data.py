@@ -100,7 +100,7 @@ if __name__ == "__main__":
     parser.add_argument('--n', type=int, nargs='+', default=[30], help='Number of items.')
     parser.add_argument('--dim', type=int, nargs='+', default=[5], help='Number of constraints.')
     parser.add_argument('--n_train', type=int, default=500, help='Number of training data points')
-    parser.add_argument('--n_eval', type=int, default=200, help='Number of evaluation data points')
+    parser.add_argument('--n_eval', type=int, default=100, help='Number of evaluation data points')
     parser.add_argument('--n_test', type=int, default=400, help='Number of test data points')
     parser.add_argument('--n_feat', type=int, default=200, help='Number of features')
     parser.add_argument('--n_iter', type=int, default=500, help='Number of iterations for the optimization of mu. (0 to skip execution)')
