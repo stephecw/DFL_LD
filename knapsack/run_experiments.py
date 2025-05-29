@@ -1,5 +1,6 @@
 import torch
 from torch import optim
+import numpy as np
 
 from pyepo.model.grb import knapsackModel
 from pyepo.func.utlis import sumGammaDistribution
@@ -12,7 +13,7 @@ from opti_X_mu import OptimizationBatchModel
 from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
 
 import argparse
-
+import os, csv
 
 
 # Define command line arguments
@@ -45,8 +46,9 @@ args = parser.parse_args()
 method = args.method
 # Problem dimensions
 num_feat = 200
-num_data_train = 500  # Training dataset size
-num_data_eval = 100   # eval dataset size
+num_data_train = 100  # Training dataset size
+num_data_eval = 5   # eval dataset size
+num_data_test = 5  # Test dataset size
 
 dim = args.dim
 num_item = args.n
@@ -114,18 +116,18 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
     # Load training dataset
     if verbose:
-        print(f"Loading train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
+        print(f"Loading train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
     try:
-        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt")
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -216,40 +218,65 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     if save_model:
         if jobtype == "LD":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method_name}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/{diff_method_name}_LD_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
+            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_LD_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth')
         elif jobtype == "classic":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method_name}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/{diff_method_name}_classic_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
+            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_classic_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth')
         elif jobtype == "SG":
             if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method_name}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/{diff_method_name}_SG_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
+            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_SG_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth')
         elif jobtype == "MSE":
             if verbose:
-                print(f"Saving the model to knapsack/models/MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'knapsack/models/MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
+                print(f"Saving the model to knapsack/models/MSE_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth")
+            torch.save(model.state_dict(), f'knapsack/models/MSE_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth')
 
-    if test_model:
-        if verbose:
-            print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", flush=True)
-        try:
-            test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
-        except FileNotFoundError:
-            print(f"File not found.", flush=True)
-            return
-        test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
-        with open("knapsack/test_results_mini.txt", mode = "a") as file:
-            rel_regret = test(model, test_loader, eval_solver, device)
-            line = f"{dim};{num_feat};{num_item};{num_data_train};{jobtype};{step_mu};{num_iter_mu};{diff_method_name};{lr};"
-            line += ";".join(str(rel_regret[j]) for j in range(num_data_test - 1)) + f";{rel_regret[-1]}\n"
-            file.write(line)
-    
-    with open("knapsack/hp_results_mini.txt", mode = "a") as file:
-            line = f"{jobtype};{diff_method_name};{dim};{num_feat};{num_item};{num_data_train};{lr};"
-            line += f"{step_mu};{num_iter_mu};{diff_method_arg};{best_relat_regret}\n"
-            file.write(line)
+
+    # Évaluer d’abord sur le set d’éval avec le modèle au meilleur epoch
+    regrets_eval = test(model, eval_loader, eval_solver, device, run=None)
+    mean_relat_eval = np.mean(regrets_eval)
+    std_relat_eval = np.std(regrets_eval)
+
+    if verbose:
+        print(f"Loading knapsack/datasets/test_{dim}_{keep}_{num_feat}_{num_item}_{num_data_test}.txt")
+    try:
+        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{keep}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
+    except FileNotFoundError:
+        print(f"File not found.")
+
+    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
+    # Test the model on the test set
+    regrets_test = test(model, test_loader, eval_solver, device, run)
+    mean_relat_test = np.mean(regrets_test)
+    std_relat_test = np.std(regrets_test)
+
+    test_row = {
+        'dim':               dim,
+        'keep':              keep,
+        'num_feat':          num_feat,
+        'num_item':          num_item,
+        'num_data_train':    num_data_train,
+        'jobtype':           jobtype,
+        'step_mu':           step_mu if 'step_mu' in locals() else '',
+        'num_iter_mu':       num_iter_mu if 'num_iter_mu' in locals() else '',
+        'method':            diff_method_name or 'MSE',
+        'lr':                lr,
+        'mean_relat_eval': float(mean_relat_eval),
+        'std_relat_eval':  float(std_relat_eval),
+        'mean_relat_test':   float(mean_relat_test),
+        'std_relat_test':    float(std_relat_test)
+    }
+
+    csv_path = "knapsack/test_results.csv"
+    write_header = not os.path.exists(csv_path)
+
+    with open(csv_path, 'a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=list(test_row.keys()))
+        if write_header:
+            writer.writeheader()
+        writer.writerow(test_row)
     
     # End execution
     if run is not None:
@@ -285,4 +312,4 @@ run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,
         diff_method_name=diff_method_name, diff_method_arg=diff_method_arg,
-        test_model=True, verbose=True, wandbarg=None, save_model=False)
+        test_model=True, num_data_test=5,verbose=True, wandbarg=None, save_model=False)
