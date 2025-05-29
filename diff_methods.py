@@ -26,5 +26,18 @@ class SPOPlus():
         self.device = device
     
     def __call__(self, c_hat, c, x):
-        loss = self.spo(c_hat, c, x.float(), (c*x).sum(dim=1)).to(self.device)
+        loss = self.spo(-c_hat, -c, x.float(), -(c*x).sum(dim=1)).to(self.device)
+        return loss
+    
+class Exact():
+    """
+    Works only for the portfolio problem, sine we have a formula for the exact solution
+    """
+    def __init__(self, solver, device):
+        self.solver = solver
+        self.device = device
+    
+    def __call__(self, c_hat, c, x):
+        x_ = self.solver(c_hat).to(self.device)
+        loss = torch.sum(c * (x - x_), dim=1).mean()
         return loss

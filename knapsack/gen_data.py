@@ -60,6 +60,7 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     if verbose:
         print(" Optimisation of mu via GPU...")
 
+
     c = torch.tensor(c, dtype=torch.int32)
     Z_train, Z_eval, Z_test = Z[:num_data_train], Z[num_data_train:num_data_train+num_data_eval], Z[num_data_train+num_data_eval:]
     c_train, c_eval, c_test = c[:num_data_train], c[num_data_train:num_data_train+num_data_eval], c[num_data_train+num_data_eval:]
@@ -78,6 +79,7 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     if verbose:
         print(f" Optimisation done (device: {torch.cuda.get_device_name()})")
     # Save
+
     write_dataset_file(f"knapsack/datasets/train_{global_dim}_{num_feat}_{num_items}_{num_data_train}.txt",
                        global_dim, num_feat, num_items, num_data_train,
                        capacities, weights, Z_train, c_train, x_star_train, X, mu)

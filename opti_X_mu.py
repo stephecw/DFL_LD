@@ -51,10 +51,11 @@ class OptimizationBatchModel:
                 print(f"Convergence atteinte")
                 break
 
+
     def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
         self.c = c_batch.clone().to(self.device)  # [B, n]
         batch_size, num_items = self.c.shape
-        self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.int32, device=self.device)
+        self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.float32, device=self.device)
         self.vals = torch.zeros(batch_size, dtype=torch.float32, device=self.device)
 
         if mu_init is None:

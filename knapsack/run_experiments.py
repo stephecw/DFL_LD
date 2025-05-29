@@ -121,6 +121,7 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
 
     if verbose:
         print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+
     try:
         eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:

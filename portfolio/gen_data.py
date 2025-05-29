@@ -1,11 +1,12 @@
 import numpy as np
+import torch
 import pyepo.data as data
 from pyepo.model.grb import portfolioModel
-from opti_X_mu import Optimization_X_mu_portfolio
-from joblib import Parallel, delayed
-from gen_data import gen_datafile
+from portfolio.my_solver import BatchSolverLin, BatchSolverQuad, BatchSolverExact
+from opti_X_mu import OptimizationBatchModel
 import argparse
 
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, c, x_star_array, X, mu):
     """Écrit le dataset généré dans un fichier dans le format suivant :
@@ -42,32 +43,6 @@ def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, c, x_
             line += ",".join(str(mu[i][j]) for j in range(num_item)) + f"\n"
             f.write(line)
 
-def optimize_single_instance(i, c_i, cov, gamma, num_item, num_iter, principal_lin):
-    """ Optimise la borne LD pour un problème donné. Voué à être parallélisé.
-    Args:
-        c_i (float array de taile ( ,num_item)): coûts du problème
-        cov (float array de taille (num_item, num_item)): matrice de covariance de la contrainte quadratique
-        gamma (float): risk_level dans la contrainte quadratique
-        num_item (int): nombre d'assets
-        num_iter (int): nombre d'itérations dans la descente de sous-gradient
-        principal_lin (bool, optional): True pour conserver la contrainte linéaire, False pour conserver la contrainte quadratique. True par défaut
-
-    Returns:
-        float array de taille ( ,num_item): solution optimale du sous-problème principal de la LD
-        float array de taille ( ,num_item): multiplicateur de Lagr optimal
-    """
-    optimizer = Optimization_X_mu_portfolio(
-        num_item=num_item,
-        c=c_i,
-        cov=cov,
-        gamma=gamma,
-        principal_lin = principal_lin
-    )
-    if i % 20:
-        print(f"Begin {i}")
-    optimizer.optim_mu(max_iter=num_iter)
-    return optimizer.get_X0(), optimizer.get_mu()
-
 def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_iter, principal_lin = True, verbose=False):
     """Génère un dataset (train et test) de problèmes de portfolio combinatoires, 
     comprenant la solution optimale et la borne LD optimale.
@@ -92,8 +67,9 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     # Données aléatoires
     cov, Z, c = data.portfolio.genData(total_data, num_feat, num_item, deg=4, noise_level=1, seed=135)
     gamma = gam  # risk_level = gamma * mean(cov[i])
-    cov2 = 1e5*cov
+    cov2 = 1e5*cov  # Covariance pour la contrainte quadratique
     
+
     # Résolution exacte du problème (x*)
     if verbose:
         print("Résolution exacte des x° ...", end=" ")
@@ -106,17 +82,32 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     x_star_array = np.array(x_star_list)
     if verbose:
         print("Done !")
+    
+
 
     # Optimisation µ
     if verbose:
         print("Résolution approchée des mu et X° ...")
-    # Parallélisation de l'optimisation de mu et X°
-    results = Parallel(n_jobs=-1)(delayed(optimize_single_instance)(i, c[i], cov2, gamma, num_item, num_iter, principal_lin) for i in range(total_data))
-    X, mu = zip(*results)
-    X = np.array(X)
-    mu = np.array(mu)
+    # Optimisation de mu et X°
+    c_tensor = torch.tensor(c, dtype=torch.float32)
+    lin_solver = BatchSolverLin(num_item, device)
+    quad_solver = BatchSolverQuad(num_item, cov2, gamma, device)
+    exact_quad_solver = BatchSolverExact(num_item, cov2, gamma, device)
+    if principal_lin:
+        solvers = [lin_solver, quad_solver]
+    else :
+        solvers = [quad_solver, lin_solver]
+    optimizer = OptimizationBatchModel(solvers, device)
+    optimizer.optim_mu(c_batch=c_tensor,verbose=verbose, max_iter=num_iter)
+
+    X_tensor = optimizer.get_X()
+    mu_tensor = optimizer.get_mu()
+
+    X = X_tensor[:, 0, :].cpu().numpy().astype(float)
+    mu = mu_tensor.view(total_data, -1).cpu().numpy()
+
     if verbose:
-        print("Done !")
+        print(f" Optimisation done (device: {torch.cuda.get_device_name()})")
 
     # Découpage
     Z_train, Z_test = Z[:num_data_train], Z[num_data_train:]
@@ -138,11 +129,11 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     # Sauvegarde
     gamma_str = str(gamma).replace('.', '-')
     fold = "/lin" if principal_lin else "/quad"
-    write_dataset_file(f"datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+    write_dataset_file(f"portfolio/datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
                        num_feat, num_item, num_data_train,
                        cov, gamma, Z_train, r_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"datasets{fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt",
+    write_dataset_file(f"portfolio/datasets{fold}/eval_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt",
                        num_feat, num_item, num_data_test,
                        cov, gamma, Z_test, r_test, x_star_test, X_test, mu_test)
     
@@ -153,16 +144,16 @@ if __name__ == "__main__":
     parser.add_argument('--n', type=int, default=50, help='Nombre d\'item.')
     parser.add_argument('--gamma', type=float, default=2.25, help='Gamma.')
     parser.add_argument('--n_train', type=int, default=500, help='Nombre de données d\'entrainement')
-    parser.add_argument('--n_test', type=int, default=100, help='Nombre de données de test')
+    parser.add_argument('--n_eval', type=int, default=100, help='Nombre de données d\'eval')
     parser.add_argument('--n_feat', type=int, default=200, help='Nombre de features')
-    parser.add_argument('--lin', type=int, default=1, help='1 pour prendre la contrainte linéraire pour le sous-prob principal, 0 pour la contrainte quadratique')
+    parser.add_argument('--lin', type=int, default=0, help='1 pour prendre la contrainte linéraire pour le sous-prob principal, 0 pour la contrainte quadratique')
     parser.add_argument('--n_iter', type=int, default=300, help='Nombre d\'itérations pour l\'optimisation de \mu. (0 pour ne pas l\'exécuter)')
 
 
     # Paramètres du dataset
     args = parser.parse_args()
     num_data_train = args.n_train
-    num_data_test = args.n_test
+    num_data_test = args.n_eval
     num_feat = args.n_feat
     num_iter = args.n_iter
     num_item = args.n
