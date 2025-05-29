@@ -25,13 +25,13 @@ def write_dataset_file(fname, dim, num_feat, num_item, num_data, capacities, wei
             line += ",".join(str(mu[i][j]) for j in range(num_item*(dim-1) - 1)) + f",{mu[i][-1]}\n"
             f.write(line)
 
-def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, keep = 1,verbose=False):
+def gen_datafile(num_data_train, num_data_eval, num_feat, num_items, dim, keep = 1,verbose=False):
     
 
-    total_data = num_data_train + num_data_test
+    total_data = num_data_train + num_data_eval
     if verbose:
-        print(f"➡ Generation of {total_data} instances ({num_data_train} train, {num_data_test} test)")
-        print(f"➡ Dimensions : {dim} constraints, {num_items} items, {num_feat} features")
+        print(f"➡ Generation of {total_data} instances ({num_data_train} train, {num_data_eval} validation)")
+        print(f"➡ Dimensions : {dim} constraints, {num_items} items, {num_feat} features, {keep} constraints kept in main subproblem")
 
     # Random data generation
     weights, Z, c = pyepo.data.knapsack.genData(total_data, num_feat, num_items, dim, deg=4, noise_width=0, seed=135)
@@ -83,11 +83,11 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, keep =
     mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
 
     # Save
-    # write_dataset_file(f"knapsack/datasets/train_{dim}_{num_feat}_{num_items}_{num_data_train}.txt",
-    #                    dim, num_feat, num_items, num_data_train,
-    #                    capacities, weights, Z_train, c_train, x_star_train, X_train, mu_train)
+    write_dataset_file(f"knapsack/datasets/train_{dim}_{num_feat}_{num_items}_{keep}_{num_data_train}.txt",
+                       dim, num_feat, num_items, num_data_train,
+                       capacities, weights, Z_train, c_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"knapsack/datasets/test_{dim}_{num_feat}_{num_items}_{num_data_test}.txt",
+    write_dataset_file(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_items}_{keep}_{num_data_test}.txt",
                        dim, num_feat, num_items, num_data_test,
                        capacities, weights, Z_test, c_test, x_star_test, X_test, mu_test)
 
