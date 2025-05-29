@@ -31,7 +31,7 @@ class SPOPlus():
     
 class Exact():
     """
-    Works only for the portfolio problem, sine we have a formula for the exact solution
+    Works only for the portfolio problem, since we have a formula for the exact solution
     """
     def __init__(self, solver, device):
         self.solver = solver
