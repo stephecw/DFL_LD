@@ -130,7 +130,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
         if time_limit is not None:
             if train_time > time_limit:
                 print("Time limit reached, stopping training.")
-                return
+                break
 
     if best_model_state is not None:
         device = next(model.parameters()).device
