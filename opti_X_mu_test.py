@@ -1,4 +1,6 @@
 import torch
+import numpy as np
+from pyepo.model.grb import knapsackModel
 
 class OptimizationBatchModel:
     def __init__(self, solvers, device="cuda"):
@@ -15,6 +17,35 @@ class OptimizationBatchModel:
     def update_val(self):
         self.solve_X()
         self.vals = torch.sum((self.c + self.mu.sum(dim=1)) * self.X[:,0], dim=1) - torch.sum(self.mu*self.X[:, 1:], dim=(1,2))
+        if self.vals.item() < self.obj:
+            print("dépassement")
+            solvers_bis = []
+            X_bis = np.zeros(self.X.shape, dtype=int)
+            for i, solver in enumerate(self.solvers):
+                solv = knapsackModel(np.expand_dims(solver.weights.cpu().numpy(),0), [solver.capacity.item()])
+                if i == 0:
+                    for j in range(self.X.shape[0]):
+                        solv.setObj = self.c.cpu().numpy()[j] + self.mu.cpu().numpy().sum(axis=1)[j]
+                        X_bis[j, i],_ = solv.solve()
+                else:
+                    for j in range(self.X.shape[0]):
+                        solv.setObj = -self.mu.cpu().numpy()[:, i-1]
+                        X_bis[j, i] = solv.solve()[0]
+            print(f"X_GPU : {self.X}, {self.vals.item()}")
+            print(f"X_CPU : {X_bis}, {_}")
+            for i, solver in enumerate(self.solvers):
+                w = solver.weights
+                cap = solver.capacity.item()
+                print(w)
+                print(cap)
+                if i == 0:
+                    print(self.c.cpu().numpy()[j] + self.mu.cpu().numpy().sum(axis=1))
+                else:
+                    print(-self.mu.cpu().numpy()[:, i-1])
+                violation_gpu = cap - (self.X[0,i] * w).sum()
+                violation_cpu = cap - (X_bis[0,i] * w.cpu().numpy()).sum()
+                print(f"violation {i}: GPU : {violation_gpu}, CPU : {violation_cpu}")
+            raise
         print(self.vals)
 
     def solve_X(self):
@@ -61,10 +92,11 @@ class OptimizationBatchModel:
                 print(f"Convergence atteinte")
                 break
 
-    def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
+    def optim_mu(self, obj, c_batch, mu_init=None, verbose=False, **adam_args):
         self.c = c_batch.clone().to(self.device)  # [B, n]
         batch_size, num_items = self.c.shape
         self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.int32, device=self.device)
+        self.obj = obj
         self.vals = torch.zeros(batch_size, dtype=torch.float32, device=self.device)
         self.l_vals = []
         self.l_grad = []
