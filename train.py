@@ -69,6 +69,12 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             else:
                 scheduler.step()
 
+        if scheduler is not None:
+            if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                scheduler.step(mean_loss)
+            else:
+                scheduler.step()
+
         if monitoring:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
@@ -343,7 +349,6 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                 scheduler.step(mean_loss)
             else:
                 scheduler.step()
-        
         if monitoring:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
@@ -495,7 +500,6 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             for param in model.parameters():
                 if param.grad is not None:
                     total_grad_norm += param.grad.norm().item() ** 2
-    
         mean_loss = total_loss / len(dataloader_train)
         if scheduler is not None:
             if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
@@ -549,7 +553,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                             "Std relative regret": std_relat_regret, "norm_diff_mu": mu_diff,
                             "train_time": train_time})
                 if verbose:
-                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
+                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f} | norm_diff_mu: {mu_diff:.4f}", flush=True)
                 
                 # Early stopping
                 if mean_relat_regret < best_relat_regret - min_delta:
@@ -619,6 +623,7 @@ def test(model, test_loader, eval_solver, device, run=None):
     errs = torch.tensor(rel_regr)
     mean_relat = errs.mean().item()
     std_relat  = errs.std().item()
+
 
     print(f"Test relative regret: {mean_relat:.4f} ± {std_relat:.4f}", flush=True)
     if run:
