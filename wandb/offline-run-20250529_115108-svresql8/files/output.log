@@ -1,0 +1,72 @@
+Loading /quad/train_30_500_200_2-25.txt
+Loading /quad/eval_30_100_200_2-25.txt
+Loading /quad/test_30_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with LD bound as loss...
+Epoch 0 | loss: 0.0239
+Eval Epoch 0 | Mean relative regret: 0.2262
+Epoch 1 | loss: 0.0199
+Eval Epoch 1 | Mean relative regret: 0.2160
+Epoch 2 | loss: 0.0171
+Eval Epoch 2 | Mean relative regret: 0.2049
+Epoch 3 | loss: 0.0155
+Eval Epoch 3 | Mean relative regret: 0.1967
+Epoch 4 | loss: 0.0143
+Eval Epoch 4 | Mean relative regret: 0.1919
+Epoch 5 | loss: 0.0133
+Eval Epoch 5 | Mean relative regret: 0.1860
+Epoch 6 | loss: 0.0125
+Eval Epoch 6 | Mean relative regret: 0.1801
+Epoch 7 | loss: 0.0117
+Eval Epoch 7 | Mean relative regret: 0.1747
+Epoch 8 | loss: 0.0109
+Eval Epoch 8 | Mean relative regret: 0.1688
+Epoch 9 | loss: 0.0103
+Eval Epoch 9 | Mean relative regret: 0.1643
+Epoch 10 | loss: 0.0096
+Eval Epoch 10 | Mean relative regret: 0.1616
+Epoch 11 | loss: 0.0088
+Eval Epoch 11 | Mean relative regret: 0.1593
+Epoch 12 | loss: 0.0086
+Eval Epoch 12 | Mean relative regret: 0.1585
+Epoch 13 | loss: 0.0082
+Eval Epoch 13 | Mean relative regret: 0.1576
+Epoch 14 | loss: 0.0077
+Eval Epoch 14 | Mean relative regret: 0.1566
+Epoch 15 | loss: 0.0073
+Eval Epoch 15 | Mean relative regret: 0.1565
+Epoch 16 | loss: 0.0070
+Eval Epoch 16 | Mean relative regret: 0.1557
+Epoch 17 | loss: 0.0068
+Eval Epoch 17 | Mean relative regret: 0.1548
+Epoch 18 | loss: 0.0066
+Eval Epoch 18 | Mean relative regret: 0.1543
+Epoch 19 | loss: 0.0064
+Eval Epoch 19 | Mean relative regret: 0.1535
+Epoch 20 | loss: 0.0062
+Eval Epoch 20 | Mean relative regret: 0.1533
+Epoch 21 | loss: 0.0059
+Eval Epoch 21 | Mean relative regret: 0.1533
+Epoch 22 | loss: 0.0058
+Eval Epoch 22 | Mean relative regret: 0.1531
+Epoch 23 | loss: 0.0055
+Eval Epoch 23 | Mean relative regret: 0.1527
+Epoch 24 | loss: 0.0055
+Eval Epoch 24 | Mean relative regret: 0.1530
+Epoch 25 | loss: 0.0053
+Eval Epoch 25 | Mean relative regret: 0.1532
+Epoch 26 | loss: 0.0053
+Eval Epoch 26 | Mean relative regret: 0.1530
+Epoch 27 | loss: 0.0053
+Eval Epoch 27 | Mean relative regret: 0.1532
+Epoch 28 | loss: 0.0052
+Eval Epoch 28 | Mean relative regret: 0.1545
+Epoch 29 | loss: 0.0051
+Eval Epoch 29 | Mean relative regret: 0.1533
+Epoch 30 | loss: 0.0049
+Eval Epoch 30 | Mean relative regret: 0.1525
+Time limit reached, stopping training.
+Test relative regret: 0.1525 ± 0.0516
+Test relative regret: 0.1320 ± 0.0541
+Saving the model to portfolio/models/IMLE_LD_30_500_200_2-25.pth

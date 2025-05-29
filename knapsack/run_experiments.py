@@ -9,7 +9,7 @@ from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus
 from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack
+from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
 
 import argparse
 
@@ -77,7 +77,7 @@ step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
 
 
-def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_eval,
+def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None,
@@ -154,9 +154,9 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     if jobtype == "LD":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
-            diff_method = I_MLE(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = I_MLE(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            diff_method = SPOPlus(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = SPOPlus(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         if verbose:
             print("Training the model with LD bound as loss...", flush=True)
 
@@ -181,14 +181,19 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     elif jobtype == "SG":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
-            diff_method = I_MLE(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = I_MLE(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            diff_method = SPOPlus(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = SPOPlus(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         # Optimizer for mu
-        solvers = [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(dim)]
+        solvers = []
+        if keep == 1:
+            solvers = [solver_X_1D_knapsack(weights[0], capacities[0], device)]
+        else:
+            solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
+        solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep, dim)]
         optimizer_mu = OptimizationBatchModel(solvers, device)
         
-        mu_global0 = torch.ones(len(train_loader.dataset), dim - 1, num_item, device=device, dtype=torch.float32)
+        mu_global0 = torch.ones(len(train_loader.dataset), dim - keep, num_item, device=device, dtype=torch.float32)
 
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...", flush=True)
@@ -275,7 +280,7 @@ wandbarg = {
             "diff_method_arg": diff_method_arg
         }
 }
-run_train(model, method, dim, num_feat, num_item, num_data_train, num_data_eval,
+run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval,
         batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl,
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,

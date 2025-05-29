@@ -1,0 +1,15 @@
+{"time":"2025-05-29T09:29:16.194688773-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_092915-cekfr5z0/logs/debug-core.log"}
+{"time":"2025-05-29T09:29:16.355182708-04:00","level":"INFO","msg":"created new stream","id":"cekfr5z0"}
+{"time":"2025-05-29T09:29:16.355274268-04:00","level":"INFO","msg":"stream: started","id":"cekfr5z0"}
+{"time":"2025-05-29T09:29:16.35553153-04:00","level":"INFO","msg":"handler: started","stream_id":"cekfr5z0"}
+{"time":"2025-05-29T09:29:16.35558324-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"cekfr5z0"}
+{"time":"2025-05-29T09:29:16.35578063-04:00","level":"INFO","msg":"sender: started","stream_id":"cekfr5z0"}
+{"time":"2025-05-29T09:29:16.362444355-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T09:30:34.856648359-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T09:30:34.85751702-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T09:30:34.858487642-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-29T09:30:35.869338774-04:00","level":"INFO","msg":"stream: closing","id":"cekfr5z0"}
+{"time":"2025-05-29T09:30:35.869368296-04:00","level":"INFO","msg":"handler: closed","stream_id":"cekfr5z0"}
+{"time":"2025-05-29T09:30:35.869387331-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"cekfr5z0"}
+{"time":"2025-05-29T09:30:35.869575669-04:00","level":"INFO","msg":"sender: closed","stream_id":"cekfr5z0"}
+{"time":"2025-05-29T09:30:35.87025589-04:00","level":"INFO","msg":"stream: closed","id":"cekfr5z0"}

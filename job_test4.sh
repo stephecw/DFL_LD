@@ -23,7 +23,7 @@ for TIME_LIMIT in 60 300 600 1800; do
     --n_samples 1 --lambda_imle 10 --sigma 1.0 \
     --step_mu 5 \
     --n_iter_mu 30 \
-    --out_file results.csv \
+    --out_file portfolio/results_temps.csv \
     --time_limit "$TIME_LIMIT"
 
   echo "Running with time_limit=$TIME_LIMIT for n=50"
@@ -34,6 +34,6 @@ for TIME_LIMIT in 60 300 600 1800; do
     --n_samples 10 --lambda_imle 1 --sigma 1.0 \
     --step_mu 15 \
     --n_iter_mu 10 \
-    --out_file results.csv \
+    --out_file portfolio/results_temps.csv \
     --time_limit "$TIME_LIMIT"
 done
