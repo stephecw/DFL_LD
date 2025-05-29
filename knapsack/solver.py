@@ -98,11 +98,13 @@ class solver_X_MD_knapsack():
     Solver for the knapsack problem with multiple dimensions.
 
     """
-    def __init__(self, weights, capacities, device):
+    def __init__(self, weights, capacities, device, n_jobs=-1):
         self.weights = torch.tensor(weights, dtype=torch.int32, device=device)
         self.capacities = torch.tensor(capacities, dtype=torch.int32, device=device)
         self.num_items = weights.shape[0]
         self.device = device
+        self.n_jobs = n_jobs
+
     
     def _solve_one(self, c_i_np):
         solver = knapsackModel(weights=self.weights.cpu().numpy(), capacity=self.capacities.cpu().numpy())
@@ -120,5 +122,6 @@ class solver_X_MD_knapsack():
         sols = Parallel(n_jobs=self.n_jobs, backend="loky")(
             delayed(self._solve_one)(c_np[i]) for i in range(c_np.shape[0])
         )
+        sols_np = np.stack(sols, axis=0)
         # retour en torch.Tensor sur l'appareil souhaité
-        return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)
+        return torch.from_numpy(sols_np).to(device=self.device, dtype=c_batch.dtype)

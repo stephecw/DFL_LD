@@ -37,7 +37,7 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     total_data = num_data_train + num_data_test + num_data_eval
     if verbose:
         print(f"➡ Generation of {total_data} instances ({num_data_train} train, {num_data_eval} eval, {num_data_test} test)")
-        print(f"➡ Dimensions : {global_dim} constraints, {num_items} items, {num_feat} features")
+        print(f"➡ Dimensions : {global_dim} constraints, {num_items} items, {num_feat} features, {keep} constraints kept in the main subproblem")
 
     # Random data generation
     weights, Z, c = pyepo.data.knapsack.genData(total_data, num_feat, num_items, global_dim, deg=4, noise_width=0, seed=135)
@@ -101,7 +101,7 @@ if __name__ == "__main__":
     parser.add_argument('--dim', type=int, nargs='+', default=[5], help='Number of constraints.')
     parser.add_argument('--n_train', type=int, default=500, help='Number of training data points')
     parser.add_argument('--n_eval', type=int, default=100, help='Number of evaluation data points')
-    parser.add_argument('--n_test', type=int, default=200, help='Number of test data points')
+    parser.add_argument('--n_test', type=int, default=400, help='Number of test data points')
     parser.add_argument('--n_feat', type=int, default=200, help='Number of features')
     parser.add_argument('--n_iter', type=int, default=500, help='Number of iterations for the optimization of mu. (0 to skip execution)')
     parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem')
@@ -117,7 +117,8 @@ if __name__ == "__main__":
     num_item = args.n
     global_dim = args.dim
     convergence = args.conv
+    keep = args.keep
     
     for n in num_item:
         for gd in global_dim:
-            gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, num_iter, convergence, verbose=True)
+            gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, keep,num_iter, convergence, verbose=True)

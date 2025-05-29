@@ -19,6 +19,7 @@ import argparse
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
+parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
 
 parser.add_argument('--dim', type=int, default=5, help='Number of constraints.')
 parser.add_argument('--n', type=int, default=30, help='Number of items.')
@@ -49,6 +50,7 @@ num_data_eval = 100   # eval dataset size
 
 dim = args.dim
 num_item = args.n
+keep = args.keep
 
 epochs = args.ep if args.ep > 0 else int(1e10)
 tl = args.tl if args.tl > 0 else int(1e10)
