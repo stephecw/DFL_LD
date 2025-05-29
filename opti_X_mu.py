@@ -26,7 +26,7 @@ class OptimizationBatchModel:
         self.solve_X()
         return self.X[:, 0].unsqueeze(1) - self.X[:, 1:]
 
-    def adam_optimizer(self, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=1000, verbose=False, freq_verb=100):
+    def adam_optimizer(self, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=10000, convergence=1e-4, verbose=False):
         """
         Adam batch for all problems simultaneously
         """
@@ -35,8 +35,6 @@ class OptimizationBatchModel:
 
         for t in range(1, max_iter + 1):
             grad = self.gradient()
-            if verbose:
-                print(f"    Iteration {t}/{max_iter} :")
 
             m = beta1 * m + (1 - beta1) * grad
             v = beta2 * v + (1 - beta2) * (grad ** 2)
@@ -45,9 +43,13 @@ class OptimizationBatchModel:
             v_hat = v / (1 - beta2**t)
 
             self.mu = self.mu - lr * m_hat / (torch.sqrt(v_hat) + eps)
-
-            if verbose and t % freq_verb == 0:
-                print(f"→ Iter {t} | Mean B(mu): {self.vals.mean().item():.4f}")
+            
+            if verbose:
+                print(f"    Iteration {t}/{max_iter} : {torch.max(torch.abs(lr * m_hat / (torch.sqrt(v_hat) + eps)))}")
+            
+            if torch.max(torch.abs(lr * m_hat / (torch.sqrt(v_hat) + eps))) < convergence:
+                print(f"Convergence atteinte")
+                break
 
     def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
         self.c = c_batch.clone().to(self.device)  # [B, n]
