@@ -66,7 +66,7 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     x_star_train, x_star_eval, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:num_data_train+num_data_eval], x_star_array[num_data_train+num_data_eval:]
     
     solvers = []
-        if keep == 1:
+    if keep == 1:
         solvers= [solver_X_1D_knapsack(weights[0], capacities[0], device)]
     else:
         solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
