@@ -10,7 +10,7 @@ def get_learning_rate(optimizer):
 
 def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=10, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device):
     """
     Training a PFL-model by minimizing the MSE.
 
@@ -63,6 +63,11 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             total_loss += loss.item()
 
         mean_loss = total_loss / len(dataloader_train)
+        if scheduler is not None:
+            if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
+                scheduler.step(mean_loss)
+            else:
+                scheduler.step()
 
         if scheduler is not None:
             if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
@@ -81,10 +86,10 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
 
         ## evaluation step (if needed)##
-        if epoch % eval_freq == 0:
+        if epoch % eval_freq == eval_freq-1:
 
             with torch.no_grad():
                 model.eval()
@@ -102,6 +107,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
                         x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
                         # Compute regret
                         relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
+                            
                         relat_regrets.append(relat_regret)
 
                 relat_regrets = torch.stack(relat_regrets)
@@ -112,7 +118,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
                     run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
                             "Std relative regret": std_relat_regret, "train_time": train_time})
                 if verbose:
-                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
+                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
                 
                 # Early stopping
                 if mean_relat_regret < best_relat_regret - min_delta:
@@ -120,17 +126,17 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
                     epochs_no_improvement = 0
                     best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
                     best_epoch = epoch
-                else:
+                elif patience is not None:
                     epochs_no_improvement += 1
                     if epochs_no_improvement >= patience:
-                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
 
         # Check time limit
         if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.")
-                return
+            if time.time() - start_time > time_limit:
+                print("Time limit reached, stopping training.", flush=True)
+                break    
 
     if best_model_state is not None:
         device = next(model.parameters()).device
@@ -143,10 +149,11 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
+    return best_relat_regret
 
 def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=10, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device):
     """
     Training a DFL-model by minimizing classical regret loss.
 
@@ -206,8 +213,6 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
             else:
                 scheduler.step()
 
-
-
         if monitoring:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
@@ -219,10 +224,10 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
 
         ## evaling step (if needed)##
-        if epoch % eval_freq == 0:
+        if epoch % eval_freq == eval_freq-1:
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
@@ -249,7 +254,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
                     run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
                             "Std relative regret": std_relat_regret, "train_time": train_time})
                 if verbose:
-                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
+                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
 
                 # Early stopping
                 if mean_relat_regret < best_relat_regret - min_delta:
@@ -257,17 +262,17 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
                     epochs_no_improvement = 0
                     best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
                     best_epoch = epoch
-                else:
+                elif patience is not None:
                     epochs_no_improvement += 1
                     if epochs_no_improvement >= patience:
-                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
 
         # Check time limit
         if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.")
-                return
+            if time.time() - start_time > time_limit:
+                print("Time limit reached, stopping training.", flush=True)
+                break
 
     if best_model_state is not None:
         device = next(model.parameters()).device
@@ -280,10 +285,11 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
+    return best_relat_regret
 
 def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=10, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device):
     """
     Training a DFL-model by minimizing LD loss.
 
@@ -343,7 +349,6 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                 scheduler.step(mean_loss)
             else:
                 scheduler.step()
-
         if monitoring:
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
@@ -355,10 +360,10 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
 
         ## evaling step (if needed)##
-        if epoch % eval_freq == 0:
+        if epoch % eval_freq == eval_freq-1:
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
@@ -385,7 +390,7 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                     run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
                             "Std relative regret": std_relat_regret, "train_time": train_time})
                 if verbose:
-                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}")
+                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
                 
                 # Early stopping
                 if mean_relat_regret < best_relat_regret - min_delta:
@@ -393,17 +398,17 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                     epochs_no_improvement = 0
                     best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
                     best_epoch = epoch
-                else:
+                elif patience is not None:
                     epochs_no_improvement += 1
                     if epochs_no_improvement >= patience:
-                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
 
         # Check time limit
         if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.")
-                return
+            if time.time() - start_time > time_limit:
+                print("Time limit reached, stopping training.", flush=True)
+                break
 
     if best_model_state is not None:
         device = next(model.parameters()).device
@@ -416,12 +421,13 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
+    return best_relat_regret
 
 def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
           step_mu, num_iter_mu, optimizer_mu,
           mu_global0,
-          run, verbose=False, patience=10, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
@@ -494,7 +500,6 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             for param in model.parameters():
                 if param.grad is not None:
                     total_grad_norm += param.grad.norm().item() ** 2
-
         mean_loss = total_loss / len(dataloader_train)
         if scheduler is not None:
             if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
@@ -513,10 +518,10 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch+1} | loss: {mean_loss:.4f}")
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
 
         ## evaling step (if needed)##
-        if epoch % eval_freq == 0:
+        if epoch % eval_freq == eval_freq-1:
             with torch.no_grad():
                 model.eval()
                 relat_regrets = []
@@ -548,7 +553,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                             "Std relative regret": std_relat_regret, "norm_diff_mu": mu_diff,
                             "train_time": train_time})
                 if verbose:
-                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f} | norm_diff_mu: {mu_diff:.4f}")
+                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f} | norm_diff_mu: {mu_diff:.4f}", flush=True)
                 
                 # Early stopping
                 if mean_relat_regret < best_relat_regret - min_delta:
@@ -556,30 +561,17 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                     epochs_no_improvement = 0
                     best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
                     best_epoch = epoch
-                else:
+                elif patience is not None:
                     epochs_no_improvement += 1
                     if epochs_no_improvement >= patience:
-                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}")
-                        if run is not None:
-                            run.log({"training_status": "early_stopping"})
+                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
 
         # Check time limit
         if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.")
-                if best_model_state is not None:
-                    device = next(model.parameters()).device
-                    model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
-                    if run is not None:
-                        total_duration = time.time() - start_time
-                        run.log({
-                            "total_duration": total_duration,
-                            "best_epoch": best_epoch,
-                            "best_relat_regret": best_relat_regret,
-                            "training_status": "time_limit"
-                        })
-                return
+            if time.time() - start_time > time_limit:
+                print("Time limit reached, stopping training.", flush=True)
+                break
     
     if best_model_state is not None:
         device = next(model.parameters()).device
@@ -592,7 +584,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
-
+    return best_relat_regret
 
 def test(model, test_loader, eval_solver, device, run=None):
     """
@@ -632,11 +624,13 @@ def test(model, test_loader, eval_solver, device, run=None):
     mean_relat = errs.mean().item()
     std_relat  = errs.std().item()
 
-    print(f"Test relative regret: {mean_relat:.4f} ± {std_relat:.4f}")
+
+    print(f"Test relative regret: {mean_relat:.4f} ± {std_relat:.4f}", flush=True)
     if run:
         run.log({
             "test/mean_relative_regret": mean_relat,
             "test/std_relative_regret": std_relat
         })
 
-    return mean_relat, std_relat
+    return rel_regr
+    #return mean_relat, std_relat
