@@ -54,15 +54,12 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, verbos
         print(" Optimisation of mu via GPU...")
 
     c_tensor = torch.tensor(c, dtype=torch.float32)
-    solvers = [solver_X_1D_knapsack(num_items, weights[i], capacities[i], device) for i in range(dim)]
+    solvers = [solver_X_1D_knapsack( weights[i], capacities[i], device) for i in range(dim)]
     optimizer = OptimizationBatchModel(
         solvers=solvers,
-        num_items=num_items,
-        dim=dim,
-        c_batch=c_tensor,
-        device=device,
+        device=device
     )
-    optimizer.optim_mu(verbose=verbose, max_iter=1000)
+    optimizer.optim_mu(c_batch=c_tensor,verbose=verbose, max_iter=1000)
 
     X_tensor = optimizer.get_X()
     mu_tensor = optimizer.get_mu()
@@ -81,11 +78,11 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_items, dim, verbos
     mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
 
     # Save
-    write_dataset_file(f"knapsack/datasets/train_{dim}_{num_feat}_{num_items}_{num_data_train}.txt",
-                       dim, num_feat, num_items, num_data_train,
-                       capacities, weights, Z_train, c_train, x_star_train, X_train, mu_train)
+    # write_dataset_file(f"knapsack/datasets/train_{dim}_{num_feat}_{num_items}_{num_data_train}.txt",
+    #                    dim, num_feat, num_items, num_data_train,
+    #                    capacities, weights, Z_train, c_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"knapsack/test_{dim}_{num_feat}_{num_items}_{num_data_test}.txt",
+    write_dataset_file(f"knapsack/datasets/test_{dim}_{num_feat}_{num_items}_{num_data_test}.txt",
                        dim, num_feat, num_items, num_data_test,
                        capacities, weights, Z_test, c_test, x_star_test, X_test, mu_test)
 
