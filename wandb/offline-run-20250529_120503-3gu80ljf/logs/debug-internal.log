@@ -1,0 +1,14 @@
+{"time":"2025-05-29T12:05:04.155421954-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_120503-3gu80ljf/logs/debug-core.log"}
+{"time":"2025-05-29T12:05:04.266485457-04:00","level":"INFO","msg":"created new stream","id":"3gu80ljf"}
+{"time":"2025-05-29T12:05:04.266553642-04:00","level":"INFO","msg":"stream: started","id":"3gu80ljf"}
+{"time":"2025-05-29T12:05:04.26679016-04:00","level":"INFO","msg":"handler: started","stream_id":"3gu80ljf"}
+{"time":"2025-05-29T12:05:04.26683654-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"3gu80ljf"}
+{"time":"2025-05-29T12:05:04.267020802-04:00","level":"INFO","msg":"sender: started","stream_id":"3gu80ljf"}
+{"time":"2025-05-29T12:05:04.29534853-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T12:15:07.128198317-04:00","level":"INFO","msg":"stream: closing","id":"3gu80ljf"}
+{"time":"2025-05-29T12:15:07.128752683-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T12:15:07.238378622-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T12:15:07.255079795-04:00","level":"INFO","msg":"handler: closed","stream_id":"3gu80ljf"}
+{"time":"2025-05-29T12:15:07.255115207-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"3gu80ljf"}
+{"time":"2025-05-29T12:15:07.256457296-04:00","level":"INFO","msg":"sender: closed","stream_id":"3gu80ljf"}
+{"time":"2025-05-29T12:15:07.256488504-04:00","level":"INFO","msg":"stream: closed","id":"3gu80ljf"}

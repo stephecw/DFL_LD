@@ -9,7 +9,7 @@ import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, capacities, weights, Z, c, x_star_array, X=None, mu=None):
+def write_dataset_file(fname, global_dim, keep,num_feat, num_item, num_data, capacities, weights, Z, c, x_star_array, X=None, mu=None):
     with open(fname, 'w') as f:
         # Constraints (unique for the whole dataset)
         f.write(f"{global_dim},{num_feat},{num_item},{num_data}\n")
@@ -23,7 +23,7 @@ def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, capaciti
                 line += ",".join(str(int(c[i][j])) for j in range(num_item)) + ","
                 line += ",".join(str(int(x_star_array[i][j])) for j in range(num_item)) + ","
                 line += ",".join(str(int(X[i][j])) for j in range(num_item)) + ","
-                line += ",".join(str(mu[i][j].item()) for j in range(num_item*(global_dim-1) - 1)) + f",{mu[i][-1]}\n"
+                line += ",".join(str(mu[i][j].item()) for j in range(num_item*(global_dim-keep) - 1)) + f",{mu[i][-1]}\n"
                 f.write(line)
         else:
             for i in range(num_data):
@@ -72,6 +72,7 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
         solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
     solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep,global_dim)]
     optimizer_mu = OptimizationBatchModel(solvers, device)
+    print("avant optimisation du mu")
     optimizer_mu.optim_mu(c_batch=c_train, verbose=verbose, max_iter=num_iter, convergence=convergence)
     X_train = optimizer_mu.get_X()
     mu_train = optimizer_mu.get_mu()
@@ -84,15 +85,15 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     # Save
 
     write_dataset_file(f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}.txt",
-                       global_dim, num_feat, num_items, num_data_train,
+                       global_dim, keep, num_feat, num_items, num_data_train,
                        capacities, weights, Z_train, c_train, x_star_train, X, mu)
 
     write_dataset_file(f"knapsack/datasets/eval_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_eval}.txt",
-                       global_dim, num_feat, num_items, num_data_eval,
+                       global_dim, keep, num_feat, num_items, num_data_eval,
                        capacities, weights, Z_eval, c_eval, x_star_eval)
     
     write_dataset_file(f"knapsack/datasets/test_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_test}.txt",
-                       global_dim, num_feat, num_items, num_data_test,
+                       global_dim, keep ,num_feat, num_items, num_data_test,
                        capacities, weights, Z_test, c_test, x_star_test)
 
 if __name__ == "__main__":

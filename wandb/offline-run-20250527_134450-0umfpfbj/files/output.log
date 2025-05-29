@@ -17080,6 +17080,7 @@ Epoch 14227 | loss: 0.0002
 Epoch 14228 | loss: 0.0002
 Epoch 14229 | loss: 0.0002
 Epoch 14230 | loss: 0.0002
+Eval Epoch 14230 | Mean relative regret: 0.1642
 Epoch 14231 | loss: 0.0002
 Epoch 14232 | loss: 0.0002
 Epoch 14233 | loss: 0.0002

@@ -1,0 +1,15 @@
+{"time":"2025-05-29T09:36:08.200423865-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_093607-5fg390sh/logs/debug-core.log"}
+{"time":"2025-05-29T09:36:08.326339797-04:00","level":"INFO","msg":"created new stream","id":"5fg390sh"}
+{"time":"2025-05-29T09:36:08.326393371-04:00","level":"INFO","msg":"stream: started","id":"5fg390sh"}
+{"time":"2025-05-29T09:36:08.32660893-04:00","level":"INFO","msg":"handler: started","stream_id":"5fg390sh"}
+{"time":"2025-05-29T09:36:08.326655353-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"5fg390sh"}
+{"time":"2025-05-29T09:36:08.326830953-04:00","level":"INFO","msg":"sender: started","stream_id":"5fg390sh"}
+{"time":"2025-05-29T09:36:08.346902109-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T09:41:21.940163199-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T09:41:21.940899597-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T09:41:21.941870055-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-29T09:41:22.95177976-04:00","level":"INFO","msg":"stream: closing","id":"5fg390sh"}
+{"time":"2025-05-29T09:41:22.951810958-04:00","level":"INFO","msg":"handler: closed","stream_id":"5fg390sh"}
+{"time":"2025-05-29T09:41:22.95183057-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"5fg390sh"}
+{"time":"2025-05-29T09:41:22.952055776-04:00","level":"INFO","msg":"sender: closed","stream_id":"5fg390sh"}
+{"time":"2025-05-29T09:41:22.95220618-04:00","level":"INFO","msg":"stream: closed","id":"5fg390sh"}
