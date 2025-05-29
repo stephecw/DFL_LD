@@ -13,7 +13,7 @@ class solver_X_1D_knapsack():
         batch_size = c.shape[0]
         self.X = torch.tensor([0]*batch_size*self.num_items, dtype=torch.int32, device=self.device)
         c = c.clone().view(batch_size*self.num_items).to(self.device)
-        Ldp = torch.zeros((batch_size, self.capacity.item() + 1, self.num_items + 1), dtype=torch.int32, device=self.device)
+        Ldp = torch.zeros((batch_size, self.capacity.item() + 1, self.num_items + 1), dtype=torch.float32, device=self.device)
         
         dp_knapsack_gpu_batch[batch_size, 1](self.capacity, 
                                              self.weights, 
@@ -42,6 +42,8 @@ def dp_knapsack_gpu_batch(capacity, weights, c, num_items, X, Ldp):
         if Ldp[idx_batch][w][i] != Ldp[idx_batch][w][i - 1]:
             X[idx_batch * num_items + i - 1] = 1
             w -= weights[i - 1]
+        else:
+            X[idx_batch * num_items + i - 1] = 0
 
 class solver_X_1D_knapsack_test():
 
@@ -54,7 +56,7 @@ class solver_X_1D_knapsack_test():
     
     def __call__(self, c):
         batch_size = c.shape[0]
-        self.X = torch.tensor([0]*batch_size*self.num_items, dtype=torch.int32, device=self.device)
+        self.X = torch.zeros(batch_size*self.num_items, dtype=torch.int32, device=self.device)
         c = c.clone().view(batch_size*self.num_items).to(self.device)
         Ldp = torch.zeros((batch_size, self.capacity.item() + 1, self.num_items + 1), dtype=torch.int32, device=self.device)
         
@@ -65,9 +67,11 @@ class solver_X_1D_knapsack_test():
                                              self.X, 
                                              Ldp)
         
-        
-        
+        self.violation = self.capacity - self.X * self.weights
         return self.X.view(batch_size, self.num_items)
+    
+    def get_violation(self):
+        return self.violation
         
 @cuda.jit
 def dp_knapsack_gpu_batch(capacity, weights, c, num_items, X, Ldp):
