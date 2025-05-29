@@ -209,7 +209,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     row = {
         'n': num_item,
         'jobtype': jobtype,
-        'ime limit': time_limit,
+        'time limit': time_limit,
         'method': diff_method_name or 'MSE',
         'n_samples': diff_method_arg.get('n_samples', ''),
         'lambda_imle': diff_method_arg.get('lambd', ''),
@@ -275,8 +275,9 @@ lr_classic = 0.002
 model_shape_classic = [num_feat, 100, num_item]
 dropout_classic = 0.2
 schedulerType_classic = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_classic = {'patience': 10,
-                     'factor': 0.5
+sched_arg_classic = {'patience': 50,
+                     'factor': 0.5,
+                     'min_lr':1e-6
                      }
 diff_method_classic = args.method  # "StepLR", "SPOPlus"
 diff_method_arg_classic = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
@@ -290,8 +291,9 @@ lr_LD = 0.002
 model_shape_LD = [num_feat, 100, num_item]
 dropout_LD = 0.2
 schedulerType_LD = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_LD = {'patience': 10,
-                'factor': 0.5
+sched_arg_LD = {'patience': 50,
+                'factor': 0.5,
+                'min_lr':1e-6
                 }
 diff_method_LD = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_LD = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
@@ -306,8 +308,9 @@ lr_SG = 0.002
 model_shape_SG = [num_feat, 100, num_item]
 dropout_SG = 0.2
 schedulerType_SG = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_SG = {'patience': 10,
-                'factor': 0.5
+sched_arg_SG = {'patience': 50,
+                'factor': 0.5,
+                'min_lr':1e-6
                 }
 diff_method_SG = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
@@ -324,7 +327,8 @@ model_shape_MSE = [num_feat, 100, num_item]
 dropout_MSE = 0.2
 schedulerType_MSE = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_MSE = {'patience': 400,
-                'factor': 0.5
+                'factor': 0.5,
+                'min_lr':1e-6
                 }
 patience_MSE = 50000000
 diff_method_SG = args.method  # "IMLE", "SPOPlus"

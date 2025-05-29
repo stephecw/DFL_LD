@@ -8,7 +8,7 @@ from joblib import Parallel, delayed
 class solver_X_1D_knapsack():
 
     def __init__(self, weights, capacity, device):
-        self.weights = torch.tensor(weights, dtype=torch.int32, device=device)
+        self.weights = weights.clone().detach().to(device).to(torch.int32)
         self.capacity = torch.tensor([capacity], dtype=torch.int32, device=device)
         self.num_items = weights.shape[0]
         self.device = device
@@ -103,15 +103,15 @@ class solver_X_MD_knapsack():
 
     """
     def __init__(self, weights, capacities, device, n_jobs=-1):
-        self.weights = torch.tensor(weights, dtype=torch.int32, device=device)
-        self.capacities = torch.tensor(capacities, dtype=torch.int32, device=device)
+        self.weights = weights.detach().cpu().numpy() if torch.is_tensor(weights) else weights.copy()
+        self.capacities = capacities.detach().cpu().numpy() if torch.is_tensor(capacities) else capacities.copy()
         self.num_items = weights.shape[0]
         self.device = device
         self.n_jobs = n_jobs
 
     
     def _solve_one(self, c_i_np):
-        solver = knapsackModel(weights=self.weights.cpu().numpy(), capacity=self.capacities.cpu().numpy())
+        solver = knapsackModel(weights=self, capacity=self.capacities)
         solver.setObj(c_i_np)
         x_i, _ = solver.solve()
         return x_i
