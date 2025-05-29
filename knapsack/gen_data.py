@@ -3,7 +3,7 @@ import torch
 import pyepo
 from pyepo.model.grb import knapsackModel
 from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack
+from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
 
 import argparse
 
@@ -32,7 +32,7 @@ def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, capaciti
                 line += ",".join(str(int(x_star_array[i][j])) for j in range(num_item-1)) + f",{int(x_star_array[i][-1])}\n"
                 f.write(line)
 
-def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_items, global_dim, num_iter, convergence, verbose=False):
+def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_items, global_dim, keep ,num_iter, convergence, verbose=False):
     
     total_data = num_data_train + num_data_test + num_data_eval
     if verbose:
@@ -60,14 +60,17 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     if verbose:
         print(" Optimisation of mu via GPU...")
 
-
     c = torch.tensor(c, dtype=torch.int32)
     Z_train, Z_eval, Z_test = Z[:num_data_train], Z[num_data_train:num_data_train+num_data_eval], Z[num_data_train+num_data_eval:]
     c_train, c_eval, c_test = c[:num_data_train], c[num_data_train:num_data_train+num_data_eval], c[num_data_train+num_data_eval:]
     x_star_train, x_star_eval, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:num_data_train+num_data_eval], x_star_array[num_data_train+num_data_eval:]
     
     solvers = []
-    solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(global_dim)]
+        if keep == 1:
+        solvers= [solver_X_1D_knapsack(weights[0], capacities[0], device)]
+    else:
+        solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
+    solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep,global_dim)]
     optimizer_mu = OptimizationBatchModel(solvers, device)
     optimizer_mu.optim_mu(c_batch=c_train, verbose=verbose, max_iter=num_iter, convergence=convergence)
     X_train = optimizer_mu.get_X()
@@ -80,15 +83,15 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
         print(f" Optimisation done (device: {torch.cuda.get_device_name()})")
     # Save
 
-    write_dataset_file(f"knapsack/datasets/train_{global_dim}_{num_feat}_{num_items}_{num_data_train}.txt",
+    write_dataset_file(f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}.txt",
                        global_dim, num_feat, num_items, num_data_train,
                        capacities, weights, Z_train, c_train, x_star_train, X, mu)
 
-    write_dataset_file(f"knapsack/datasets/eval_{global_dim}_{num_feat}_{num_items}_{num_data_eval}.txt",
+    write_dataset_file(f"knapsack/datasets/eval_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_eval}.txt",
                        global_dim, num_feat, num_items, num_data_eval,
                        capacities, weights, Z_eval, c_eval, x_star_eval)
     
-    write_dataset_file(f"knapsack/datasets/test_{global_dim}_{num_feat}_{num_items}_{num_data_test}.txt",
+    write_dataset_file(f"knapsack/datasets/test_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_test}.txt",
                        global_dim, num_feat, num_items, num_data_test,
                        capacities, weights, Z_test, c_test, x_star_test)
 
@@ -101,6 +104,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_test', type=int, default=200, help='Number of test data points')
     parser.add_argument('--n_feat', type=int, default=200, help='Number of features')
     parser.add_argument('--n_iter', type=int, default=500, help='Number of iterations for the optimization of mu. (0 to skip execution)')
+    parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem')
     parser.add_argument('--conv', type=float, default=1e4, help='Convergence stopping.')
 
     # Parameters
