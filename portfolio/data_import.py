@@ -33,7 +33,7 @@ class ImportDataset:
         self.c_tensor  = torch.tensor(self.c , dtype=torch.float32)
         self.x_tensor  = torch.tensor(self.x , dtype=torch.float32)
         self.X_tensor  = torch.tensor(self.X , dtype=torch.float32)
-        self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
+        self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32).unsqueeze(1)
 
 
         if model is not None:
@@ -127,4 +127,9 @@ class ImportDataset:
         """
         dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=shuffle)
         return dataloader
+    def get_mu(self):
+        """
+        Retourne le vecteur mu du problème de portfolio.
+        """
+        return self.mu_tensor
 
