@@ -29,7 +29,7 @@ parser.add_argument('--lambda_imle', type=float, default=0.1, help='Lambda for I
 parser.add_argument('--sigma', type=float, default=0.1, help='Sigma for IMLE. Only used if method is "IMLE".')
 parser.add_argument('--out_file', type=str, default='portfolio/results.csv',
                     help='Chemin du fichier CSV où stocker les résultats.')
-parser.add_argument('time_limit', type=int, default=300, help='Time limit for training in seconds. Default is 300 seconds.')
+parser.add_argument('--time_limit', type=int, default=300, help='Time limit for training in seconds. Default is 300 seconds.')
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
