@@ -44,8 +44,9 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     x_star_train, x_star_eval, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:num_data_train+num_data_eval], x_star_array[num_data_train+num_data_eval:]
     
     solvers = [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(global_dim)]
+    #solvers = [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(global_dim)]
     optimizer_mu = OptimizationBatchModel(solvers, device)
-    optimizer_mu.optim_mu(c_batch=c_train, verbose=verbose, max_iter=num_iter, convergence=convergence)
+    optimizer_mu.optim_mu(obj= _,c_batch=c_train, verbose=verbose, max_iter=num_iter, convergence=convergence)
     X_train = optimizer_mu.get_X()
     mu_train = optimizer_mu.get_mu()
     l_vals, l_grad = optimizer_mu.get_monitor()
