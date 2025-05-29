@@ -1,0 +1,7 @@
+{"time":"2025-05-29T11:07:46.459751361-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_110745-znrqpofp/logs/debug-core.log"}
+{"time":"2025-05-29T11:07:46.617789206-04:00","level":"INFO","msg":"created new stream","id":"znrqpofp"}
+{"time":"2025-05-29T11:07:46.617873822-04:00","level":"INFO","msg":"stream: started","id":"znrqpofp"}
+{"time":"2025-05-29T11:07:46.618133927-04:00","level":"INFO","msg":"handler: started","stream_id":"znrqpofp"}
+{"time":"2025-05-29T11:07:46.618190426-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"znrqpofp"}
+{"time":"2025-05-29T11:07:46.61838713-04:00","level":"INFO","msg":"sender: started","stream_id":"znrqpofp"}
+{"time":"2025-05-29T11:07:46.635884414-04:00","level":"INFO","msg":"Starting system monitor"}

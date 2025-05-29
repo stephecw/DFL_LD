@@ -1,0 +1,124 @@
+Loading /quad/train_30_500_200_2-25.txt
+Loading /quad/eval_30_100_200_2-25.txt
+Loading /quad/test_30_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with dynamic mu and LD bound as loss...
+Epoch 1 | loss: 0.0187
+Eval Epoch 0 | Mean relative regret: 0.2157 | norm_diff_mu: 116.7852
+Epoch 2 | loss: 0.0168
+Eval Epoch 1 | Mean relative regret: 0.2030 | norm_diff_mu: 116.7852
+Epoch 3 | loss: 0.0154
+Eval Epoch 2 | Mean relative regret: 0.1933 | norm_diff_mu: 116.7852
+Epoch 4 | loss: 0.0142
+Eval Epoch 3 | Mean relative regret: 0.1845 | norm_diff_mu: 116.7852
+Epoch 5 | loss: 0.0131
+Eval Epoch 4 | Mean relative regret: 0.1745 | norm_diff_mu: 116.7852
+Epoch 6 | loss: 0.0120
+Eval Epoch 5 | Mean relative regret: 0.1641 | norm_diff_mu: 100.0217
+Epoch 7 | loss: 0.0106
+Eval Epoch 6 | Mean relative regret: 0.1585 | norm_diff_mu: 100.0217
+Epoch 8 | loss: 0.0099
+Eval Epoch 7 | Mean relative regret: 0.1553 | norm_diff_mu: 100.0217
+Epoch 9 | loss: 0.0090
+Eval Epoch 8 | Mean relative regret: 0.1518 | norm_diff_mu: 100.0217
+Epoch 10 | loss: 0.0085
+Eval Epoch 9 | Mean relative regret: 0.1489 | norm_diff_mu: 100.0217
+Epoch 11 | loss: 0.0080
+Eval Epoch 10 | Mean relative regret: 0.1478 | norm_diff_mu: 90.5843
+Epoch 12 | loss: 0.0075
+Eval Epoch 11 | Mean relative regret: 0.1476 | norm_diff_mu: 90.5843
+Epoch 13 | loss: 0.0071
+Eval Epoch 12 | Mean relative regret: 0.1465 | norm_diff_mu: 90.5843
+Epoch 14 | loss: 0.0069
+Eval Epoch 13 | Mean relative regret: 0.1455 | norm_diff_mu: 90.5843
+Epoch 15 | loss: 0.0066
+Eval Epoch 14 | Mean relative regret: 0.1449 | norm_diff_mu: 90.5843
+Epoch 16 | loss: 0.0065
+Eval Epoch 15 | Mean relative regret: 0.1452 | norm_diff_mu: 82.3320
+Epoch 17 | loss: 0.0060
+Eval Epoch 16 | Mean relative regret: 0.1458 | norm_diff_mu: 82.3320
+Epoch 18 | loss: 0.0058
+Eval Epoch 17 | Mean relative regret: 0.1462 | norm_diff_mu: 82.3320
+Epoch 19 | loss: 0.0058
+Eval Epoch 18 | Mean relative regret: 0.1467 | norm_diff_mu: 82.3320
+Epoch 20 | loss: 0.0057
+Eval Epoch 19 | Mean relative regret: 0.1457 | norm_diff_mu: 82.3320
+Epoch 21 | loss: 0.0055
+Eval Epoch 20 | Mean relative regret: 0.1452 | norm_diff_mu: 74.6139
+Epoch 22 | loss: 0.0054
+Eval Epoch 21 | Mean relative regret: 0.1453 | norm_diff_mu: 74.6139
+Epoch 23 | loss: 0.0053
+Eval Epoch 22 | Mean relative regret: 0.1456 | norm_diff_mu: 74.6139
+Epoch 24 | loss: 0.0051
+Eval Epoch 23 | Mean relative regret: 0.1455 | norm_diff_mu: 74.6139
+Epoch 25 | loss: 0.0050
+Eval Epoch 24 | Mean relative regret: 0.1461 | norm_diff_mu: 74.6139
+Epoch 26 | loss: 0.0050
+Eval Epoch 25 | Mean relative regret: 0.1466 | norm_diff_mu: 67.2315
+Epoch 27 | loss: 0.0049
+Eval Epoch 26 | Mean relative regret: 0.1464 | norm_diff_mu: 67.2315
+Epoch 28 | loss: 0.0048
+Eval Epoch 27 | Mean relative regret: 0.1466 | norm_diff_mu: 67.2315
+Epoch 29 | loss: 0.0048
+Eval Epoch 28 | Mean relative regret: 0.1456 | norm_diff_mu: 67.2315
+Epoch 30 | loss: 0.0047
+Eval Epoch 29 | Mean relative regret: 0.1457 | norm_diff_mu: 67.2315
+Epoch 31 | loss: 0.0045
+Eval Epoch 30 | Mean relative regret: 0.1453 | norm_diff_mu: 59.9153
+Epoch 32 | loss: 0.0044
+Eval Epoch 31 | Mean relative regret: 0.1456 | norm_diff_mu: 59.9153
+Epoch 33 | loss: 0.0044
+Eval Epoch 32 | Mean relative regret: 0.1460 | norm_diff_mu: 59.9153
+Epoch 34 | loss: 0.0044
+Eval Epoch 33 | Mean relative regret: 0.1457 | norm_diff_mu: 59.9153
+Epoch 35 | loss: 0.0042
+Eval Epoch 34 | Mean relative regret: 0.1454 | norm_diff_mu: 59.9153
+Epoch 36 | loss: 0.0043
+Eval Epoch 35 | Mean relative regret: 0.1452 | norm_diff_mu: 52.6915
+Epoch 37 | loss: 0.0042
+Eval Epoch 36 | Mean relative regret: 0.1451 | norm_diff_mu: 52.6915
+Epoch 38 | loss: 0.0041
+Eval Epoch 37 | Mean relative regret: 0.1462 | norm_diff_mu: 52.6915
+Epoch 39 | loss: 0.0040
+Eval Epoch 38 | Mean relative regret: 0.1465 | norm_diff_mu: 52.6915
+Epoch 40 | loss: 0.0040
+Eval Epoch 39 | Mean relative regret: 0.1459 | norm_diff_mu: 52.6915
+Epoch 41 | loss: 0.0041
+Eval Epoch 40 | Mean relative regret: 0.1458 | norm_diff_mu: 45.6274
+Epoch 42 | loss: 0.0040
+Eval Epoch 41 | Mean relative regret: 0.1461 | norm_diff_mu: 45.6274
+Epoch 43 | loss: 0.0040
+Eval Epoch 42 | Mean relative regret: 0.1464 | norm_diff_mu: 45.6274
+Epoch 44 | loss: 0.0039
+Eval Epoch 43 | Mean relative regret: 0.1461 | norm_diff_mu: 45.6274
+Epoch 45 | loss: 0.0039
+Eval Epoch 44 | Mean relative regret: 0.1474 | norm_diff_mu: 45.6274
+Epoch 46 | loss: 0.0040
+Eval Epoch 45 | Mean relative regret: 0.1480 | norm_diff_mu: 38.5711
+Epoch 47 | loss: 0.0040
+Eval Epoch 46 | Mean relative regret: 0.1478 | norm_diff_mu: 38.5711
+Epoch 48 | loss: 0.0038
+Eval Epoch 47 | Mean relative regret: 0.1478 | norm_diff_mu: 38.5711
+Epoch 49 | loss: 0.0037
+Eval Epoch 48 | Mean relative regret: 0.1478 | norm_diff_mu: 38.5711
+Epoch 50 | loss: 0.0038
+Eval Epoch 49 | Mean relative regret: 0.1481 | norm_diff_mu: 38.5711
+Epoch 51 | loss: 0.0036
+Eval Epoch 50 | Mean relative regret: 0.1475 | norm_diff_mu: 31.6708
+Epoch 52 | loss: 0.0037
+Eval Epoch 51 | Mean relative regret: 0.1479 | norm_diff_mu: 31.6708
+Epoch 53 | loss: 0.0037
+Eval Epoch 52 | Mean relative regret: 0.1482 | norm_diff_mu: 31.6708
+Epoch 54 | loss: 0.0038
+Eval Epoch 53 | Mean relative regret: 0.1480 | norm_diff_mu: 31.6708
+Epoch 55 | loss: 0.0037
+Eval Epoch 54 | Mean relative regret: 0.1481 | norm_diff_mu: 31.6708
+Epoch 56 | loss: 0.0036
+Eval Epoch 55 | Mean relative regret: 0.1479 | norm_diff_mu: 24.8111
+Time limit reached, stopping training.
+Test relative regret: 0.1449 ± 0.0488
+Test relative regret: 0.1320 ± 0.0529
+Saving the model to portfolio/models/IMLE_SG_30_500_200_2-25.pth
+/home/stephecw/projet/DFL_LD/portfolio/my_solver.py:172: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /shared_tmp/build_wheels_tmp.115664/python-3.10/torch/torch/csrc/utils/tensor_new.cpp:254.)
+  return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)

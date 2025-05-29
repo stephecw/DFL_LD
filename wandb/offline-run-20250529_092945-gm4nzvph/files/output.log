@@ -1,0 +1,2146 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/eval_50_100_200_2-25.txt
+Loading /quad/test_50_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Training the model with MSE as loss
+Epoch 0 | loss: 0.0551
+Eval Epoch 0 | Mean relative regret: 0.2193
+Epoch 1 | loss: 0.0285
+Epoch 2 | loss: 0.0174
+Epoch 3 | loss: 0.0122
+Epoch 4 | loss: 0.0090
+Epoch 5 | loss: 0.0072
+Eval Epoch 5 | Mean relative regret: 0.2150
+Epoch 6 | loss: 0.0059
+Epoch 7 | loss: 0.0047
+Epoch 8 | loss: 0.0041
+Epoch 9 | loss: 0.0036
+Epoch 10 | loss: 0.0031
+Eval Epoch 10 | Mean relative regret: 0.2111
+Epoch 11 | loss: 0.0028
+Epoch 12 | loss: 0.0025
+Epoch 13 | loss: 0.0022
+Epoch 14 | loss: 0.0020
+Epoch 15 | loss: 0.0019
+Eval Epoch 15 | Mean relative regret: 0.2065
+Epoch 16 | loss: 0.0017
+Epoch 17 | loss: 0.0016
+Epoch 18 | loss: 0.0015
+Epoch 19 | loss: 0.0015
+Epoch 20 | loss: 0.0013
+Eval Epoch 20 | Mean relative regret: 0.2029
+Epoch 21 | loss: 0.0013
+Epoch 22 | loss: 0.0012
+Epoch 23 | loss: 0.0012
+Epoch 24 | loss: 0.0011
+Epoch 25 | loss: 0.0011
+Eval Epoch 25 | Mean relative regret: 0.1996
+Epoch 26 | loss: 0.0010
+Epoch 27 | loss: 0.0010
+Epoch 28 | loss: 0.0010
+Epoch 29 | loss: 0.0009
+Epoch 30 | loss: 0.0009
+Eval Epoch 30 | Mean relative regret: 0.1954
+Epoch 31 | loss: 0.0009
+Epoch 32 | loss: 0.0008
+Epoch 33 | loss: 0.0008
+Epoch 34 | loss: 0.0008
+Epoch 35 | loss: 0.0008
+Eval Epoch 35 | Mean relative regret: 0.1920
+Epoch 36 | loss: 0.0008
+Epoch 37 | loss: 0.0008
+Epoch 38 | loss: 0.0008
+Epoch 39 | loss: 0.0007
+Epoch 40 | loss: 0.0007
+Eval Epoch 40 | Mean relative regret: 0.1893
+Epoch 41 | loss: 0.0007
+Epoch 42 | loss: 0.0007
+Epoch 43 | loss: 0.0007
+Epoch 44 | loss: 0.0007
+Epoch 45 | loss: 0.0007
+Eval Epoch 45 | Mean relative regret: 0.1868
+Epoch 46 | loss: 0.0007
+Epoch 47 | loss: 0.0006
+Epoch 48 | loss: 0.0006
+Epoch 49 | loss: 0.0006
+Epoch 50 | loss: 0.0006
+Eval Epoch 50 | Mean relative regret: 0.1851
+Epoch 51 | loss: 0.0006
+Epoch 52 | loss: 0.0006
+Epoch 53 | loss: 0.0006
+Epoch 54 | loss: 0.0006
+Epoch 55 | loss: 0.0006
+Eval Epoch 55 | Mean relative regret: 0.1822
+Epoch 56 | loss: 0.0006
+Epoch 57 | loss: 0.0006
+Epoch 58 | loss: 0.0006
+Epoch 59 | loss: 0.0005
+Epoch 60 | loss: 0.0005
+Eval Epoch 60 | Mean relative regret: 0.1799
+Epoch 61 | loss: 0.0005
+Epoch 62 | loss: 0.0005
+Epoch 63 | loss: 0.0005
+Epoch 64 | loss: 0.0005
+Epoch 65 | loss: 0.0005
+Eval Epoch 65 | Mean relative regret: 0.1777
+Epoch 66 | loss: 0.0005
+Epoch 67 | loss: 0.0005
+Epoch 68 | loss: 0.0005
+Epoch 69 | loss: 0.0005
+Epoch 70 | loss: 0.0005
+Eval Epoch 70 | Mean relative regret: 0.1769
+Epoch 71 | loss: 0.0005
+Epoch 72 | loss: 0.0005
+Epoch 73 | loss: 0.0005
+Epoch 74 | loss: 0.0005
+Epoch 75 | loss: 0.0005
+Eval Epoch 75 | Mean relative regret: 0.1766
+Epoch 76 | loss: 0.0005
+Epoch 77 | loss: 0.0005
+Epoch 78 | loss: 0.0005
+Epoch 79 | loss: 0.0005
+Epoch 80 | loss: 0.0005
+Eval Epoch 80 | Mean relative regret: 0.1759
+Epoch 81 | loss: 0.0005
+Epoch 82 | loss: 0.0005
+Epoch 83 | loss: 0.0005
+Epoch 84 | loss: 0.0005
+Epoch 85 | loss: 0.0005
+Eval Epoch 85 | Mean relative regret: 0.1749
+Epoch 86 | loss: 0.0004
+Epoch 87 | loss: 0.0004
+Epoch 88 | loss: 0.0004
+Epoch 89 | loss: 0.0004
+Epoch 90 | loss: 0.0004
+Eval Epoch 90 | Mean relative regret: 0.1738
+Epoch 91 | loss: 0.0004
+Epoch 92 | loss: 0.0004
+Epoch 93 | loss: 0.0004
+Epoch 94 | loss: 0.0004
+Epoch 95 | loss: 0.0004
+Eval Epoch 95 | Mean relative regret: 0.1733
+Epoch 96 | loss: 0.0004
+Epoch 97 | loss: 0.0004
+Epoch 98 | loss: 0.0004
+Epoch 99 | loss: 0.0004
+Epoch 100 | loss: 0.0004
+Eval Epoch 100 | Mean relative regret: 0.1724
+Epoch 101 | loss: 0.0004
+Epoch 102 | loss: 0.0004
+Epoch 103 | loss: 0.0004
+Epoch 104 | loss: 0.0004
+Epoch 105 | loss: 0.0004
+Eval Epoch 105 | Mean relative regret: 0.1718
+Epoch 106 | loss: 0.0004
+Epoch 107 | loss: 0.0004
+Epoch 108 | loss: 0.0004
+Epoch 109 | loss: 0.0004
+Epoch 110 | loss: 0.0004
+Eval Epoch 110 | Mean relative regret: 0.1704
+Epoch 111 | loss: 0.0004
+Epoch 112 | loss: 0.0004
+Epoch 113 | loss: 0.0004
+Epoch 114 | loss: 0.0004
+Epoch 115 | loss: 0.0004
+Eval Epoch 115 | Mean relative regret: 0.1700
+Epoch 116 | loss: 0.0004
+Epoch 117 | loss: 0.0004
+Epoch 118 | loss: 0.0004
+Epoch 119 | loss: 0.0004
+Epoch 120 | loss: 0.0004
+Eval Epoch 120 | Mean relative regret: 0.1691
+Epoch 121 | loss: 0.0004
+Epoch 122 | loss: 0.0004
+Epoch 123 | loss: 0.0004
+Epoch 124 | loss: 0.0004
+Epoch 125 | loss: 0.0004
+Eval Epoch 125 | Mean relative regret: 0.1689
+Epoch 126 | loss: 0.0004
+Epoch 127 | loss: 0.0004
+Epoch 128 | loss: 0.0004
+Epoch 129 | loss: 0.0004
+Epoch 130 | loss: 0.0004
+Eval Epoch 130 | Mean relative regret: 0.1690
+Epoch 131 | loss: 0.0004
+Epoch 132 | loss: 0.0004
+Epoch 133 | loss: 0.0004
+Epoch 134 | loss: 0.0004
+Epoch 135 | loss: 0.0004
+Eval Epoch 135 | Mean relative regret: 0.1687
+Epoch 136 | loss: 0.0004
+Epoch 137 | loss: 0.0004
+Epoch 138 | loss: 0.0004
+Epoch 139 | loss: 0.0004
+Epoch 140 | loss: 0.0004
+Eval Epoch 140 | Mean relative regret: 0.1681
+Epoch 141 | loss: 0.0004
+Epoch 142 | loss: 0.0004
+Epoch 143 | loss: 0.0004
+Epoch 144 | loss: 0.0004
+Epoch 145 | loss: 0.0004
+Eval Epoch 145 | Mean relative regret: 0.1684
+Epoch 146 | loss: 0.0004
+Epoch 147 | loss: 0.0004
+Epoch 148 | loss: 0.0004
+Epoch 149 | loss: 0.0004
+Epoch 150 | loss: 0.0004
+Eval Epoch 150 | Mean relative regret: 0.1674
+Epoch 151 | loss: 0.0004
+Epoch 152 | loss: 0.0004
+Epoch 153 | loss: 0.0004
+Epoch 154 | loss: 0.0004
+Epoch 155 | loss: 0.0004
+Eval Epoch 155 | Mean relative regret: 0.1675
+Epoch 156 | loss: 0.0004
+Epoch 157 | loss: 0.0004
+Epoch 158 | loss: 0.0004
+Epoch 159 | loss: 0.0004
+Epoch 160 | loss: 0.0003
+Eval Epoch 160 | Mean relative regret: 0.1673
+Epoch 161 | loss: 0.0004
+Epoch 162 | loss: 0.0004
+Epoch 163 | loss: 0.0004
+Epoch 164 | loss: 0.0004
+Epoch 165 | loss: 0.0004
+Eval Epoch 165 | Mean relative regret: 0.1684
+Epoch 166 | loss: 0.0004
+Epoch 167 | loss: 0.0003
+Epoch 168 | loss: 0.0004
+Epoch 169 | loss: 0.0004
+Epoch 170 | loss: 0.0003
+Eval Epoch 170 | Mean relative regret: 0.1682
+Epoch 171 | loss: 0.0004
+Epoch 172 | loss: 0.0004
+Epoch 173 | loss: 0.0003
+Epoch 174 | loss: 0.0003
+Epoch 175 | loss: 0.0003
+Eval Epoch 175 | Mean relative regret: 0.1677
+Epoch 176 | loss: 0.0003
+Epoch 177 | loss: 0.0004
+Epoch 178 | loss: 0.0004
+Epoch 179 | loss: 0.0003
+Epoch 180 | loss: 0.0003
+Eval Epoch 180 | Mean relative regret: 0.1685
+Epoch 181 | loss: 0.0003
+Epoch 182 | loss: 0.0004
+Epoch 183 | loss: 0.0003
+Epoch 184 | loss: 0.0003
+Epoch 185 | loss: 0.0003
+Eval Epoch 185 | Mean relative regret: 0.1680
+Epoch 186 | loss: 0.0003
+Epoch 187 | loss: 0.0003
+Epoch 188 | loss: 0.0004
+Epoch 189 | loss: 0.0003
+Epoch 190 | loss: 0.0003
+Eval Epoch 190 | Mean relative regret: 0.1674
+Epoch 191 | loss: 0.0003
+Epoch 192 | loss: 0.0003
+Epoch 193 | loss: 0.0003
+Epoch 194 | loss: 0.0003
+Epoch 195 | loss: 0.0003
+Eval Epoch 195 | Mean relative regret: 0.1667
+Epoch 196 | loss: 0.0003
+Epoch 197 | loss: 0.0003
+Epoch 198 | loss: 0.0003
+Epoch 199 | loss: 0.0003
+Epoch 200 | loss: 0.0003
+Eval Epoch 200 | Mean relative regret: 0.1677
+Epoch 201 | loss: 0.0003
+Epoch 202 | loss: 0.0003
+Epoch 203 | loss: 0.0003
+Epoch 204 | loss: 0.0003
+Epoch 205 | loss: 0.0003
+Eval Epoch 205 | Mean relative regret: 0.1682
+Epoch 206 | loss: 0.0003
+Epoch 207 | loss: 0.0003
+Epoch 208 | loss: 0.0003
+Epoch 209 | loss: 0.0003
+Epoch 210 | loss: 0.0003
+Eval Epoch 210 | Mean relative regret: 0.1662
+Epoch 211 | loss: 0.0003
+Epoch 212 | loss: 0.0003
+Epoch 213 | loss: 0.0003
+Epoch 214 | loss: 0.0003
+Epoch 215 | loss: 0.0003
+Eval Epoch 215 | Mean relative regret: 0.1667
+Epoch 216 | loss: 0.0003
+Epoch 217 | loss: 0.0003
+Epoch 218 | loss: 0.0003
+Epoch 219 | loss: 0.0003
+Epoch 220 | loss: 0.0003
+Eval Epoch 220 | Mean relative regret: 0.1669
+Epoch 221 | loss: 0.0003
+Epoch 222 | loss: 0.0003
+Epoch 223 | loss: 0.0003
+Epoch 224 | loss: 0.0003
+Epoch 225 | loss: 0.0003
+Eval Epoch 225 | Mean relative regret: 0.1668
+Epoch 226 | loss: 0.0003
+Epoch 227 | loss: 0.0003
+Epoch 228 | loss: 0.0003
+Epoch 229 | loss: 0.0003
+Epoch 230 | loss: 0.0003
+Eval Epoch 230 | Mean relative regret: 0.1658
+Epoch 231 | loss: 0.0003
+Epoch 232 | loss: 0.0003
+Epoch 233 | loss: 0.0003
+Epoch 234 | loss: 0.0003
+Epoch 235 | loss: 0.0003
+Eval Epoch 235 | Mean relative regret: 0.1665
+Epoch 236 | loss: 0.0003
+Epoch 237 | loss: 0.0003
+Epoch 238 | loss: 0.0003
+Epoch 239 | loss: 0.0003
+Epoch 240 | loss: 0.0003
+Eval Epoch 240 | Mean relative regret: 0.1661
+Epoch 241 | loss: 0.0003
+Epoch 242 | loss: 0.0003
+Epoch 243 | loss: 0.0003
+Epoch 244 | loss: 0.0003
+Epoch 245 | loss: 0.0003
+Eval Epoch 245 | Mean relative regret: 0.1641
+Epoch 246 | loss: 0.0003
+Epoch 247 | loss: 0.0003
+Epoch 248 | loss: 0.0003
+Epoch 249 | loss: 0.0003
+Epoch 250 | loss: 0.0003
+Eval Epoch 250 | Mean relative regret: 0.1651
+Epoch 251 | loss: 0.0003
+Epoch 252 | loss: 0.0003
+Epoch 253 | loss: 0.0003
+Epoch 254 | loss: 0.0003
+Epoch 255 | loss: 0.0003
+Eval Epoch 255 | Mean relative regret: 0.1644
+Epoch 256 | loss: 0.0003
+Epoch 257 | loss: 0.0003
+Epoch 258 | loss: 0.0003
+Epoch 259 | loss: 0.0003
+Epoch 260 | loss: 0.0003
+Eval Epoch 260 | Mean relative regret: 0.1638
+Epoch 261 | loss: 0.0003
+Epoch 262 | loss: 0.0003
+Epoch 263 | loss: 0.0003
+Epoch 264 | loss: 0.0003
+Epoch 265 | loss: 0.0003
+Eval Epoch 265 | Mean relative regret: 0.1636
+Epoch 266 | loss: 0.0003
+Epoch 267 | loss: 0.0003
+Epoch 268 | loss: 0.0003
+Epoch 269 | loss: 0.0003
+Epoch 270 | loss: 0.0003
+Eval Epoch 270 | Mean relative regret: 0.1636
+Epoch 271 | loss: 0.0003
+Epoch 272 | loss: 0.0003
+Epoch 273 | loss: 0.0003
+Epoch 274 | loss: 0.0003
+Epoch 275 | loss: 0.0003
+Eval Epoch 275 | Mean relative regret: 0.1629
+Epoch 276 | loss: 0.0003
+Epoch 277 | loss: 0.0003
+Epoch 278 | loss: 0.0003
+Epoch 279 | loss: 0.0003
+Epoch 280 | loss: 0.0003
+Eval Epoch 280 | Mean relative regret: 0.1628
+Epoch 281 | loss: 0.0003
+Epoch 282 | loss: 0.0003
+Epoch 283 | loss: 0.0003
+Epoch 284 | loss: 0.0003
+Epoch 285 | loss: 0.0003
+Eval Epoch 285 | Mean relative regret: 0.1640
+Epoch 286 | loss: 0.0003
+Epoch 287 | loss: 0.0003
+Epoch 288 | loss: 0.0003
+Epoch 289 | loss: 0.0003
+Epoch 290 | loss: 0.0003
+Eval Epoch 290 | Mean relative regret: 0.1622
+Epoch 291 | loss: 0.0003
+Epoch 292 | loss: 0.0003
+Epoch 293 | loss: 0.0003
+Epoch 294 | loss: 0.0003
+Epoch 295 | loss: 0.0003
+Eval Epoch 295 | Mean relative regret: 0.1619
+Epoch 296 | loss: 0.0003
+Epoch 297 | loss: 0.0003
+Epoch 298 | loss: 0.0003
+Epoch 299 | loss: 0.0003
+Epoch 300 | loss: 0.0003
+Eval Epoch 300 | Mean relative regret: 0.1629
+Epoch 301 | loss: 0.0003
+Epoch 302 | loss: 0.0003
+Epoch 303 | loss: 0.0003
+Epoch 304 | loss: 0.0003
+Epoch 305 | loss: 0.0003
+Eval Epoch 305 | Mean relative regret: 0.1621
+Epoch 306 | loss: 0.0003
+Epoch 307 | loss: 0.0003
+Epoch 308 | loss: 0.0003
+Epoch 309 | loss: 0.0003
+Epoch 310 | loss: 0.0003
+Eval Epoch 310 | Mean relative regret: 0.1626
+Epoch 311 | loss: 0.0003
+Epoch 312 | loss: 0.0003
+Epoch 313 | loss: 0.0003
+Epoch 314 | loss: 0.0003
+Epoch 315 | loss: 0.0003
+Eval Epoch 315 | Mean relative regret: 0.1625
+Epoch 316 | loss: 0.0003
+Epoch 317 | loss: 0.0003
+Epoch 318 | loss: 0.0003
+Epoch 319 | loss: 0.0003
+Epoch 320 | loss: 0.0003
+Eval Epoch 320 | Mean relative regret: 0.1622
+Epoch 321 | loss: 0.0003
+Epoch 322 | loss: 0.0003
+Epoch 323 | loss: 0.0003
+Epoch 324 | loss: 0.0003
+Epoch 325 | loss: 0.0003
+Eval Epoch 325 | Mean relative regret: 0.1616
+Epoch 326 | loss: 0.0003
+Epoch 327 | loss: 0.0003
+Epoch 328 | loss: 0.0003
+Epoch 329 | loss: 0.0003
+Epoch 330 | loss: 0.0003
+Eval Epoch 330 | Mean relative regret: 0.1614
+Epoch 331 | loss: 0.0003
+Epoch 332 | loss: 0.0003
+Epoch 333 | loss: 0.0003
+Epoch 334 | loss: 0.0003
+Epoch 335 | loss: 0.0003
+Eval Epoch 335 | Mean relative regret: 0.1603
+Epoch 336 | loss: 0.0003
+Epoch 337 | loss: 0.0003
+Epoch 338 | loss: 0.0003
+Epoch 339 | loss: 0.0003
+Epoch 340 | loss: 0.0003
+Eval Epoch 340 | Mean relative regret: 0.1600
+Epoch 341 | loss: 0.0003
+Epoch 342 | loss: 0.0003
+Epoch 343 | loss: 0.0003
+Epoch 344 | loss: 0.0003
+Epoch 345 | loss: 0.0003
+Eval Epoch 345 | Mean relative regret: 0.1584
+Epoch 346 | loss: 0.0003
+Epoch 347 | loss: 0.0003
+Epoch 348 | loss: 0.0003
+Epoch 349 | loss: 0.0003
+Epoch 350 | loss: 0.0003
+Eval Epoch 350 | Mean relative regret: 0.1587
+Epoch 351 | loss: 0.0003
+Epoch 352 | loss: 0.0003
+Epoch 353 | loss: 0.0003
+Epoch 354 | loss: 0.0003
+Epoch 355 | loss: 0.0003
+Eval Epoch 355 | Mean relative regret: 0.1583
+Epoch 356 | loss: 0.0003
+Epoch 357 | loss: 0.0003
+Epoch 358 | loss: 0.0003
+Epoch 359 | loss: 0.0003
+Epoch 360 | loss: 0.0003
+Eval Epoch 360 | Mean relative regret: 0.1593
+Epoch 361 | loss: 0.0003
+Epoch 362 | loss: 0.0003
+Epoch 363 | loss: 0.0003
+Epoch 364 | loss: 0.0003
+Epoch 365 | loss: 0.0003
+Eval Epoch 365 | Mean relative regret: 0.1576
+Epoch 366 | loss: 0.0003
+Epoch 367 | loss: 0.0003
+Epoch 368 | loss: 0.0003
+Epoch 369 | loss: 0.0003
+Epoch 370 | loss: 0.0003
+Eval Epoch 370 | Mean relative regret: 0.1576
+Epoch 371 | loss: 0.0003
+Epoch 372 | loss: 0.0003
+Epoch 373 | loss: 0.0003
+Epoch 374 | loss: 0.0003
+Epoch 375 | loss: 0.0003
+Eval Epoch 375 | Mean relative regret: 0.1575
+Epoch 376 | loss: 0.0003
+Epoch 377 | loss: 0.0003
+Epoch 378 | loss: 0.0003
+Epoch 379 | loss: 0.0003
+Epoch 380 | loss: 0.0003
+Eval Epoch 380 | Mean relative regret: 0.1575
+Epoch 381 | loss: 0.0003
+Epoch 382 | loss: 0.0003
+Epoch 383 | loss: 0.0003
+Epoch 384 | loss: 0.0003
+Epoch 385 | loss: 0.0003
+Eval Epoch 385 | Mean relative regret: 0.1586
+Epoch 386 | loss: 0.0003
+Epoch 387 | loss: 0.0003
+Epoch 388 | loss: 0.0003
+Epoch 389 | loss: 0.0003
+Epoch 390 | loss: 0.0003
+Eval Epoch 390 | Mean relative regret: 0.1585
+Epoch 391 | loss: 0.0003
+Epoch 392 | loss: 0.0003
+Epoch 393 | loss: 0.0003
+Epoch 394 | loss: 0.0003
+Epoch 395 | loss: 0.0003
+Eval Epoch 395 | Mean relative regret: 0.1581
+Epoch 396 | loss: 0.0003
+Epoch 397 | loss: 0.0003
+Epoch 398 | loss: 0.0003
+Epoch 399 | loss: 0.0003
+Epoch 400 | loss: 0.0003
+Eval Epoch 400 | Mean relative regret: 0.1587
+Epoch 401 | loss: 0.0003
+Epoch 402 | loss: 0.0003
+Epoch 403 | loss: 0.0003
+Epoch 404 | loss: 0.0003
+Epoch 405 | loss: 0.0003
+Eval Epoch 405 | Mean relative regret: 0.1580
+Epoch 406 | loss: 0.0003
+Epoch 407 | loss: 0.0003
+Epoch 408 | loss: 0.0003
+Epoch 409 | loss: 0.0003
+Epoch 410 | loss: 0.0003
+Eval Epoch 410 | Mean relative regret: 0.1597
+Epoch 411 | loss: 0.0003
+Epoch 412 | loss: 0.0003
+Epoch 413 | loss: 0.0003
+Epoch 414 | loss: 0.0003
+Epoch 415 | loss: 0.0003
+Eval Epoch 415 | Mean relative regret: 0.1590
+Epoch 416 | loss: 0.0003
+Epoch 417 | loss: 0.0003
+Epoch 418 | loss: 0.0003
+Epoch 419 | loss: 0.0003
+Epoch 420 | loss: 0.0003
+Eval Epoch 420 | Mean relative regret: 0.1595
+Epoch 421 | loss: 0.0003
+Epoch 422 | loss: 0.0003
+Epoch 423 | loss: 0.0003
+Epoch 424 | loss: 0.0003
+Epoch 425 | loss: 0.0003
+Eval Epoch 425 | Mean relative regret: 0.1595
+Epoch 426 | loss: 0.0003
+Epoch 427 | loss: 0.0003
+Epoch 428 | loss: 0.0003
+Epoch 429 | loss: 0.0003
+Epoch 430 | loss: 0.0003
+Eval Epoch 430 | Mean relative regret: 0.1593
+Epoch 431 | loss: 0.0003
+Epoch 432 | loss: 0.0003
+Epoch 433 | loss: 0.0003
+Epoch 434 | loss: 0.0003
+Epoch 435 | loss: 0.0003
+Eval Epoch 435 | Mean relative regret: 0.1594
+Epoch 436 | loss: 0.0003
+Epoch 437 | loss: 0.0003
+Epoch 438 | loss: 0.0003
+Epoch 439 | loss: 0.0003
+Epoch 440 | loss: 0.0003
+Eval Epoch 440 | Mean relative regret: 0.1590
+Epoch 441 | loss: 0.0003
+Epoch 442 | loss: 0.0003
+Epoch 443 | loss: 0.0003
+Epoch 444 | loss: 0.0003
+Epoch 445 | loss: 0.0003
+Eval Epoch 445 | Mean relative regret: 0.1592
+Epoch 446 | loss: 0.0003
+Epoch 447 | loss: 0.0003
+Epoch 448 | loss: 0.0003
+Epoch 449 | loss: 0.0003
+Epoch 450 | loss: 0.0003
+Eval Epoch 450 | Mean relative regret: 0.1594
+Epoch 451 | loss: 0.0003
+Epoch 452 | loss: 0.0003
+Epoch 453 | loss: 0.0003
+Epoch 454 | loss: 0.0003
+Epoch 455 | loss: 0.0003
+Eval Epoch 455 | Mean relative regret: 0.1588
+Epoch 456 | loss: 0.0003
+Epoch 457 | loss: 0.0003
+Epoch 458 | loss: 0.0003
+Epoch 459 | loss: 0.0003
+Epoch 460 | loss: 0.0003
+Eval Epoch 460 | Mean relative regret: 0.1589
+Epoch 461 | loss: 0.0003
+Epoch 462 | loss: 0.0003
+Epoch 463 | loss: 0.0003
+Epoch 464 | loss: 0.0003
+Epoch 465 | loss: 0.0003
+Eval Epoch 465 | Mean relative regret: 0.1589
+Epoch 466 | loss: 0.0003
+Epoch 467 | loss: 0.0003
+Epoch 468 | loss: 0.0003
+Epoch 469 | loss: 0.0003
+Epoch 470 | loss: 0.0003
+Eval Epoch 470 | Mean relative regret: 0.1575
+Epoch 471 | loss: 0.0003
+Epoch 472 | loss: 0.0003
+Epoch 473 | loss: 0.0003
+Epoch 474 | loss: 0.0003
+Epoch 475 | loss: 0.0003
+Eval Epoch 475 | Mean relative regret: 0.1576
+Epoch 476 | loss: 0.0003
+Epoch 477 | loss: 0.0003
+Epoch 478 | loss: 0.0003
+Epoch 479 | loss: 0.0003
+Epoch 480 | loss: 0.0003
+Eval Epoch 480 | Mean relative regret: 0.1576
+Epoch 481 | loss: 0.0003
+Epoch 482 | loss: 0.0003
+Epoch 483 | loss: 0.0003
+Epoch 484 | loss: 0.0003
+Epoch 485 | loss: 0.0003
+Eval Epoch 485 | Mean relative regret: 0.1602
+Epoch 486 | loss: 0.0003
+Epoch 487 | loss: 0.0003
+Epoch 488 | loss: 0.0003
+Epoch 489 | loss: 0.0003
+Epoch 490 | loss: 0.0003
+Eval Epoch 490 | Mean relative regret: 0.1581
+Epoch 491 | loss: 0.0003
+Epoch 492 | loss: 0.0003
+Epoch 493 | loss: 0.0003
+Epoch 494 | loss: 0.0003
+Epoch 495 | loss: 0.0003
+Eval Epoch 495 | Mean relative regret: 0.1567
+Epoch 496 | loss: 0.0003
+Epoch 497 | loss: 0.0003
+Epoch 498 | loss: 0.0003
+Epoch 499 | loss: 0.0003
+Epoch 500 | loss: 0.0003
+Eval Epoch 500 | Mean relative regret: 0.1585
+Epoch 501 | loss: 0.0003
+Epoch 502 | loss: 0.0003
+Epoch 503 | loss: 0.0003
+Epoch 504 | loss: 0.0003
+Epoch 505 | loss: 0.0003
+Eval Epoch 505 | Mean relative regret: 0.1594
+Epoch 506 | loss: 0.0003
+Epoch 507 | loss: 0.0003
+Epoch 508 | loss: 0.0003
+Epoch 509 | loss: 0.0003
+Epoch 510 | loss: 0.0003
+Eval Epoch 510 | Mean relative regret: 0.1592
+Epoch 511 | loss: 0.0003
+Epoch 512 | loss: 0.0003
+Epoch 513 | loss: 0.0003
+Epoch 514 | loss: 0.0003
+Epoch 515 | loss: 0.0003
+Eval Epoch 515 | Mean relative regret: 0.1592
+Epoch 516 | loss: 0.0003
+Epoch 517 | loss: 0.0003
+Epoch 518 | loss: 0.0003
+Epoch 519 | loss: 0.0003
+Epoch 520 | loss: 0.0003
+Eval Epoch 520 | Mean relative regret: 0.1586
+Epoch 521 | loss: 0.0003
+Epoch 522 | loss: 0.0003
+Epoch 523 | loss: 0.0003
+Epoch 524 | loss: 0.0003
+Epoch 525 | loss: 0.0003
+Eval Epoch 525 | Mean relative regret: 0.1581
+Epoch 526 | loss: 0.0003
+Epoch 527 | loss: 0.0003
+Epoch 528 | loss: 0.0003
+Epoch 529 | loss: 0.0003
+Epoch 530 | loss: 0.0003
+Eval Epoch 530 | Mean relative regret: 0.1582
+Epoch 531 | loss: 0.0003
+Epoch 532 | loss: 0.0003
+Epoch 533 | loss: 0.0003
+Epoch 534 | loss: 0.0003
+Epoch 535 | loss: 0.0003
+Eval Epoch 535 | Mean relative regret: 0.1582
+Epoch 536 | loss: 0.0003
+Epoch 537 | loss: 0.0003
+Epoch 538 | loss: 0.0003
+Epoch 539 | loss: 0.0003
+Epoch 540 | loss: 0.0003
+Eval Epoch 540 | Mean relative regret: 0.1587
+Epoch 541 | loss: 0.0003
+Epoch 542 | loss: 0.0003
+Epoch 543 | loss: 0.0003
+Epoch 544 | loss: 0.0003
+Epoch 545 | loss: 0.0003
+Eval Epoch 545 | Mean relative regret: 0.1580
+Epoch 546 | loss: 0.0003
+Epoch 547 | loss: 0.0003
+Epoch 548 | loss: 0.0003
+Epoch 549 | loss: 0.0003
+Epoch 550 | loss: 0.0003
+Eval Epoch 550 | Mean relative regret: 0.1600
+Epoch 551 | loss: 0.0003
+Epoch 552 | loss: 0.0003
+Epoch 553 | loss: 0.0003
+Epoch 554 | loss: 0.0003
+Epoch 555 | loss: 0.0003
+Eval Epoch 555 | Mean relative regret: 0.1588
+Epoch 556 | loss: 0.0003
+Epoch 557 | loss: 0.0003
+Epoch 558 | loss: 0.0003
+Epoch 559 | loss: 0.0003
+Epoch 560 | loss: 0.0003
+Eval Epoch 560 | Mean relative regret: 0.1592
+Epoch 561 | loss: 0.0003
+Epoch 562 | loss: 0.0003
+Epoch 563 | loss: 0.0003
+Epoch 564 | loss: 0.0003
+Epoch 565 | loss: 0.0003
+Eval Epoch 565 | Mean relative regret: 0.1605
+Epoch 566 | loss: 0.0003
+Epoch 567 | loss: 0.0003
+Epoch 568 | loss: 0.0003
+Epoch 569 | loss: 0.0003
+Epoch 570 | loss: 0.0003
+Eval Epoch 570 | Mean relative regret: 0.1594
+Epoch 571 | loss: 0.0003
+Epoch 572 | loss: 0.0003
+Epoch 573 | loss: 0.0003
+Epoch 574 | loss: 0.0003
+Epoch 575 | loss: 0.0003
+Eval Epoch 575 | Mean relative regret: 0.1595
+Epoch 576 | loss: 0.0003
+Epoch 577 | loss: 0.0003
+Epoch 578 | loss: 0.0003
+Epoch 579 | loss: 0.0003
+Epoch 580 | loss: 0.0003
+Eval Epoch 580 | Mean relative regret: 0.1599
+Epoch 581 | loss: 0.0003
+Epoch 582 | loss: 0.0003
+Epoch 583 | loss: 0.0003
+Epoch 584 | loss: 0.0003
+Epoch 585 | loss: 0.0003
+Eval Epoch 585 | Mean relative regret: 0.1608
+Epoch 586 | loss: 0.0003
+Epoch 587 | loss: 0.0003
+Epoch 588 | loss: 0.0003
+Epoch 589 | loss: 0.0003
+Epoch 590 | loss: 0.0003
+Eval Epoch 590 | Mean relative regret: 0.1586
+Epoch 591 | loss: 0.0003
+Epoch 592 | loss: 0.0003
+Epoch 593 | loss: 0.0003
+Epoch 594 | loss: 0.0003
+Epoch 595 | loss: 0.0003
+Eval Epoch 595 | Mean relative regret: 0.1606
+Epoch 596 | loss: 0.0003
+Epoch 597 | loss: 0.0003
+Epoch 598 | loss: 0.0003
+Epoch 599 | loss: 0.0003
+Epoch 600 | loss: 0.0003
+Eval Epoch 600 | Mean relative regret: 0.1579
+Epoch 601 | loss: 0.0003
+Epoch 602 | loss: 0.0003
+Epoch 603 | loss: 0.0003
+Epoch 604 | loss: 0.0003
+Epoch 605 | loss: 0.0003
+Eval Epoch 605 | Mean relative regret: 0.1579
+Epoch 606 | loss: 0.0003
+Epoch 607 | loss: 0.0003
+Epoch 608 | loss: 0.0003
+Epoch 609 | loss: 0.0003
+Epoch 610 | loss: 0.0003
+Eval Epoch 610 | Mean relative regret: 0.1570
+Epoch 611 | loss: 0.0003
+Epoch 612 | loss: 0.0003
+Epoch 613 | loss: 0.0003
+Epoch 614 | loss: 0.0003
+Epoch 615 | loss: 0.0003
+Eval Epoch 615 | Mean relative regret: 0.1595
+Epoch 616 | loss: 0.0003
+Epoch 617 | loss: 0.0003
+Epoch 618 | loss: 0.0003
+Epoch 619 | loss: 0.0003
+Epoch 620 | loss: 0.0003
+Eval Epoch 620 | Mean relative regret: 0.1581
+Epoch 621 | loss: 0.0003
+Epoch 622 | loss: 0.0003
+Epoch 623 | loss: 0.0003
+Epoch 624 | loss: 0.0003
+Epoch 625 | loss: 0.0003
+Eval Epoch 625 | Mean relative regret: 0.1596
+Epoch 626 | loss: 0.0003
+Epoch 627 | loss: 0.0003
+Epoch 628 | loss: 0.0003
+Epoch 629 | loss: 0.0003
+Epoch 630 | loss: 0.0003
+Eval Epoch 630 | Mean relative regret: 0.1586
+Epoch 631 | loss: 0.0003
+Epoch 632 | loss: 0.0003
+Epoch 633 | loss: 0.0003
+Epoch 634 | loss: 0.0003
+Epoch 635 | loss: 0.0003
+Eval Epoch 635 | Mean relative regret: 0.1581
+Epoch 636 | loss: 0.0003
+Epoch 637 | loss: 0.0003
+Epoch 638 | loss: 0.0003
+Epoch 639 | loss: 0.0003
+Epoch 640 | loss: 0.0003
+Eval Epoch 640 | Mean relative regret: 0.1610
+Epoch 641 | loss: 0.0003
+Epoch 642 | loss: 0.0003
+Epoch 643 | loss: 0.0003
+Epoch 644 | loss: 0.0003
+Epoch 645 | loss: 0.0003
+Eval Epoch 645 | Mean relative regret: 0.1599
+Epoch 646 | loss: 0.0003
+Epoch 647 | loss: 0.0003
+Epoch 648 | loss: 0.0003
+Epoch 649 | loss: 0.0003
+Epoch 650 | loss: 0.0003
+Eval Epoch 650 | Mean relative regret: 0.1600
+Epoch 651 | loss: 0.0003
+Epoch 652 | loss: 0.0003
+Epoch 653 | loss: 0.0003
+Epoch 654 | loss: 0.0003
+Epoch 655 | loss: 0.0003
+Eval Epoch 655 | Mean relative regret: 0.1608
+Epoch 656 | loss: 0.0003
+Epoch 657 | loss: 0.0003
+Epoch 658 | loss: 0.0003
+Epoch 659 | loss: 0.0003
+Epoch 660 | loss: 0.0003
+Eval Epoch 660 | Mean relative regret: 0.1598
+Epoch 661 | loss: 0.0003
+Epoch 662 | loss: 0.0003
+Epoch 663 | loss: 0.0003
+Epoch 664 | loss: 0.0003
+Epoch 665 | loss: 0.0003
+Eval Epoch 665 | Mean relative regret: 0.1605
+Epoch 666 | loss: 0.0003
+Epoch 667 | loss: 0.0003
+Epoch 668 | loss: 0.0003
+Epoch 669 | loss: 0.0003
+Epoch 670 | loss: 0.0003
+Eval Epoch 670 | Mean relative regret: 0.1603
+Epoch 671 | loss: 0.0003
+Epoch 672 | loss: 0.0003
+Epoch 673 | loss: 0.0003
+Epoch 674 | loss: 0.0003
+Epoch 675 | loss: 0.0003
+Eval Epoch 675 | Mean relative regret: 0.1602
+Epoch 676 | loss: 0.0003
+Epoch 677 | loss: 0.0003
+Epoch 678 | loss: 0.0003
+Epoch 679 | loss: 0.0003
+Epoch 680 | loss: 0.0003
+Eval Epoch 680 | Mean relative regret: 0.1601
+Epoch 681 | loss: 0.0003
+Epoch 682 | loss: 0.0003
+Epoch 683 | loss: 0.0003
+Epoch 684 | loss: 0.0003
+Epoch 685 | loss: 0.0003
+Eval Epoch 685 | Mean relative regret: 0.1587
+Epoch 686 | loss: 0.0003
+Epoch 687 | loss: 0.0003
+Epoch 688 | loss: 0.0003
+Epoch 689 | loss: 0.0003
+Epoch 690 | loss: 0.0003
+Eval Epoch 690 | Mean relative regret: 0.1601
+Epoch 691 | loss: 0.0003
+Epoch 692 | loss: 0.0003
+Epoch 693 | loss: 0.0003
+Epoch 694 | loss: 0.0003
+Epoch 695 | loss: 0.0003
+Eval Epoch 695 | Mean relative regret: 0.1587
+Epoch 696 | loss: 0.0003
+Epoch 697 | loss: 0.0003
+Epoch 698 | loss: 0.0003
+Epoch 699 | loss: 0.0003
+Epoch 700 | loss: 0.0003
+Eval Epoch 700 | Mean relative regret: 0.1583
+Epoch 701 | loss: 0.0003
+Epoch 702 | loss: 0.0003
+Epoch 703 | loss: 0.0003
+Epoch 704 | loss: 0.0003
+Epoch 705 | loss: 0.0003
+Eval Epoch 705 | Mean relative regret: 0.1598
+Epoch 706 | loss: 0.0003
+Epoch 707 | loss: 0.0003
+Epoch 708 | loss: 0.0003
+Epoch 709 | loss: 0.0003
+Epoch 710 | loss: 0.0003
+Eval Epoch 710 | Mean relative regret: 0.1593
+Epoch 711 | loss: 0.0003
+Epoch 712 | loss: 0.0003
+Epoch 713 | loss: 0.0003
+Epoch 714 | loss: 0.0003
+Epoch 715 | loss: 0.0003
+Eval Epoch 715 | Mean relative regret: 0.1605
+Epoch 716 | loss: 0.0003
+Epoch 717 | loss: 0.0003
+Epoch 718 | loss: 0.0003
+Epoch 719 | loss: 0.0003
+Epoch 720 | loss: 0.0003
+Eval Epoch 720 | Mean relative regret: 0.1589
+Epoch 721 | loss: 0.0003
+Epoch 722 | loss: 0.0003
+Epoch 723 | loss: 0.0003
+Epoch 724 | loss: 0.0003
+Epoch 725 | loss: 0.0003
+Eval Epoch 725 | Mean relative regret: 0.1617
+Epoch 726 | loss: 0.0003
+Epoch 727 | loss: 0.0003
+Epoch 728 | loss: 0.0003
+Epoch 729 | loss: 0.0003
+Epoch 730 | loss: 0.0003
+Eval Epoch 730 | Mean relative regret: 0.1595
+Epoch 731 | loss: 0.0003
+Epoch 732 | loss: 0.0003
+Epoch 733 | loss: 0.0003
+Epoch 734 | loss: 0.0003
+Epoch 735 | loss: 0.0003
+Eval Epoch 735 | Mean relative regret: 0.1597
+Epoch 736 | loss: 0.0003
+Epoch 737 | loss: 0.0003
+Epoch 738 | loss: 0.0003
+Epoch 739 | loss: 0.0003
+Epoch 740 | loss: 0.0003
+Eval Epoch 740 | Mean relative regret: 0.1597
+Epoch 741 | loss: 0.0003
+Epoch 742 | loss: 0.0003
+Epoch 743 | loss: 0.0003
+Epoch 744 | loss: 0.0003
+Epoch 745 | loss: 0.0003
+Eval Epoch 745 | Mean relative regret: 0.1595
+Epoch 746 | loss: 0.0003
+Epoch 747 | loss: 0.0003
+Epoch 748 | loss: 0.0003
+Epoch 749 | loss: 0.0003
+Epoch 750 | loss: 0.0003
+Eval Epoch 750 | Mean relative regret: 0.1590
+Epoch 751 | loss: 0.0003
+Epoch 752 | loss: 0.0003
+Epoch 753 | loss: 0.0003
+Epoch 754 | loss: 0.0003
+Epoch 755 | loss: 0.0003
+Eval Epoch 755 | Mean relative regret: 0.1604
+Epoch 756 | loss: 0.0003
+Epoch 757 | loss: 0.0003
+Epoch 758 | loss: 0.0003
+Epoch 759 | loss: 0.0003
+Epoch 760 | loss: 0.0003
+Eval Epoch 760 | Mean relative regret: 0.1599
+Epoch 761 | loss: 0.0003
+Epoch 762 | loss: 0.0003
+Epoch 763 | loss: 0.0003
+Epoch 764 | loss: 0.0003
+Epoch 765 | loss: 0.0003
+Eval Epoch 765 | Mean relative regret: 0.1610
+Epoch 766 | loss: 0.0003
+Epoch 767 | loss: 0.0003
+Epoch 768 | loss: 0.0003
+Epoch 769 | loss: 0.0003
+Epoch 770 | loss: 0.0003
+Eval Epoch 770 | Mean relative regret: 0.1609
+Epoch 771 | loss: 0.0003
+Epoch 772 | loss: 0.0003
+Epoch 773 | loss: 0.0003
+Epoch 774 | loss: 0.0003
+Epoch 775 | loss: 0.0003
+Eval Epoch 775 | Mean relative regret: 0.1597
+Epoch 776 | loss: 0.0003
+Epoch 777 | loss: 0.0003
+Epoch 778 | loss: 0.0003
+Epoch 779 | loss: 0.0003
+Epoch 780 | loss: 0.0003
+Eval Epoch 780 | Mean relative regret: 0.1600
+Epoch 781 | loss: 0.0003
+Epoch 782 | loss: 0.0003
+Epoch 783 | loss: 0.0003
+Epoch 784 | loss: 0.0003
+Epoch 785 | loss: 0.0003
+Eval Epoch 785 | Mean relative regret: 0.1586
+Epoch 786 | loss: 0.0003
+Epoch 787 | loss: 0.0003
+Epoch 788 | loss: 0.0003
+Epoch 789 | loss: 0.0003
+Epoch 790 | loss: 0.0003
+Eval Epoch 790 | Mean relative regret: 0.1589
+Epoch 791 | loss: 0.0003
+Epoch 792 | loss: 0.0003
+Epoch 793 | loss: 0.0003
+Epoch 794 | loss: 0.0003
+Epoch 795 | loss: 0.0003
+Eval Epoch 795 | Mean relative regret: 0.1606
+Epoch 796 | loss: 0.0003
+Epoch 797 | loss: 0.0003
+Epoch 798 | loss: 0.0003
+Epoch 799 | loss: 0.0003
+Epoch 800 | loss: 0.0003
+Eval Epoch 800 | Mean relative regret: 0.1610
+Epoch 801 | loss: 0.0003
+Epoch 802 | loss: 0.0003
+Epoch 803 | loss: 0.0003
+Epoch 804 | loss: 0.0003
+Epoch 805 | loss: 0.0003
+Eval Epoch 805 | Mean relative regret: 0.1615
+Epoch 806 | loss: 0.0003
+Epoch 807 | loss: 0.0003
+Epoch 808 | loss: 0.0003
+Epoch 809 | loss: 0.0003
+Epoch 810 | loss: 0.0003
+Eval Epoch 810 | Mean relative regret: 0.1585
+Epoch 811 | loss: 0.0003
+Epoch 812 | loss: 0.0003
+Epoch 813 | loss: 0.0003
+Epoch 814 | loss: 0.0003
+Epoch 815 | loss: 0.0003
+Eval Epoch 815 | Mean relative regret: 0.1593
+Epoch 816 | loss: 0.0003
+Epoch 817 | loss: 0.0003
+Epoch 818 | loss: 0.0003
+Epoch 819 | loss: 0.0003
+Epoch 820 | loss: 0.0003
+Eval Epoch 820 | Mean relative regret: 0.1624
+Epoch 821 | loss: 0.0003
+Epoch 822 | loss: 0.0003
+Epoch 823 | loss: 0.0003
+Epoch 824 | loss: 0.0003
+Epoch 825 | loss: 0.0003
+Eval Epoch 825 | Mean relative regret: 0.1620
+Epoch 826 | loss: 0.0003
+Epoch 827 | loss: 0.0003
+Epoch 828 | loss: 0.0003
+Epoch 829 | loss: 0.0003
+Epoch 830 | loss: 0.0003
+Eval Epoch 830 | Mean relative regret: 0.1614
+Epoch 831 | loss: 0.0003
+Epoch 832 | loss: 0.0003
+Epoch 833 | loss: 0.0003
+Epoch 834 | loss: 0.0003
+Epoch 835 | loss: 0.0003
+Eval Epoch 835 | Mean relative regret: 0.1623
+Epoch 836 | loss: 0.0003
+Epoch 837 | loss: 0.0003
+Epoch 838 | loss: 0.0003
+Epoch 839 | loss: 0.0003
+Epoch 840 | loss: 0.0003
+Eval Epoch 840 | Mean relative regret: 0.1629
+Epoch 841 | loss: 0.0003
+Epoch 842 | loss: 0.0003
+Epoch 843 | loss: 0.0003
+Epoch 844 | loss: 0.0003
+Epoch 845 | loss: 0.0003
+Eval Epoch 845 | Mean relative regret: 0.1614
+Epoch 846 | loss: 0.0003
+Epoch 847 | loss: 0.0003
+Epoch 848 | loss: 0.0003
+Epoch 849 | loss: 0.0003
+Epoch 850 | loss: 0.0003
+Eval Epoch 850 | Mean relative regret: 0.1606
+Epoch 851 | loss: 0.0003
+Epoch 852 | loss: 0.0003
+Epoch 853 | loss: 0.0003
+Epoch 854 | loss: 0.0003
+Epoch 855 | loss: 0.0003
+Eval Epoch 855 | Mean relative regret: 0.1600
+Epoch 856 | loss: 0.0003
+Epoch 857 | loss: 0.0003
+Epoch 858 | loss: 0.0003
+Epoch 859 | loss: 0.0003
+Epoch 860 | loss: 0.0003
+Eval Epoch 860 | Mean relative regret: 0.1610
+Epoch 861 | loss: 0.0003
+Epoch 862 | loss: 0.0003
+Epoch 863 | loss: 0.0003
+Epoch 864 | loss: 0.0003
+Epoch 865 | loss: 0.0003
+Eval Epoch 865 | Mean relative regret: 0.1627
+Epoch 866 | loss: 0.0003
+Epoch 867 | loss: 0.0003
+Epoch 868 | loss: 0.0003
+Epoch 869 | loss: 0.0003
+Epoch 870 | loss: 0.0003
+Eval Epoch 870 | Mean relative regret: 0.1613
+Epoch 871 | loss: 0.0003
+Epoch 872 | loss: 0.0003
+Epoch 873 | loss: 0.0003
+Epoch 874 | loss: 0.0003
+Epoch 875 | loss: 0.0003
+Eval Epoch 875 | Mean relative regret: 0.1610
+Epoch 876 | loss: 0.0003
+Epoch 877 | loss: 0.0003
+Epoch 878 | loss: 0.0003
+Epoch 879 | loss: 0.0003
+Epoch 880 | loss: 0.0003
+Eval Epoch 880 | Mean relative regret: 0.1597
+Epoch 881 | loss: 0.0003
+Epoch 882 | loss: 0.0003
+Epoch 883 | loss: 0.0003
+Epoch 884 | loss: 0.0003
+Epoch 885 | loss: 0.0003
+Eval Epoch 885 | Mean relative regret: 0.1604
+Epoch 886 | loss: 0.0003
+Epoch 887 | loss: 0.0003
+Epoch 888 | loss: 0.0003
+Epoch 889 | loss: 0.0003
+Epoch 890 | loss: 0.0003
+Eval Epoch 890 | Mean relative regret: 0.1607
+Epoch 891 | loss: 0.0003
+Epoch 892 | loss: 0.0003
+Epoch 893 | loss: 0.0003
+Epoch 894 | loss: 0.0003
+Epoch 895 | loss: 0.0003
+Eval Epoch 895 | Mean relative regret: 0.1616
+Epoch 896 | loss: 0.0003
+Epoch 897 | loss: 0.0003
+Epoch 898 | loss: 0.0003
+Epoch 899 | loss: 0.0003
+Epoch 900 | loss: 0.0003
+Eval Epoch 900 | Mean relative regret: 0.1605
+Epoch 901 | loss: 0.0003
+Epoch 902 | loss: 0.0003
+Epoch 903 | loss: 0.0003
+Epoch 904 | loss: 0.0003
+Epoch 905 | loss: 0.0003
+Eval Epoch 905 | Mean relative regret: 0.1619
+Epoch 906 | loss: 0.0003
+Epoch 907 | loss: 0.0003
+Epoch 908 | loss: 0.0003
+Epoch 909 | loss: 0.0003
+Epoch 910 | loss: 0.0003
+Eval Epoch 910 | Mean relative regret: 0.1608
+Epoch 911 | loss: 0.0003
+Epoch 912 | loss: 0.0003
+Epoch 913 | loss: 0.0003
+Epoch 914 | loss: 0.0003
+Epoch 915 | loss: 0.0003
+Eval Epoch 915 | Mean relative regret: 0.1614
+Epoch 916 | loss: 0.0003
+Epoch 917 | loss: 0.0003
+Epoch 918 | loss: 0.0003
+Epoch 919 | loss: 0.0003
+Epoch 920 | loss: 0.0003
+Eval Epoch 920 | Mean relative regret: 0.1608
+Epoch 921 | loss: 0.0003
+Epoch 922 | loss: 0.0003
+Epoch 923 | loss: 0.0003
+Epoch 924 | loss: 0.0003
+Epoch 925 | loss: 0.0003
+Eval Epoch 925 | Mean relative regret: 0.1607
+Epoch 926 | loss: 0.0003
+Epoch 927 | loss: 0.0003
+Epoch 928 | loss: 0.0003
+Epoch 929 | loss: 0.0003
+Epoch 930 | loss: 0.0003
+Eval Epoch 930 | Mean relative regret: 0.1614
+Epoch 931 | loss: 0.0003
+Epoch 932 | loss: 0.0003
+Epoch 933 | loss: 0.0003
+Epoch 934 | loss: 0.0003
+Epoch 935 | loss: 0.0003
+Eval Epoch 935 | Mean relative regret: 0.1609
+Epoch 936 | loss: 0.0003
+Epoch 937 | loss: 0.0003
+Epoch 938 | loss: 0.0003
+Epoch 939 | loss: 0.0003
+Epoch 940 | loss: 0.0003
+Eval Epoch 940 | Mean relative regret: 0.1599
+Epoch 941 | loss: 0.0003
+Epoch 942 | loss: 0.0003
+Epoch 943 | loss: 0.0003
+Epoch 944 | loss: 0.0003
+Epoch 945 | loss: 0.0003
+Eval Epoch 945 | Mean relative regret: 0.1591
+Epoch 946 | loss: 0.0003
+Epoch 947 | loss: 0.0003
+Epoch 948 | loss: 0.0003
+Epoch 949 | loss: 0.0003
+Epoch 950 | loss: 0.0003
+Eval Epoch 950 | Mean relative regret: 0.1603
+Epoch 951 | loss: 0.0003
+Epoch 952 | loss: 0.0003
+Epoch 953 | loss: 0.0003
+Epoch 954 | loss: 0.0003
+Epoch 955 | loss: 0.0003
+Eval Epoch 955 | Mean relative regret: 0.1604
+Epoch 956 | loss: 0.0003
+Epoch 957 | loss: 0.0003
+Epoch 958 | loss: 0.0003
+Epoch 959 | loss: 0.0003
+Epoch 960 | loss: 0.0003
+Eval Epoch 960 | Mean relative regret: 0.1609
+Epoch 961 | loss: 0.0003
+Epoch 962 | loss: 0.0003
+Epoch 963 | loss: 0.0003
+Epoch 964 | loss: 0.0003
+Epoch 965 | loss: 0.0003
+Eval Epoch 965 | Mean relative regret: 0.1618
+Epoch 966 | loss: 0.0003
+Epoch 967 | loss: 0.0003
+Epoch 968 | loss: 0.0003
+Epoch 969 | loss: 0.0003
+Epoch 970 | loss: 0.0003
+Eval Epoch 970 | Mean relative regret: 0.1604
+Epoch 971 | loss: 0.0003
+Epoch 972 | loss: 0.0003
+Epoch 973 | loss: 0.0003
+Epoch 974 | loss: 0.0003
+Epoch 975 | loss: 0.0003
+Eval Epoch 975 | Mean relative regret: 0.1593
+Epoch 976 | loss: 0.0003
+Epoch 977 | loss: 0.0003
+Epoch 978 | loss: 0.0003
+Epoch 979 | loss: 0.0003
+Epoch 980 | loss: 0.0003
+Eval Epoch 980 | Mean relative regret: 0.1605
+Epoch 981 | loss: 0.0003
+Epoch 982 | loss: 0.0003
+Epoch 983 | loss: 0.0003
+Epoch 984 | loss: 0.0003
+Epoch 985 | loss: 0.0003
+Eval Epoch 985 | Mean relative regret: 0.1631
+Epoch 986 | loss: 0.0003
+Epoch 987 | loss: 0.0003
+Epoch 988 | loss: 0.0003
+Epoch 989 | loss: 0.0003
+Epoch 990 | loss: 0.0003
+Eval Epoch 990 | Mean relative regret: 0.1609
+Epoch 991 | loss: 0.0003
+Epoch 992 | loss: 0.0003
+Epoch 993 | loss: 0.0003
+Epoch 994 | loss: 0.0003
+Epoch 995 | loss: 0.0003
+Eval Epoch 995 | Mean relative regret: 0.1602
+Epoch 996 | loss: 0.0003
+Epoch 997 | loss: 0.0003
+Epoch 998 | loss: 0.0003
+Epoch 999 | loss: 0.0003
+Epoch 1000 | loss: 0.0003
+Eval Epoch 1000 | Mean relative regret: 0.1615
+Epoch 1001 | loss: 0.0003
+Epoch 1002 | loss: 0.0003
+Epoch 1003 | loss: 0.0003
+Epoch 1004 | loss: 0.0003
+Epoch 1005 | loss: 0.0003
+Eval Epoch 1005 | Mean relative regret: 0.1592
+Epoch 1006 | loss: 0.0003
+Epoch 1007 | loss: 0.0003
+Epoch 1008 | loss: 0.0003
+Epoch 1009 | loss: 0.0003
+Epoch 1010 | loss: 0.0003
+Eval Epoch 1010 | Mean relative regret: 0.1619
+Epoch 1011 | loss: 0.0003
+Epoch 1012 | loss: 0.0003
+Epoch 1013 | loss: 0.0003
+Epoch 1014 | loss: 0.0003
+Epoch 1015 | loss: 0.0003
+Eval Epoch 1015 | Mean relative regret: 0.1623
+Epoch 1016 | loss: 0.0003
+Epoch 1017 | loss: 0.0003
+Epoch 1018 | loss: 0.0003
+Epoch 1019 | loss: 0.0003
+Epoch 1020 | loss: 0.0003
+Eval Epoch 1020 | Mean relative regret: 0.1610
+Epoch 1021 | loss: 0.0003
+Epoch 1022 | loss: 0.0003
+Epoch 1023 | loss: 0.0003
+Epoch 1024 | loss: 0.0003
+Epoch 1025 | loss: 0.0003
+Eval Epoch 1025 | Mean relative regret: 0.1635
+Epoch 1026 | loss: 0.0003
+Epoch 1027 | loss: 0.0003
+Epoch 1028 | loss: 0.0003
+Epoch 1029 | loss: 0.0003
+Epoch 1030 | loss: 0.0003
+Eval Epoch 1030 | Mean relative regret: 0.1614
+Epoch 1031 | loss: 0.0003
+Epoch 1032 | loss: 0.0003
+Epoch 1033 | loss: 0.0003
+Epoch 1034 | loss: 0.0003
+Epoch 1035 | loss: 0.0003
+Eval Epoch 1035 | Mean relative regret: 0.1611
+Epoch 1036 | loss: 0.0003
+Epoch 1037 | loss: 0.0003
+Epoch 1038 | loss: 0.0003
+Epoch 1039 | loss: 0.0003
+Epoch 1040 | loss: 0.0003
+Eval Epoch 1040 | Mean relative regret: 0.1617
+Epoch 1041 | loss: 0.0003
+Epoch 1042 | loss: 0.0003
+Epoch 1043 | loss: 0.0003
+Epoch 1044 | loss: 0.0003
+Epoch 1045 | loss: 0.0003
+Eval Epoch 1045 | Mean relative regret: 0.1604
+Epoch 1046 | loss: 0.0003
+Epoch 1047 | loss: 0.0003
+Epoch 1048 | loss: 0.0003
+Epoch 1049 | loss: 0.0003
+Epoch 1050 | loss: 0.0003
+Eval Epoch 1050 | Mean relative regret: 0.1632
+Epoch 1051 | loss: 0.0003
+Epoch 1052 | loss: 0.0003
+Epoch 1053 | loss: 0.0003
+Epoch 1054 | loss: 0.0003
+Epoch 1055 | loss: 0.0003
+Eval Epoch 1055 | Mean relative regret: 0.1628
+Epoch 1056 | loss: 0.0003
+Epoch 1057 | loss: 0.0003
+Epoch 1058 | loss: 0.0003
+Epoch 1059 | loss: 0.0003
+Epoch 1060 | loss: 0.0003
+Eval Epoch 1060 | Mean relative regret: 0.1616
+Epoch 1061 | loss: 0.0003
+Epoch 1062 | loss: 0.0003
+Epoch 1063 | loss: 0.0003
+Epoch 1064 | loss: 0.0003
+Epoch 1065 | loss: 0.0003
+Eval Epoch 1065 | Mean relative regret: 0.1618
+Epoch 1066 | loss: 0.0003
+Epoch 1067 | loss: 0.0003
+Epoch 1068 | loss: 0.0003
+Epoch 1069 | loss: 0.0003
+Epoch 1070 | loss: 0.0003
+Eval Epoch 1070 | Mean relative regret: 0.1634
+Epoch 1071 | loss: 0.0003
+Epoch 1072 | loss: 0.0003
+Epoch 1073 | loss: 0.0003
+Epoch 1074 | loss: 0.0003
+Epoch 1075 | loss: 0.0003
+Eval Epoch 1075 | Mean relative regret: 0.1633
+Epoch 1076 | loss: 0.0003
+Epoch 1077 | loss: 0.0003
+Epoch 1078 | loss: 0.0003
+Epoch 1079 | loss: 0.0003
+Epoch 1080 | loss: 0.0003
+Eval Epoch 1080 | Mean relative regret: 0.1614
+Epoch 1081 | loss: 0.0003
+Epoch 1082 | loss: 0.0003
+Epoch 1083 | loss: 0.0003
+Epoch 1084 | loss: 0.0003
+Epoch 1085 | loss: 0.0003
+Eval Epoch 1085 | Mean relative regret: 0.1625
+Epoch 1086 | loss: 0.0003
+Epoch 1087 | loss: 0.0003
+Epoch 1088 | loss: 0.0003
+Epoch 1089 | loss: 0.0003
+Epoch 1090 | loss: 0.0003
+Eval Epoch 1090 | Mean relative regret: 0.1618
+Epoch 1091 | loss: 0.0003
+Epoch 1092 | loss: 0.0003
+Epoch 1093 | loss: 0.0003
+Epoch 1094 | loss: 0.0003
+Epoch 1095 | loss: 0.0003
+Eval Epoch 1095 | Mean relative regret: 0.1617
+Epoch 1096 | loss: 0.0003
+Epoch 1097 | loss: 0.0003
+Epoch 1098 | loss: 0.0003
+Epoch 1099 | loss: 0.0003
+Epoch 1100 | loss: 0.0003
+Eval Epoch 1100 | Mean relative regret: 0.1623
+Epoch 1101 | loss: 0.0003
+Epoch 1102 | loss: 0.0003
+Epoch 1103 | loss: 0.0003
+Epoch 1104 | loss: 0.0003
+Epoch 1105 | loss: 0.0003
+Eval Epoch 1105 | Mean relative regret: 0.1611
+Epoch 1106 | loss: 0.0003
+Epoch 1107 | loss: 0.0003
+Epoch 1108 | loss: 0.0003
+Epoch 1109 | loss: 0.0003
+Epoch 1110 | loss: 0.0003
+Eval Epoch 1110 | Mean relative regret: 0.1613
+Epoch 1111 | loss: 0.0003
+Epoch 1112 | loss: 0.0003
+Epoch 1113 | loss: 0.0003
+Epoch 1114 | loss: 0.0003
+Epoch 1115 | loss: 0.0003
+Eval Epoch 1115 | Mean relative regret: 0.1611
+Epoch 1116 | loss: 0.0003
+Epoch 1117 | loss: 0.0003
+Epoch 1118 | loss: 0.0003
+Epoch 1119 | loss: 0.0003
+Epoch 1120 | loss: 0.0003
+Eval Epoch 1120 | Mean relative regret: 0.1632
+Epoch 1121 | loss: 0.0003
+Epoch 1122 | loss: 0.0003
+Epoch 1123 | loss: 0.0003
+Epoch 1124 | loss: 0.0003
+Epoch 1125 | loss: 0.0003
+Eval Epoch 1125 | Mean relative regret: 0.1612
+Epoch 1126 | loss: 0.0003
+Epoch 1127 | loss: 0.0003
+Epoch 1128 | loss: 0.0003
+Epoch 1129 | loss: 0.0003
+Epoch 1130 | loss: 0.0003
+Eval Epoch 1130 | Mean relative regret: 0.1613
+Epoch 1131 | loss: 0.0003
+Epoch 1132 | loss: 0.0003
+Epoch 1133 | loss: 0.0003
+Epoch 1134 | loss: 0.0003
+Epoch 1135 | loss: 0.0003
+Eval Epoch 1135 | Mean relative regret: 0.1627
+Epoch 1136 | loss: 0.0003
+Epoch 1137 | loss: 0.0003
+Epoch 1138 | loss: 0.0003
+Epoch 1139 | loss: 0.0003
+Epoch 1140 | loss: 0.0003
+Eval Epoch 1140 | Mean relative regret: 0.1623
+Epoch 1141 | loss: 0.0003
+Epoch 1142 | loss: 0.0003
+Epoch 1143 | loss: 0.0003
+Epoch 1144 | loss: 0.0003
+Epoch 1145 | loss: 0.0003
+Eval Epoch 1145 | Mean relative regret: 0.1616
+Epoch 1146 | loss: 0.0003
+Epoch 1147 | loss: 0.0003
+Epoch 1148 | loss: 0.0003
+Epoch 1149 | loss: 0.0003
+Epoch 1150 | loss: 0.0003
+Eval Epoch 1150 | Mean relative regret: 0.1602
+Epoch 1151 | loss: 0.0003
+Epoch 1152 | loss: 0.0003
+Epoch 1153 | loss: 0.0003
+Epoch 1154 | loss: 0.0003
+Epoch 1155 | loss: 0.0003
+Eval Epoch 1155 | Mean relative regret: 0.1610
+Epoch 1156 | loss: 0.0003
+Epoch 1157 | loss: 0.0003
+Epoch 1158 | loss: 0.0003
+Epoch 1159 | loss: 0.0003
+Epoch 1160 | loss: 0.0003
+Eval Epoch 1160 | Mean relative regret: 0.1630
+Epoch 1161 | loss: 0.0003
+Epoch 1162 | loss: 0.0003
+Epoch 1163 | loss: 0.0003
+Epoch 1164 | loss: 0.0003
+Epoch 1165 | loss: 0.0003
+Eval Epoch 1165 | Mean relative regret: 0.1613
+Epoch 1166 | loss: 0.0003
+Epoch 1167 | loss: 0.0003
+Epoch 1168 | loss: 0.0003
+Epoch 1169 | loss: 0.0003
+Epoch 1170 | loss: 0.0003
+Eval Epoch 1170 | Mean relative regret: 0.1632
+Epoch 1171 | loss: 0.0003
+Epoch 1172 | loss: 0.0003
+Epoch 1173 | loss: 0.0003
+Epoch 1174 | loss: 0.0003
+Epoch 1175 | loss: 0.0003
+Eval Epoch 1175 | Mean relative regret: 0.1617
+Epoch 1176 | loss: 0.0003
+Epoch 1177 | loss: 0.0003
+Epoch 1178 | loss: 0.0003
+Epoch 1179 | loss: 0.0003
+Epoch 1180 | loss: 0.0003
+Eval Epoch 1180 | Mean relative regret: 0.1629
+Epoch 1181 | loss: 0.0003
+Epoch 1182 | loss: 0.0003
+Epoch 1183 | loss: 0.0003
+Epoch 1184 | loss: 0.0003
+Epoch 1185 | loss: 0.0003
+Eval Epoch 1185 | Mean relative regret: 0.1630
+Epoch 1186 | loss: 0.0003
+Epoch 1187 | loss: 0.0003
+Epoch 1188 | loss: 0.0003
+Epoch 1189 | loss: 0.0003
+Epoch 1190 | loss: 0.0003
+Eval Epoch 1190 | Mean relative regret: 0.1616
+Epoch 1191 | loss: 0.0003
+Epoch 1192 | loss: 0.0003
+Epoch 1193 | loss: 0.0003
+Epoch 1194 | loss: 0.0003
+Epoch 1195 | loss: 0.0003
+Eval Epoch 1195 | Mean relative regret: 0.1601
+Epoch 1196 | loss: 0.0003
+Epoch 1197 | loss: 0.0003
+Epoch 1198 | loss: 0.0003
+Epoch 1199 | loss: 0.0003
+Epoch 1200 | loss: 0.0003
+Eval Epoch 1200 | Mean relative regret: 0.1613
+Epoch 1201 | loss: 0.0003
+Epoch 1202 | loss: 0.0003
+Epoch 1203 | loss: 0.0003
+Epoch 1204 | loss: 0.0003
+Epoch 1205 | loss: 0.0003
+Eval Epoch 1205 | Mean relative regret: 0.1636
+Epoch 1206 | loss: 0.0003
+Epoch 1207 | loss: 0.0003
+Epoch 1208 | loss: 0.0003
+Epoch 1209 | loss: 0.0003
+Epoch 1210 | loss: 0.0003
+Eval Epoch 1210 | Mean relative regret: 0.1632
+Epoch 1211 | loss: 0.0003
+Epoch 1212 | loss: 0.0003
+Epoch 1213 | loss: 0.0003
+Epoch 1214 | loss: 0.0003
+Epoch 1215 | loss: 0.0003
+Eval Epoch 1215 | Mean relative regret: 0.1623
+Epoch 1216 | loss: 0.0003
+Epoch 1217 | loss: 0.0003
+Epoch 1218 | loss: 0.0003
+Epoch 1219 | loss: 0.0003
+Epoch 1220 | loss: 0.0003
+Eval Epoch 1220 | Mean relative regret: 0.1635
+Epoch 1221 | loss: 0.0003
+Epoch 1222 | loss: 0.0003
+Epoch 1223 | loss: 0.0003
+Epoch 1224 | loss: 0.0003
+Epoch 1225 | loss: 0.0003
+Eval Epoch 1225 | Mean relative regret: 0.1594
+Epoch 1226 | loss: 0.0003
+Epoch 1227 | loss: 0.0003
+Epoch 1228 | loss: 0.0003
+Epoch 1229 | loss: 0.0003
+Epoch 1230 | loss: 0.0003
+Eval Epoch 1230 | Mean relative regret: 0.1624
+Epoch 1231 | loss: 0.0003
+Epoch 1232 | loss: 0.0003
+Epoch 1233 | loss: 0.0003
+Epoch 1234 | loss: 0.0003
+Epoch 1235 | loss: 0.0003
+Eval Epoch 1235 | Mean relative regret: 0.1615
+Epoch 1236 | loss: 0.0003
+Epoch 1237 | loss: 0.0003
+Epoch 1238 | loss: 0.0003
+Epoch 1239 | loss: 0.0003
+Epoch 1240 | loss: 0.0003
+Eval Epoch 1240 | Mean relative regret: 0.1613
+Epoch 1241 | loss: 0.0003
+Epoch 1242 | loss: 0.0003
+Epoch 1243 | loss: 0.0003
+Epoch 1244 | loss: 0.0003
+Epoch 1245 | loss: 0.0003
+Eval Epoch 1245 | Mean relative regret: 0.1620
+Epoch 1246 | loss: 0.0003
+Epoch 1247 | loss: 0.0003
+Epoch 1248 | loss: 0.0003
+Epoch 1249 | loss: 0.0003
+Epoch 1250 | loss: 0.0003
+Eval Epoch 1250 | Mean relative regret: 0.1613
+Epoch 1251 | loss: 0.0003
+Epoch 1252 | loss: 0.0003
+Epoch 1253 | loss: 0.0003
+Epoch 1254 | loss: 0.0003
+Epoch 1255 | loss: 0.0003
+Eval Epoch 1255 | Mean relative regret: 0.1607
+Epoch 1256 | loss: 0.0003
+Epoch 1257 | loss: 0.0003
+Epoch 1258 | loss: 0.0003
+Epoch 1259 | loss: 0.0003
+Epoch 1260 | loss: 0.0003
+Eval Epoch 1260 | Mean relative regret: 0.1625
+Epoch 1261 | loss: 0.0003
+Epoch 1262 | loss: 0.0003
+Epoch 1263 | loss: 0.0003
+Epoch 1264 | loss: 0.0003
+Epoch 1265 | loss: 0.0003
+Eval Epoch 1265 | Mean relative regret: 0.1603
+Epoch 1266 | loss: 0.0003
+Epoch 1267 | loss: 0.0003
+Epoch 1268 | loss: 0.0003
+Epoch 1269 | loss: 0.0003
+Epoch 1270 | loss: 0.0003
+Eval Epoch 1270 | Mean relative regret: 0.1622
+Epoch 1271 | loss: 0.0003
+Epoch 1272 | loss: 0.0003
+Epoch 1273 | loss: 0.0003
+Epoch 1274 | loss: 0.0003
+Epoch 1275 | loss: 0.0003
+Eval Epoch 1275 | Mean relative regret: 0.1616
+Epoch 1276 | loss: 0.0003
+Epoch 1277 | loss: 0.0003
+Epoch 1278 | loss: 0.0003
+Epoch 1279 | loss: 0.0003
+Epoch 1280 | loss: 0.0003
+Eval Epoch 1280 | Mean relative regret: 0.1605
+Epoch 1281 | loss: 0.0003
+Epoch 1282 | loss: 0.0003
+Epoch 1283 | loss: 0.0003
+Epoch 1284 | loss: 0.0003
+Epoch 1285 | loss: 0.0003
+Eval Epoch 1285 | Mean relative regret: 0.1612
+Epoch 1286 | loss: 0.0003
+Epoch 1287 | loss: 0.0003
+Epoch 1288 | loss: 0.0003
+Epoch 1289 | loss: 0.0003
+Epoch 1290 | loss: 0.0003
+Eval Epoch 1290 | Mean relative regret: 0.1626
+Epoch 1291 | loss: 0.0003
+Epoch 1292 | loss: 0.0003
+Epoch 1293 | loss: 0.0003
+Epoch 1294 | loss: 0.0003
+Epoch 1295 | loss: 0.0003
+Eval Epoch 1295 | Mean relative regret: 0.1624
+Epoch 1296 | loss: 0.0003
+Epoch 1297 | loss: 0.0003
+Epoch 1298 | loss: 0.0003
+Epoch 1299 | loss: 0.0003
+Epoch 1300 | loss: 0.0003
+Eval Epoch 1300 | Mean relative regret: 0.1617
+Epoch 1301 | loss: 0.0003
+Epoch 1302 | loss: 0.0003
+Epoch 1303 | loss: 0.0003
+Epoch 1304 | loss: 0.0003
+Epoch 1305 | loss: 0.0003
+Eval Epoch 1305 | Mean relative regret: 0.1606
+Epoch 1306 | loss: 0.0003
+Epoch 1307 | loss: 0.0003
+Epoch 1308 | loss: 0.0003
+Epoch 1309 | loss: 0.0003
+Epoch 1310 | loss: 0.0003
+Eval Epoch 1310 | Mean relative regret: 0.1628
+Epoch 1311 | loss: 0.0003
+Epoch 1312 | loss: 0.0003
+Epoch 1313 | loss: 0.0003
+Epoch 1314 | loss: 0.0003
+Epoch 1315 | loss: 0.0003
+Eval Epoch 1315 | Mean relative regret: 0.1611
+Epoch 1316 | loss: 0.0003
+Epoch 1317 | loss: 0.0003
+Epoch 1318 | loss: 0.0003
+Epoch 1319 | loss: 0.0003
+Epoch 1320 | loss: 0.0003
+Eval Epoch 1320 | Mean relative regret: 0.1614
+Epoch 1321 | loss: 0.0003
+Epoch 1322 | loss: 0.0003
+Epoch 1323 | loss: 0.0003
+Epoch 1324 | loss: 0.0003
+Epoch 1325 | loss: 0.0003
+Eval Epoch 1325 | Mean relative regret: 0.1623
+Epoch 1326 | loss: 0.0003
+Epoch 1327 | loss: 0.0003
+Epoch 1328 | loss: 0.0003
+Epoch 1329 | loss: 0.0003
+Epoch 1330 | loss: 0.0003
+Eval Epoch 1330 | Mean relative regret: 0.1617
+Epoch 1331 | loss: 0.0003
+Epoch 1332 | loss: 0.0003
+Epoch 1333 | loss: 0.0003
+Epoch 1334 | loss: 0.0003
+Epoch 1335 | loss: 0.0003
+Eval Epoch 1335 | Mean relative regret: 0.1623
+Epoch 1336 | loss: 0.0003
+Epoch 1337 | loss: 0.0003
+Epoch 1338 | loss: 0.0003
+Epoch 1339 | loss: 0.0003
+Epoch 1340 | loss: 0.0003
+Eval Epoch 1340 | Mean relative regret: 0.1625
+Epoch 1341 | loss: 0.0003
+Epoch 1342 | loss: 0.0003
+Epoch 1343 | loss: 0.0003
+Epoch 1344 | loss: 0.0003
+Epoch 1345 | loss: 0.0003
+Eval Epoch 1345 | Mean relative regret: 0.1621
+Epoch 1346 | loss: 0.0003
+Epoch 1347 | loss: 0.0003
+Epoch 1348 | loss: 0.0003
+Epoch 1349 | loss: 0.0003
+Epoch 1350 | loss: 0.0003
+Eval Epoch 1350 | Mean relative regret: 0.1621
+Epoch 1351 | loss: 0.0003
+Epoch 1352 | loss: 0.0003
+Epoch 1353 | loss: 0.0003
+Epoch 1354 | loss: 0.0003
+Epoch 1355 | loss: 0.0003
+Eval Epoch 1355 | Mean relative regret: 0.1629
+Epoch 1356 | loss: 0.0003
+Epoch 1357 | loss: 0.0003
+Epoch 1358 | loss: 0.0003
+Epoch 1359 | loss: 0.0003
+Epoch 1360 | loss: 0.0003
+Eval Epoch 1360 | Mean relative regret: 0.1626
+Epoch 1361 | loss: 0.0003
+Epoch 1362 | loss: 0.0003
+Epoch 1363 | loss: 0.0003
+Epoch 1364 | loss: 0.0003
+Epoch 1365 | loss: 0.0003
+Eval Epoch 1365 | Mean relative regret: 0.1593
+Epoch 1366 | loss: 0.0003
+Epoch 1367 | loss: 0.0003
+Epoch 1368 | loss: 0.0003
+Epoch 1369 | loss: 0.0003
+Epoch 1370 | loss: 0.0003
+Eval Epoch 1370 | Mean relative regret: 0.1586
+Epoch 1371 | loss: 0.0003
+Epoch 1372 | loss: 0.0003
+Epoch 1373 | loss: 0.0003
+Epoch 1374 | loss: 0.0003
+Epoch 1375 | loss: 0.0003
+Eval Epoch 1375 | Mean relative regret: 0.1614
+Epoch 1376 | loss: 0.0003
+Epoch 1377 | loss: 0.0003
+Epoch 1378 | loss: 0.0003
+Epoch 1379 | loss: 0.0003
+Epoch 1380 | loss: 0.0003
+Eval Epoch 1380 | Mean relative regret: 0.1595
+Epoch 1381 | loss: 0.0003
+Epoch 1382 | loss: 0.0003
+Epoch 1383 | loss: 0.0003
+Epoch 1384 | loss: 0.0003
+Epoch 1385 | loss: 0.0003
+Eval Epoch 1385 | Mean relative regret: 0.1598
+Epoch 1386 | loss: 0.0003
+Epoch 1387 | loss: 0.0003
+Epoch 1388 | loss: 0.0003
+Epoch 1389 | loss: 0.0003
+Epoch 1390 | loss: 0.0003
+Eval Epoch 1390 | Mean relative regret: 0.1605
+Epoch 1391 | loss: 0.0003
+Epoch 1392 | loss: 0.0003
+Epoch 1393 | loss: 0.0003
+Epoch 1394 | loss: 0.0003
+Epoch 1395 | loss: 0.0003
+Eval Epoch 1395 | Mean relative regret: 0.1612
+Epoch 1396 | loss: 0.0003
+Epoch 1397 | loss: 0.0003
+Epoch 1398 | loss: 0.0003
+Epoch 1399 | loss: 0.0003
+Epoch 1400 | loss: 0.0003
+Eval Epoch 1400 | Mean relative regret: 0.1611
+Epoch 1401 | loss: 0.0003
+Epoch 1402 | loss: 0.0003
+Epoch 1403 | loss: 0.0003
+Epoch 1404 | loss: 0.0003
+Epoch 1405 | loss: 0.0003
+Eval Epoch 1405 | Mean relative regret: 0.1604
+Epoch 1406 | loss: 0.0003
+Epoch 1407 | loss: 0.0003
+Epoch 1408 | loss: 0.0003
+Epoch 1409 | loss: 0.0003
+Epoch 1410 | loss: 0.0003
+Eval Epoch 1410 | Mean relative regret: 0.1615
+Epoch 1411 | loss: 0.0003
+Epoch 1412 | loss: 0.0003
+Epoch 1413 | loss: 0.0003
+Epoch 1414 | loss: 0.0003
+Epoch 1415 | loss: 0.0003
+Eval Epoch 1415 | Mean relative regret: 0.1590
+Epoch 1416 | loss: 0.0003
+Epoch 1417 | loss: 0.0003
+Epoch 1418 | loss: 0.0003
+Epoch 1419 | loss: 0.0003
+Epoch 1420 | loss: 0.0003
+Eval Epoch 1420 | Mean relative regret: 0.1584
+Epoch 1421 | loss: 0.0003
+Epoch 1422 | loss: 0.0003
+Epoch 1423 | loss: 0.0003
+Epoch 1424 | loss: 0.0003
+Epoch 1425 | loss: 0.0003
+Eval Epoch 1425 | Mean relative regret: 0.1598
+Epoch 1426 | loss: 0.0003
+Epoch 1427 | loss: 0.0003
+Epoch 1428 | loss: 0.0003
+Epoch 1429 | loss: 0.0003
+Epoch 1430 | loss: 0.0003
+Eval Epoch 1430 | Mean relative regret: 0.1622
+Epoch 1431 | loss: 0.0003
+Epoch 1432 | loss: 0.0003
+Epoch 1433 | loss: 0.0003
+Epoch 1434 | loss: 0.0003
+Epoch 1435 | loss: 0.0003
+Eval Epoch 1435 | Mean relative regret: 0.1631
+Epoch 1436 | loss: 0.0003
+Epoch 1437 | loss: 0.0003
+Epoch 1438 | loss: 0.0003
+Epoch 1439 | loss: 0.0003
+Epoch 1440 | loss: 0.0003
+Eval Epoch 1440 | Mean relative regret: 0.1613
+Epoch 1441 | loss: 0.0003
+Epoch 1442 | loss: 0.0003
+Epoch 1443 | loss: 0.0003
+Epoch 1444 | loss: 0.0003
+Epoch 1445 | loss: 0.0003
+Eval Epoch 1445 | Mean relative regret: 0.1619
+Epoch 1446 | loss: 0.0003
+Epoch 1447 | loss: 0.0003
+Epoch 1448 | loss: 0.0003
+Epoch 1449 | loss: 0.0003
+Epoch 1450 | loss: 0.0003
+Eval Epoch 1450 | Mean relative regret: 0.1624
+Epoch 1451 | loss: 0.0003
+Epoch 1452 | loss: 0.0003
+Epoch 1453 | loss: 0.0003
+Epoch 1454 | loss: 0.0003
+Epoch 1455 | loss: 0.0003
+Eval Epoch 1455 | Mean relative regret: 0.1623
+Epoch 1456 | loss: 0.0003
+Epoch 1457 | loss: 0.0003
+Epoch 1458 | loss: 0.0003
+Epoch 1459 | loss: 0.0003
+Epoch 1460 | loss: 0.0003
+Eval Epoch 1460 | Mean relative regret: 0.1606
+Epoch 1461 | loss: 0.0003
+Epoch 1462 | loss: 0.0003
+Epoch 1463 | loss: 0.0003
+Epoch 1464 | loss: 0.0003
+Epoch 1465 | loss: 0.0003
+Eval Epoch 1465 | Mean relative regret: 0.1605
+Epoch 1466 | loss: 0.0003
+Epoch 1467 | loss: 0.0003
+Epoch 1468 | loss: 0.0003
+Epoch 1469 | loss: 0.0003
+Epoch 1470 | loss: 0.0003
+Eval Epoch 1470 | Mean relative regret: 0.1623
+Epoch 1471 | loss: 0.0003
+Epoch 1472 | loss: 0.0003
+Epoch 1473 | loss: 0.0003
+Epoch 1474 | loss: 0.0003
+Epoch 1475 | loss: 0.0003
+Eval Epoch 1475 | Mean relative regret: 0.1628
+Epoch 1476 | loss: 0.0003
+Epoch 1477 | loss: 0.0003
+Epoch 1478 | loss: 0.0003
+Epoch 1479 | loss: 0.0003
+Epoch 1480 | loss: 0.0003
+Eval Epoch 1480 | Mean relative regret: 0.1611
+Epoch 1481 | loss: 0.0003
+Epoch 1482 | loss: 0.0003
+Epoch 1483 | loss: 0.0003
+Epoch 1484 | loss: 0.0003
+Epoch 1485 | loss: 0.0003
+Eval Epoch 1485 | Mean relative regret: 0.1614
+Epoch 1486 | loss: 0.0003
+Epoch 1487 | loss: 0.0003
+Epoch 1488 | loss: 0.0003
+Epoch 1489 | loss: 0.0003
+Epoch 1490 | loss: 0.0003
+Eval Epoch 1490 | Mean relative regret: 0.1625
+Epoch 1491 | loss: 0.0003
+Epoch 1492 | loss: 0.0003
+Epoch 1493 | loss: 0.0003
+Epoch 1494 | loss: 0.0003
+Epoch 1495 | loss: 0.0003
+Eval Epoch 1495 | Mean relative regret: 0.1611
+Epoch 1496 | loss: 0.0003
+Epoch 1497 | loss: 0.0003
+Epoch 1498 | loss: 0.0003
+Epoch 1499 | loss: 0.0003
+Epoch 1500 | loss: 0.0003
+Eval Epoch 1500 | Mean relative regret: 0.1608
+Epoch 1501 | loss: 0.0003
+Epoch 1502 | loss: 0.0003
+Epoch 1503 | loss: 0.0003
+Epoch 1504 | loss: 0.0003
+Epoch 1505 | loss: 0.0003
+Eval Epoch 1505 | Mean relative regret: 0.1603
+Epoch 1506 | loss: 0.0003
+Epoch 1507 | loss: 0.0003
+Epoch 1508 | loss: 0.0003
+Epoch 1509 | loss: 0.0003
+Epoch 1510 | loss: 0.0003
+Eval Epoch 1510 | Mean relative regret: 0.1601
+Epoch 1511 | loss: 0.0003
+Epoch 1512 | loss: 0.0003
+Epoch 1513 | loss: 0.0003
+Epoch 1514 | loss: 0.0003
+Epoch 1515 | loss: 0.0003
+Eval Epoch 1515 | Mean relative regret: 0.1616
+Epoch 1516 | loss: 0.0003
+Epoch 1517 | loss: 0.0003
+Epoch 1518 | loss: 0.0003
+Epoch 1519 | loss: 0.0003
+Epoch 1520 | loss: 0.0003
+Eval Epoch 1520 | Mean relative regret: 0.1599
+Epoch 1521 | loss: 0.0003
+Epoch 1522 | loss: 0.0003
+Epoch 1523 | loss: 0.0003
+Epoch 1524 | loss: 0.0003
+Epoch 1525 | loss: 0.0003
+Eval Epoch 1525 | Mean relative regret: 0.1607
+Epoch 1526 | loss: 0.0003
+Epoch 1527 | loss: 0.0003
+Epoch 1528 | loss: 0.0003
+Epoch 1529 | loss: 0.0003
+Epoch 1530 | loss: 0.0003
+Eval Epoch 1530 | Mean relative regret: 0.1598
+Epoch 1531 | loss: 0.0003
+Epoch 1532 | loss: 0.0003
+Epoch 1533 | loss: 0.0003
+Epoch 1534 | loss: 0.0003
+Epoch 1535 | loss: 0.0003
+Eval Epoch 1535 | Mean relative regret: 0.1609
+Epoch 1536 | loss: 0.0003
+Epoch 1537 | loss: 0.0003
+Epoch 1538 | loss: 0.0003
+Epoch 1539 | loss: 0.0003
+Epoch 1540 | loss: 0.0003
+Eval Epoch 1540 | Mean relative regret: 0.1618
+Epoch 1541 | loss: 0.0003
+Epoch 1542 | loss: 0.0003
+Epoch 1543 | loss: 0.0003
+Epoch 1544 | loss: 0.0003
+Epoch 1545 | loss: 0.0003
+Eval Epoch 1545 | Mean relative regret: 0.1608
+Epoch 1546 | loss: 0.0003
+Epoch 1547 | loss: 0.0003
+Epoch 1548 | loss: 0.0003
+Epoch 1549 | loss: 0.0003
+Epoch 1550 | loss: 0.0003
+Eval Epoch 1550 | Mean relative regret: 0.1620
+Epoch 1551 | loss: 0.0003
+Epoch 1552 | loss: 0.0003
+Epoch 1553 | loss: 0.0003
+Epoch 1554 | loss: 0.0003
+Epoch 1555 | loss: 0.0003
+Eval Epoch 1555 | Mean relative regret: 0.1595
+Epoch 1556 | loss: 0.0003
+Epoch 1557 | loss: 0.0003
+Epoch 1558 | loss: 0.0003
+Epoch 1559 | loss: 0.0003
+Epoch 1560 | loss: 0.0003
+Eval Epoch 1560 | Mean relative regret: 0.1606
+Epoch 1561 | loss: 0.0003
+Epoch 1562 | loss: 0.0003
+Epoch 1563 | loss: 0.0003
+Epoch 1564 | loss: 0.0003
+Epoch 1565 | loss: 0.0003
+Eval Epoch 1565 | Mean relative regret: 0.1605
+Epoch 1566 | loss: 0.0003
+Epoch 1567 | loss: 0.0003
+Epoch 1568 | loss: 0.0003
+Epoch 1569 | loss: 0.0003
+Epoch 1570 | loss: 0.0003
+Eval Epoch 1570 | Mean relative regret: 0.1612
+Epoch 1571 | loss: 0.0003
+Epoch 1572 | loss: 0.0003
+Epoch 1573 | loss: 0.0003
+Epoch 1574 | loss: 0.0003
+Epoch 1575 | loss: 0.0003
+Eval Epoch 1575 | Mean relative regret: 0.1615
+Epoch 1576 | loss: 0.0003
+Epoch 1577 | loss: 0.0003
+Epoch 1578 | loss: 0.0003
+Epoch 1579 | loss: 0.0003
+Epoch 1580 | loss: 0.0003
+Eval Epoch 1580 | Mean relative regret: 0.1597
+Epoch 1581 | loss: 0.0003
+Epoch 1582 | loss: 0.0003
+Epoch 1583 | loss: 0.0003
+Epoch 1584 | loss: 0.0003
+Epoch 1585 | loss: 0.0003
+Eval Epoch 1585 | Mean relative regret: 0.1610
+Epoch 1586 | loss: 0.0003
+Epoch 1587 | loss: 0.0003
+Epoch 1588 | loss: 0.0003
+Epoch 1589 | loss: 0.0003
+Epoch 1590 | loss: 0.0003
+Eval Epoch 1590 | Mean relative regret: 0.1623
+Epoch 1591 | loss: 0.0003
+Epoch 1592 | loss: 0.0003
+Epoch 1593 | loss: 0.0003
+Epoch 1594 | loss: 0.0003
+Epoch 1595 | loss: 0.0003
+Eval Epoch 1595 | Mean relative regret: 0.1615
+Epoch 1596 | loss: 0.0003
+Epoch 1597 | loss: 0.0003
+Epoch 1598 | loss: 0.0003
+Epoch 1599 | loss: 0.0003
+Epoch 1600 | loss: 0.0003
+Eval Epoch 1600 | Mean relative regret: 0.1605
+Epoch 1601 | loss: 0.0003
+Epoch 1602 | loss: 0.0003
+Epoch 1603 | loss: 0.0003
+Epoch 1604 | loss: 0.0003
+Epoch 1605 | loss: 0.0003
+Eval Epoch 1605 | Mean relative regret: 0.1610
+Epoch 1606 | loss: 0.0003
+Epoch 1607 | loss: 0.0003
+Epoch 1608 | loss: 0.0003
+Epoch 1609 | loss: 0.0003
+Epoch 1610 | loss: 0.0003
+Eval Epoch 1610 | Mean relative regret: 0.1611
+Epoch 1611 | loss: 0.0003
+Epoch 1612 | loss: 0.0003
+Epoch 1613 | loss: 0.0003
+Epoch 1614 | loss: 0.0003
+Epoch 1615 | loss: 0.0003
+Eval Epoch 1615 | Mean relative regret: 0.1614
+Epoch 1616 | loss: 0.0003
+Epoch 1617 | loss: 0.0003
+Epoch 1618 | loss: 0.0003
+Epoch 1619 | loss: 0.0003
+Epoch 1620 | loss: 0.0003
+Eval Epoch 1620 | Mean relative regret: 0.1622
+Epoch 1621 | loss: 0.0003
+Epoch 1622 | loss: 0.0003
+Epoch 1623 | loss: 0.0003
+Epoch 1624 | loss: 0.0003
+Epoch 1625 | loss: 0.0003
+Eval Epoch 1625 | Mean relative regret: 0.1626
+Epoch 1626 | loss: 0.0003
+Epoch 1627 | loss: 0.0003
+Epoch 1628 | loss: 0.0003
+Epoch 1629 | loss: 0.0003
+Epoch 1630 | loss: 0.0003
+Eval Epoch 1630 | Mean relative regret: 0.1611
+Epoch 1631 | loss: 0.0003
+Epoch 1632 | loss: 0.0003
+Epoch 1633 | loss: 0.0003
+Epoch 1634 | loss: 0.0003
+Epoch 1635 | loss: 0.0003
+Eval Epoch 1635 | Mean relative regret: 0.1624
+Epoch 1636 | loss: 0.0003
+Epoch 1637 | loss: 0.0003
+Epoch 1638 | loss: 0.0003
+Epoch 1639 | loss: 0.0003
+Epoch 1640 | loss: 0.0003
+Eval Epoch 1640 | Mean relative regret: 0.1619
+Epoch 1641 | loss: 0.0003
+Epoch 1642 | loss: 0.0003
+Epoch 1643 | loss: 0.0003
+Epoch 1644 | loss: 0.0003
+Epoch 1645 | loss: 0.0003
+Eval Epoch 1645 | Mean relative regret: 0.1622
+Epoch 1646 | loss: 0.0003
+Epoch 1647 | loss: 0.0003
+Epoch 1648 | loss: 0.0003
+Epoch 1649 | loss: 0.0003
+Epoch 1650 | loss: 0.0003
+Eval Epoch 1650 | Mean relative regret: 0.1627
+Epoch 1651 | loss: 0.0003
+Epoch 1652 | loss: 0.0003
+Epoch 1653 | loss: 0.0003
+Epoch 1654 | loss: 0.0003
+Epoch 1655 | loss: 0.0003
+Eval Epoch 1655 | Mean relative regret: 0.1606
+Epoch 1656 | loss: 0.0003
+Epoch 1657 | loss: 0.0003
+Epoch 1658 | loss: 0.0003
+Epoch 1659 | loss: 0.0003
+Epoch 1660 | loss: 0.0003
+Eval Epoch 1660 | Mean relative regret: 0.1615
+Epoch 1661 | loss: 0.0003
+Epoch 1662 | loss: 0.0003
+Epoch 1663 | loss: 0.0003
+Epoch 1664 | loss: 0.0003
+Epoch 1665 | loss: 0.0003
+Eval Epoch 1665 | Mean relative regret: 0.1620
+Epoch 1666 | loss: 0.0003
+Epoch 1667 | loss: 0.0003
+Epoch 1668 | loss: 0.0003
+Epoch 1669 | loss: 0.0003
+Epoch 1670 | loss: 0.0003
+Eval Epoch 1670 | Mean relative regret: 0.1622
+Epoch 1671 | loss: 0.0003
+Epoch 1672 | loss: 0.0003
+Epoch 1673 | loss: 0.0003
+Epoch 1674 | loss: 0.0003
+Epoch 1675 | loss: 0.0003
+Eval Epoch 1675 | Mean relative regret: 0.1618
+Epoch 1676 | loss: 0.0003
+Epoch 1677 | loss: 0.0003
+Epoch 1678 | loss: 0.0003
+Epoch 1679 | loss: 0.0003
+Epoch 1680 | loss: 0.0003
+Eval Epoch 1680 | Mean relative regret: 0.1611
+Epoch 1681 | loss: 0.0003
+Epoch 1682 | loss: 0.0003
+Epoch 1683 | loss: 0.0003
+Epoch 1684 | loss: 0.0003
+Epoch 1685 | loss: 0.0003
+Eval Epoch 1685 | Mean relative regret: 0.1608
+Epoch 1686 | loss: 0.0003
+Epoch 1687 | loss: 0.0003
+Epoch 1688 | loss: 0.0003
+Epoch 1689 | loss: 0.0003
+Epoch 1690 | loss: 0.0003
+Eval Epoch 1690 | Mean relative regret: 0.1580
+Epoch 1691 | loss: 0.0003
+Epoch 1692 | loss: 0.0003
+Epoch 1693 | loss: 0.0003
+Epoch 1694 | loss: 0.0003
+Epoch 1695 | loss: 0.0003
+Eval Epoch 1695 | Mean relative regret: 0.1604
+Epoch 1696 | loss: 0.0003
+Epoch 1697 | loss: 0.0003
+Epoch 1698 | loss: 0.0003
+Epoch 1699 | loss: 0.0003
+Epoch 1700 | loss: 0.0003
+Eval Epoch 1700 | Mean relative regret: 0.1604
+Epoch 1701 | loss: 0.0003
+Epoch 1702 | loss: 0.0003
+Epoch 1703 | loss: 0.0003
+Epoch 1704 | loss: 0.0003
+Epoch 1705 | loss: 0.0003
+Eval Epoch 1705 | Mean relative regret: 0.1599
+Epoch 1706 | loss: 0.0003
+Epoch 1707 | loss: 0.0003
+Epoch 1708 | loss: 0.0003
+Epoch 1709 | loss: 0.0003
+Epoch 1710 | loss: 0.0003
+Eval Epoch 1710 | Mean relative regret: 0.1602
+Epoch 1711 | loss: 0.0003
+Epoch 1712 | loss: 0.0003
+Epoch 1713 | loss: 0.0003
+Epoch 1714 | loss: 0.0003
+Epoch 1715 | loss: 0.0003
+Eval Epoch 1715 | Mean relative regret: 0.1593
+Epoch 1716 | loss: 0.0003
+Epoch 1717 | loss: 0.0003
+Epoch 1718 | loss: 0.0003
+Epoch 1719 | loss: 0.0003
+Epoch 1720 | loss: 0.0003
+Eval Epoch 1720 | Mean relative regret: 0.1609
+Epoch 1721 | loss: 0.0003
+Epoch 1722 | loss: 0.0003
+Epoch 1723 | loss: 0.0003
+Epoch 1724 | loss: 0.0003
+Epoch 1725 | loss: 0.0003
+Eval Epoch 1725 | Mean relative regret: 0.1611
+Epoch 1726 | loss: 0.0003
+Epoch 1727 | loss: 0.0003
+Epoch 1728 | loss: 0.0003
+Epoch 1729 | loss: 0.0003
+Epoch 1730 | loss: 0.0003
+Eval Epoch 1730 | Mean relative regret: 0.1617
+Epoch 1731 | loss: 0.0003
+Epoch 1732 | loss: 0.0003
+Epoch 1733 | loss: 0.0003
+Epoch 1734 | loss: 0.0003
+Epoch 1735 | loss: 0.0003
+Eval Epoch 1735 | Mean relative regret: 0.1609
+Epoch 1736 | loss: 0.0003
+Epoch 1737 | loss: 0.0003
+Epoch 1738 | loss: 0.0003
+Epoch 1739 | loss: 0.0003
+Epoch 1740 | loss: 0.0003
+Eval Epoch 1740 | Mean relative regret: 0.1617
+Epoch 1741 | loss: 0.0003
+Epoch 1742 | loss: 0.0003
+Epoch 1743 | loss: 0.0003
+Epoch 1744 | loss: 0.0003
+Epoch 1745 | loss: 0.0003
+Eval Epoch 1745 | Mean relative regret: 0.1602
+Epoch 1746 | loss: 0.0003
+Epoch 1747 | loss: 0.0003
+Epoch 1748 | loss: 0.0003
+Epoch 1749 | loss: 0.0003
+Epoch 1750 | loss: 0.0003
+Eval Epoch 1750 | Mean relative regret: 0.1612
+Epoch 1751 | loss: 0.0003
+Epoch 1752 | loss: 0.0003
+Epoch 1753 | loss: 0.0003
+Epoch 1754 | loss: 0.0003
+Epoch 1755 | loss: 0.0003
+Eval Epoch 1755 | Mean relative regret: 0.1595
+Epoch 1756 | loss: 0.0003
+Epoch 1757 | loss: 0.0003
+Epoch 1758 | loss: 0.0003
+Epoch 1759 | loss: 0.0003
+Epoch 1760 | loss: 0.0003
+Eval Epoch 1760 | Mean relative regret: 0.1623
+Epoch 1761 | loss: 0.0003
+Epoch 1762 | loss: 0.0003
+Epoch 1763 | loss: 0.0003
+Epoch 1764 | loss: 0.0003
+Epoch 1765 | loss: 0.0003
+Eval Epoch 1765 | Mean relative regret: 0.1616
+Epoch 1766 | loss: 0.0003
+Epoch 1767 | loss: 0.0003
+Epoch 1768 | loss: 0.0003
+Epoch 1769 | loss: 0.0003
+Epoch 1770 | loss: 0.0003
+Eval Epoch 1770 | Mean relative regret: 0.1621
+Epoch 1771 | loss: 0.0003
+Epoch 1772 | loss: 0.0003
+Time limit reached, stopping training.
+Test relative regret: 0.1630 ± 0.0420
+Test relative regret: 0.1358 ± 0.0399
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/portfolio/run_experiments.py", line 452, in <module>
+    run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, principal_lin,
+  File "/home/stephecw/projet/DFL_LD/portfolio/run_experiments.py", line 209, in run_train
+    'n_samples': diff_method_arg.get('n_samples', ''),
+AttributeError: 'NoneType' object has no attribute 'get'
