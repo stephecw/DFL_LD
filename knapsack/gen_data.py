@@ -105,7 +105,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_feat', type=int, default=200, help='Number of features')
     parser.add_argument('--n_iter', type=int, default=500, help='Number of iterations for the optimization of mu. (0 to skip execution)')
     parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem')
-    parser.add_argument('--conv', type=float, default=1e4, help='Convergence stopping.')
+    parser.add_argument('--conv', type=float, default=1e-4, help='Convergence stopping.')
 
     # Parameters
     args = parser.parse_args()
