@@ -12,7 +12,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 def write_dataset_file(fname, global_dim, keep,num_feat, num_item, num_data, capacities, weights, Z, c, x_star_array, X=None, mu=None):
     with open(fname, 'w') as f:
         # Constraints (unique for the whole dataset)
-        f.write(f"{global_dim},{num_feat},{num_item},{num_data}\n")
+        f.write(f"{global_dim},{keep},{num_feat},{num_item},{num_data}\n")
         for i in range(global_dim):
             line = str(int(capacities[i])) + "," + ",".join(str(int(w)) for w in weights[i][:-1]) + f",{int(weights[i][-1])}\n"
             f.write(line)
@@ -72,7 +72,6 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
         solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
     solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep,global_dim)]
     optimizer_mu = OptimizationBatchModel(solvers, device)
-    print("avant optimisation du mu")
     optimizer_mu.optim_mu(c_batch=c_train, verbose=verbose, max_iter=num_iter, convergence=convergence)
     X_train = optimizer_mu.get_X()
     mu_train = optimizer_mu.get_mu()
