@@ -1,0 +1,14 @@
+{"time":"2025-05-29T10:37:36.32962458-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_103736-hlw470nz/logs/debug-core.log"}
+{"time":"2025-05-29T10:37:36.441883111-04:00","level":"INFO","msg":"created new stream","id":"hlw470nz"}
+{"time":"2025-05-29T10:37:36.44198095-04:00","level":"INFO","msg":"stream: started","id":"hlw470nz"}
+{"time":"2025-05-29T10:37:36.442225069-04:00","level":"INFO","msg":"handler: started","stream_id":"hlw470nz"}
+{"time":"2025-05-29T10:37:36.442290056-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"hlw470nz"}
+{"time":"2025-05-29T10:37:36.442468346-04:00","level":"INFO","msg":"sender: started","stream_id":"hlw470nz"}
+{"time":"2025-05-29T10:37:36.472189189-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T11:07:58.626375961-04:00","level":"INFO","msg":"stream: closing","id":"hlw470nz"}
+{"time":"2025-05-29T11:07:58.626427337-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T11:07:58.627740449-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T11:07:58.627850174-04:00","level":"INFO","msg":"handler: closed","stream_id":"hlw470nz"}
+{"time":"2025-05-29T11:07:58.627875062-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"hlw470nz"}
+{"time":"2025-05-29T11:07:58.627901661-04:00","level":"INFO","msg":"sender: closed","stream_id":"hlw470nz"}
+{"time":"2025-05-29T11:07:58.631263476-04:00","level":"INFO","msg":"stream: closed","id":"hlw470nz"}

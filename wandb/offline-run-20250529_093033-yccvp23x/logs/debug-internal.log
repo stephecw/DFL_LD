@@ -1,0 +1,15 @@
+{"time":"2025-05-29T09:30:33.789003568-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_093033-yccvp23x/logs/debug-core.log"}
+{"time":"2025-05-29T09:30:33.900409179-04:00","level":"INFO","msg":"created new stream","id":"yccvp23x"}
+{"time":"2025-05-29T09:30:33.900470094-04:00","level":"INFO","msg":"stream: started","id":"yccvp23x"}
+{"time":"2025-05-29T09:30:33.900706439-04:00","level":"INFO","msg":"handler: started","stream_id":"yccvp23x"}
+{"time":"2025-05-29T09:30:33.900758889-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"yccvp23x"}
+{"time":"2025-05-29T09:30:33.900944825-04:00","level":"INFO","msg":"sender: started","stream_id":"yccvp23x"}
+{"time":"2025-05-29T09:30:33.944176943-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T09:36:12.959978605-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T09:36:12.960767541-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T09:36:12.961735645-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-29T09:36:13.969656346-04:00","level":"INFO","msg":"stream: closing","id":"yccvp23x"}
+{"time":"2025-05-29T09:36:13.969688373-04:00","level":"INFO","msg":"handler: closed","stream_id":"yccvp23x"}
+{"time":"2025-05-29T09:36:13.969709695-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"yccvp23x"}
+{"time":"2025-05-29T09:36:13.969937522-04:00","level":"INFO","msg":"sender: closed","stream_id":"yccvp23x"}
+{"time":"2025-05-29T09:36:13.970096038-04:00","level":"INFO","msg":"stream: closed","id":"yccvp23x"}

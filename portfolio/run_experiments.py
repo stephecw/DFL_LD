@@ -196,15 +196,20 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
                     run=run, verbose=verbose, patience=patience)
         
     # Évaluer d’abord sur le set d’éval avec le modèle au meilleur epoch
-    mean_relat_eval, std_relat_eval = test(model, eval_loader, eval_solver, device, run=None)
+    regrets_eval = test(model, eval_loader, eval_solver, device, run=None)
+    mean_relat_eval = np.mean(regrets_eval)
+    std_relat_eval = np.std(regrets_eval)
 
     # Test the model on the test set
-    mean_relat_test, std_relat_test = test(model, test_loader, eval_solver, device, run)
+    regrets_test = test(model, test_loader, eval_solver, device, run)
+    mean_relat_test = np.mean(regrets_test)
+    std_relat_test = np.std(regrets_test)
 
     
     row = {
         'n': num_item,
         'jobtype': jobtype,
+        'ime limit': time_limit,
         'method': diff_method_name or 'MSE',
         'n_samples': diff_method_arg.get('n_samples', ''),
         'lambda_imle': diff_method_arg.get('lambd', ''),
@@ -217,12 +222,12 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         'std_relat_test': std_relat_test
     }
     # Écrire en mode « append » avec en‑têtes créés si le fichier n’existe pas
-    # write_header = not os.path.exists(args.out_file)
-    # with open(args.out_file, 'a', newline='') as f:
-    #     writer = csv.DictWriter(f, fieldnames=row.keys())
-    #     if write_header:
-    #         writer.writeheader()
-    #     writer.writerow(row)
+    write_header = not os.path.exists(args.out_file)
+    with open(args.out_file, 'a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=row.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
 
     # Save model
     if save_model:
@@ -338,7 +343,7 @@ if epochs_LD > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"{diff_method_LD}_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_LD}sec_LD",
             'config': {
                 "architecture": model_shape_LD,
@@ -369,7 +374,7 @@ if epochs_classic > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"{diff_method_classic}_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_classic}sec_classic",
             'config': {
                 "architecture": model_shape_classic,
@@ -400,7 +405,7 @@ if epochs_SG > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"{diff_method_SG}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_SG}sec_SG",
             'config': {
                 "architecture": model_shape_SG,
@@ -434,7 +439,7 @@ if epochs_MSE > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"MSE_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_MSE}sec_MSE",
             'config': {
                 "architecture": model_shape_MSE,
