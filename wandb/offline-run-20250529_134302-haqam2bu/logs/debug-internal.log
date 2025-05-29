@@ -1,0 +1,15 @@
+{"time":"2025-05-29T13:43:02.793961922-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_134302-haqam2bu/logs/debug-core.log"}
+{"time":"2025-05-29T13:43:02.919710408-04:00","level":"INFO","msg":"created new stream","id":"haqam2bu"}
+{"time":"2025-05-29T13:43:02.919763033-04:00","level":"INFO","msg":"stream: started","id":"haqam2bu"}
+{"time":"2025-05-29T13:43:02.919995577-04:00","level":"INFO","msg":"handler: started","stream_id":"haqam2bu"}
+{"time":"2025-05-29T13:43:02.920044995-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"haqam2bu"}
+{"time":"2025-05-29T13:43:02.920225689-04:00","level":"INFO","msg":"sender: started","stream_id":"haqam2bu"}
+{"time":"2025-05-29T13:43:02.942571873-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T13:53:18.941012855-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T13:53:19.015841176-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T13:53:19.034092749-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-29T13:53:20.065269273-04:00","level":"INFO","msg":"stream: closing","id":"haqam2bu"}
+{"time":"2025-05-29T13:53:20.065315439-04:00","level":"INFO","msg":"handler: closed","stream_id":"haqam2bu"}
+{"time":"2025-05-29T13:53:20.066851999-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"haqam2bu"}
+{"time":"2025-05-29T13:53:20.070236874-04:00","level":"INFO","msg":"sender: closed","stream_id":"haqam2bu"}
+{"time":"2025-05-29T13:53:20.070705422-04:00","level":"INFO","msg":"stream: closed","id":"haqam2bu"}

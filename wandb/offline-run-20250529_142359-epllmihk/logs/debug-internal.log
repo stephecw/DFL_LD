@@ -1,0 +1,14 @@
+{"time":"2025-05-29T14:23:59.985742879-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_142359-epllmihk/logs/debug-core.log"}
+{"time":"2025-05-29T14:24:00.120277896-04:00","level":"INFO","msg":"created new stream","id":"epllmihk"}
+{"time":"2025-05-29T14:24:00.120328446-04:00","level":"INFO","msg":"stream: started","id":"epllmihk"}
+{"time":"2025-05-29T14:24:00.120477693-04:00","level":"INFO","msg":"handler: started","stream_id":"epllmihk"}
+{"time":"2025-05-29T14:24:00.120521575-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"epllmihk"}
+{"time":"2025-05-29T14:24:00.120690136-04:00","level":"INFO","msg":"sender: started","stream_id":"epllmihk"}
+{"time":"2025-05-29T14:24:00.12735512-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T14:54:23.34504567-04:00","level":"INFO","msg":"stream: closing","id":"epllmihk"}
+{"time":"2025-05-29T14:54:23.352413442-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T14:54:23.393099621-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T14:54:23.400368877-04:00","level":"INFO","msg":"handler: closed","stream_id":"epllmihk"}
+{"time":"2025-05-29T14:54:23.400528739-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"epllmihk"}
+{"time":"2025-05-29T14:54:23.400670515-04:00","level":"INFO","msg":"sender: closed","stream_id":"epllmihk"}
+{"time":"2025-05-29T14:54:23.407194361-04:00","level":"INFO","msg":"stream: closed","id":"epllmihk"}

@@ -1,0 +1,14 @@
+{"time":"2025-05-29T13:52:37.724882972-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_135237-lnavk1to/logs/debug-core.log"}
+{"time":"2025-05-29T13:52:37.837272518-04:00","level":"INFO","msg":"created new stream","id":"lnavk1to"}
+{"time":"2025-05-29T13:52:37.837323188-04:00","level":"INFO","msg":"stream: started","id":"lnavk1to"}
+{"time":"2025-05-29T13:52:37.837590953-04:00","level":"INFO","msg":"handler: started","stream_id":"lnavk1to"}
+{"time":"2025-05-29T13:52:37.837636237-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"lnavk1to"}
+{"time":"2025-05-29T13:52:37.837808317-04:00","level":"INFO","msg":"sender: started","stream_id":"lnavk1to"}
+{"time":"2025-05-29T13:52:37.844326199-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T14:22:41.539898752-04:00","level":"INFO","msg":"stream: closing","id":"lnavk1to"}
+{"time":"2025-05-29T14:22:41.543483174-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T14:22:41.578828168-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T14:22:41.583230963-04:00","level":"INFO","msg":"handler: closed","stream_id":"lnavk1to"}
+{"time":"2025-05-29T14:22:41.583430326-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"lnavk1to"}
+{"time":"2025-05-29T14:22:41.583592756-04:00","level":"INFO","msg":"sender: closed","stream_id":"lnavk1to"}
+{"time":"2025-05-29T14:22:41.607509123-04:00","level":"INFO","msg":"stream: closed","id":"lnavk1to"}
