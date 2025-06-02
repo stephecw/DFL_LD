@@ -19,10 +19,10 @@ for TIME_LIMIT in 60 300 600 1800; do
   python -m portfolio.run_experiments \
     --n 30 \
     --ep_sg 1000000 \
-    --method IMLE \
+    --method Exact \
     --n_samples 1 --lambda_imle 10 --sigma 1.0 \
-    --step_mu 5 \
-    --n_iter_mu 30 \
+    --step_mu 1 \
+    --n_iter_mu 10 \
     --out_file portfolio/results_temps.csv \
     --time_limit "$TIME_LIMIT"
 
@@ -30,10 +30,10 @@ for TIME_LIMIT in 60 300 600 1800; do
   python -m portfolio.run_experiments \
     --n 50 \
     --ep_sg 1000000 \
-    --method IMLE \
+    --method Exact \
     --n_samples 5 --lambda_imle 10 --sigma 1.0 \
-    --step_mu 15 \
-    --n_iter_mu 10 \
+    --step_mu 1 \
+    --n_iter_mu 20 \
     --out_file portfolio/results_temps.csv \
     --time_limit "$TIME_LIMIT"
 done

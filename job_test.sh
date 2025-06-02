@@ -18,8 +18,8 @@ for TIME_LIMIT in 60 300 600 1800 3600; do
   echo "Running with time_limit=$TIME_LIMIT for n=30"
   python -m portfolio.run_experiments \
     --n 30 \
-    --ep_cla 1000000 \
-    --method IMLE \
+    --ep_ld 1000000 \
+    --method Exact \
     --n_samples 1 --lambda_imle 10 --sigma 1.0 \
     --step_mu 0 \
     --n_iter_mu 0 \
@@ -29,8 +29,8 @@ for TIME_LIMIT in 60 300 600 1800 3600; do
   echo "Running with time_limit=$TIME_LIMIT for n=50"
   python -m portfolio.run_experiments \
     --n 50 \
-    --ep_cla 1000000 \
-    --method IMLE \
+    --ep_ld 1000000 \
+    --method Exact \
     --n_samples 5 --lambda_imle 10 --sigma 1.0 \
     --step_mu 0 \
     --n_iter_mu 0 \

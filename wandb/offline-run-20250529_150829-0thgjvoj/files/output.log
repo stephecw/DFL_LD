@@ -1,0 +1,18 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/eval_50_100_200_2-25.txt
+Loading /quad/test_50_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with regret as loss...
+Epoch 0 | loss: 0.0296
+Eval Epoch 0 | Mean relative regret: 0.2077
+Epoch 1 | loss: 0.0266
+Eval Epoch 1 | Mean relative regret: 0.1920
+Epoch 2 | loss: 0.0239
+Eval Epoch 2 | Mean relative regret: 0.1790
+Epoch 3 | loss: 0.0214
+Eval Epoch 3 | Mean relative regret: 0.1673
+Time limit reached, stopping training.
+Test relative regret: 0.1673 ± 0.0426
+Test relative regret: 0.1517 ± 0.0399
+Saving the model to portfolio/models/IMLE_classic_50_500_200_2-25.pth
