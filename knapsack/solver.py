@@ -8,8 +8,8 @@ from joblib import Parallel, delayed
 class solver_X_1D_knapsack():
 
     def __init__(self, weights, capacity, device):
-        self.weights = weights.clone().detach().to(device).to(torch.int32)
-        self.capacity = torch.tensor([capacity], dtype=torch.int32, device=device)
+        self.weights = torch.as_tensor(weights, dtype=torch.int32, device=device)
+        self.capacity = torch.as_tensor([capacity], dtype=torch.int32, device=device)
         self.num_items = weights.shape[0]
         self.device = device
     
@@ -17,7 +17,7 @@ class solver_X_1D_knapsack():
         batch_size = c.shape[0]
         self.X = torch.tensor([0]*batch_size*self.num_items, dtype=torch.int32, device=self.device)
         c = c.clone().view(batch_size*self.num_items).to(self.device)
-        Ldp = torch.zeros((batch_size, self.capacity.item() + 1, self.num_items + 1), dtype=torch.int32, device=self.device)
+        Ldp = torch.zeros((batch_size, self.capacity.item() + 1, self.num_items + 1), dtype=torch.float32, device=self.device)
         
         dp_knapsack_gpu_batch[batch_size, 1](self.capacity, 
                                              self.weights, 
@@ -107,7 +107,7 @@ class solver_X_MD_knapsack():
 
     
     def _solve_one(self, c_i_np):
-        solver = knapsackModel(weights=self, capacity=self.capacities)
+        solver = knapsackModel(weights=self.weights, capacity=self.capacities)
         solver.setObj(c_i_np)
         x_i, _ = solver.solve()
         return x_i

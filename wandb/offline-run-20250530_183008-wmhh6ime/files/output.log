@@ -1,0 +1,27 @@
+/home/stephecw/projet/DFL_LD/portfolio/my_solver.py:172: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /shared_tmp/build_wheels_tmp.115664/python-3.10/torch/torch/csrc/utils/tensor_new.cpp:254.)
+  return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)
+Traceback (most recent call last):
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 196, in _run_module_as_main
+    return _run_code(code, main_globals, None,
+  File "/cvmfs/soft.computecanada.ca/easybuild/software/2023/x86-64-v4/Compiler/gcccore/python/3.10.13/lib/python3.10/runpy.py", line 86, in _run_code
+    exec(code, run_globals)
+  File "/home/stephecw/projet/DFL_LD/portfolio/run_experiments.py", line 432, in <module>
+    run_train(model, "SG", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, principal_lin,
+  File "/home/stephecw/projet/DFL_LD/portfolio/run_experiments.py", line 184, in run_train
+    train_SG(model, diff_method, eval_solver,
+  File "/home/stephecw/projet/DFL_LD/train.py", line 557, in train_SG
+    batch_regrets = Parallel(n_jobs=n_jobs)(
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/joblib/parallel.py", line 1918, in __call__
+    return output if self.return_generator else list(output)
+  File "/home/stephecw/env_projet/lib/python3.10/site-packages/joblib/parallel.py", line 1847, in _get_sequential_output
+    res = func(*args, **kwargs)
+  File "/home/stephecw/projet/DFL_LD/train.py", line 16, in _compute_regret
+    num = (c_true_i.numpy() * (x_true_i - x_hat)).sum()
+TypeError: unsupported operand type(s) for *: 'numpy.ndarray' and 'Tensor'
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/eval_50_100_200_2-25.txt
+Loading /quad/test_50_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with dynamic mu and LD bound as loss...
+Epoch 0 | loss: 0.9945

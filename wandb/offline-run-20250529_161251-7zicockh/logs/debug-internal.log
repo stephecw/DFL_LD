@@ -1,0 +1,15 @@
+{"time":"2025-05-29T16:12:51.810853686-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_161251-7zicockh/logs/debug-core.log"}
+{"time":"2025-05-29T16:12:51.946507234-04:00","level":"INFO","msg":"created new stream","id":"7zicockh"}
+{"time":"2025-05-29T16:12:51.94657478-04:00","level":"INFO","msg":"stream: started","id":"7zicockh"}
+{"time":"2025-05-29T16:12:51.94681313-04:00","level":"INFO","msg":"handler: started","stream_id":"7zicockh"}
+{"time":"2025-05-29T16:12:51.946880091-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"7zicockh"}
+{"time":"2025-05-29T16:12:51.947065512-04:00","level":"INFO","msg":"sender: started","stream_id":"7zicockh"}
+{"time":"2025-05-29T16:12:51.952837587-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T16:43:07.109940982-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T16:43:07.110728022-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T16:43:07.11180089-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-29T16:43:08.124118516-04:00","level":"INFO","msg":"stream: closing","id":"7zicockh"}
+{"time":"2025-05-29T16:43:08.124152476-04:00","level":"INFO","msg":"handler: closed","stream_id":"7zicockh"}
+{"time":"2025-05-29T16:43:08.124173392-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"7zicockh"}
+{"time":"2025-05-29T16:43:08.124374462-04:00","level":"INFO","msg":"sender: closed","stream_id":"7zicockh"}
+{"time":"2025-05-29T16:43:08.124512586-04:00","level":"INFO","msg":"stream: closed","id":"7zicockh"}

@@ -1,0 +1,92 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/eval_50_100_200_2-25.txt
+Loading /quad/test_50_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with dynamic mu and LD bound as loss...
+Epoch 0 | loss: 1.0216
+Eval Epoch 0 | Mean relative regret: 0.2162 | norm_diff_mu: 168.6370
+Epoch 1 | loss: 0.4737
+Eval Epoch 1 | Mean relative regret: 0.1948 | norm_diff_mu: 165.7620
+Epoch 2 | loss: 0.3232
+Eval Epoch 2 | Mean relative regret: 0.1894 | norm_diff_mu: 164.5679
+Epoch 3 | loss: 0.2674
+Eval Epoch 3 | Mean relative regret: 0.1828 | norm_diff_mu: 163.2400
+Epoch 4 | loss: 0.2547
+Eval Epoch 4 | Mean relative regret: 0.1775 | norm_diff_mu: 162.1655
+Epoch 5 | loss: 0.2385
+Eval Epoch 5 | Mean relative regret: 0.1755 | norm_diff_mu: 161.1473
+Epoch 6 | loss: 0.2363
+Eval Epoch 6 | Mean relative regret: 0.1752 | norm_diff_mu: 160.1645
+Epoch 7 | loss: 0.2291
+Eval Epoch 7 | Mean relative regret: 0.1726 | norm_diff_mu: 159.1913
+Epoch 8 | loss: 0.2277
+Eval Epoch 8 | Mean relative regret: 0.1697 | norm_diff_mu: 158.4080
+Epoch 9 | loss: 0.2311
+Eval Epoch 9 | Mean relative regret: 0.1694 | norm_diff_mu: 157.4726
+Epoch 10 | loss: 0.2309
+Eval Epoch 10 | Mean relative regret: 0.1679 | norm_diff_mu: 156.6345
+Epoch 11 | loss: 0.2390
+Eval Epoch 11 | Mean relative regret: 0.1677 | norm_diff_mu: 155.8101
+Epoch 12 | loss: 0.2371
+Eval Epoch 12 | Mean relative regret: 0.1641 | norm_diff_mu: 155.0279
+Epoch 13 | loss: 0.2277
+Eval Epoch 13 | Mean relative regret: 0.1644 | norm_diff_mu: 154.1487
+Epoch 14 | loss: 0.2269
+Eval Epoch 14 | Mean relative regret: 0.1628 | norm_diff_mu: 153.4306
+Epoch 15 | loss: 0.2287
+Eval Epoch 15 | Mean relative regret: 0.1643 | norm_diff_mu: 152.6558
+Epoch 16 | loss: 0.2296
+Eval Epoch 16 | Mean relative regret: 0.1628 | norm_diff_mu: 151.8880
+Epoch 17 | loss: 0.2216
+Eval Epoch 17 | Mean relative regret: 0.1615 | norm_diff_mu: 151.1461
+Epoch 18 | loss: 0.2234
+Eval Epoch 18 | Mean relative regret: 0.1619 | norm_diff_mu: 150.4604
+Epoch 19 | loss: 0.2214
+Eval Epoch 19 | Mean relative regret: 0.1614 | norm_diff_mu: 149.7743
+Epoch 20 | loss: 0.2197
+Eval Epoch 20 | Mean relative regret: 0.1587 | norm_diff_mu: 149.0362
+Epoch 21 | loss: 0.2247
+Eval Epoch 21 | Mean relative regret: 0.1607 | norm_diff_mu: 148.3026
+Epoch 22 | loss: 0.2215
+Eval Epoch 22 | Mean relative regret: 0.1584 | norm_diff_mu: 147.5741
+Epoch 23 | loss: 0.2166
+Eval Epoch 23 | Mean relative regret: 0.1597 | norm_diff_mu: 146.8803
+Epoch 24 | loss: 0.2162
+Eval Epoch 24 | Mean relative regret: 0.1577 | norm_diff_mu: 146.1888
+Epoch 25 | loss: 0.2200
+Eval Epoch 25 | Mean relative regret: 0.1588 | norm_diff_mu: 145.4978
+Epoch 26 | loss: 0.2119
+Eval Epoch 26 | Mean relative regret: 0.1591 | norm_diff_mu: 144.8255
+Epoch 27 | loss: 0.2173
+Eval Epoch 27 | Mean relative regret: 0.1596 | norm_diff_mu: 144.1348
+Epoch 28 | loss: 0.2223
+Eval Epoch 28 | Mean relative regret: 0.1574 | norm_diff_mu: 143.5229
+Epoch 29 | loss: 0.2205
+Eval Epoch 29 | Mean relative regret: 0.1572 | norm_diff_mu: 142.8578
+Epoch 30 | loss: 0.2106
+Eval Epoch 30 | Mean relative regret: 0.1578 | norm_diff_mu: 142.1558
+Epoch 31 | loss: 0.2139
+Eval Epoch 31 | Mean relative regret: 0.1554 | norm_diff_mu: 141.5217
+Epoch 32 | loss: 0.2139
+Eval Epoch 32 | Mean relative regret: 0.1567 | norm_diff_mu: 140.8595
+Epoch 33 | loss: 0.2071
+Eval Epoch 33 | Mean relative regret: 0.1562 | norm_diff_mu: 140.2206
+Epoch 34 | loss: 0.2177
+Eval Epoch 34 | Mean relative regret: 0.1564 | norm_diff_mu: 139.6017
+Epoch 35 | loss: 0.2137
+Eval Epoch 35 | Mean relative regret: 0.1568 | norm_diff_mu: 138.9554
+Epoch 36 | loss: 0.2089
+Eval Epoch 36 | Mean relative regret: 0.1586 | norm_diff_mu: 138.3128
+Epoch 37 | loss: 0.2023
+Eval Epoch 37 | Mean relative regret: 0.1578 | norm_diff_mu: 137.6849
+Epoch 38 | loss: 0.2081
+Eval Epoch 38 | Mean relative regret: 0.1585 | norm_diff_mu: 137.0315
+Epoch 39 | loss: 0.2069
+Eval Epoch 39 | Mean relative regret: 0.1570 | norm_diff_mu: 136.4677
+Time limit reached, stopping training.
+Test relative regret: 0.1554 ± 0.0381
+Test relative regret: 0.1369 ± 0.0393
+Saving the model to portfolio/models/SPOPlus_SG_50_500_200_2-25.pth
+/home/stephecw/projet/DFL_LD/portfolio/my_solver.py:172: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /shared_tmp/build_wheels_tmp.115664/python-3.10/torch/torch/csrc/utils/tensor_new.cpp:254.)
+  return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)
