@@ -291,7 +291,7 @@ lr_LD = 0.002
 model_shape_LD = [num_feat, 100, num_item]
 dropout_LD = 0.2
 schedulerType_LD = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_LD = {'patience': 400,
+sched_arg_LD = {'patience': 100,
                 'factor': 0.5,
                 'min_lr':1e-6
                 }
@@ -308,7 +308,7 @@ lr_SG = 0.002
 model_shape_SG = [num_feat, 100, num_item]
 dropout_SG = 0.2
 schedulerType_SG = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_SG = {'patience': 400,
+sched_arg_SG = {'patience': 100,
                 'factor': 0.5,
                 'min_lr':1e-6
                 }
