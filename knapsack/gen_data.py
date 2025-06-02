@@ -137,11 +137,11 @@ def transform_keep_train(
 
     # 2. Charger le dataset existant avec ImportDataset
     ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=False)
-    gd, keep_in_file, nf, ni, nd = ds.get_sizes()
+    gd, nf, ni, nd = ds.get_sizes()
     if gd != global_dim or nf != num_feat or ni != num_item or nd != num_data_train:
         raise ValueError("Les paramètres fournis ne correspondent pas aux métadonnées du fichier existant.")
-    if keep_in_file != old_keep:
-        raise ValueError(f"Le fichier spécifie keep={keep_in_file}, mais old_keep={old_keep} donné.")
+    # if keep_in_file != old_keep:
+    #     raise ValueError(f"Le fichier spécifie keep={keep_in_file}, mais old_keep={old_keep} donné.")
 
     capacities = ds.get_capacities(tensor=False)  # numpy array (global_dim,)
     weights    = ds.get_weights(tensor=False)     # numpy array (global_dim, num_item)
@@ -232,4 +232,16 @@ if __name__ == "__main__":
     
     for n in num_item:
         for gd in global_dim:
-            gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, keep,num_iter, convergence, verbose=True)
+
+            # gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, keep,num_iter, convergence, verbose=True)
+            transform_keep_train(
+                num_data_train=num_data_train,
+                num_feat=num_feat,
+                num_item=n,
+                global_dim=gd,
+                old_keep=1,
+                new_keep=keep,  # Example of transforming to keep=1
+                num_iter=num_iter,
+                convergence=convergence,
+                verbose=True
+            )

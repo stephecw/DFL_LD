@@ -124,10 +124,10 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -240,9 +240,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     std_relat_eval = np.std(regrets_eval)
 
     if verbose:
-        print(f"Loading knapsack/datasets/test_{dim}_{keep}_{num_feat}_{num_item}_{num_data_test}.txt")
+        print(f"Loading knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     try:
-        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{keep}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
+        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.")
 
