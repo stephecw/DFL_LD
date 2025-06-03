@@ -14,28 +14,28 @@ module load python/3.10
 module load scipy-stack
 source ~/env_projet/bin/activate
 
-python -m knapsack.run_experiments --keep 1 --diff IMLE --method cla --ep 1000000 --tl 600
+python -m knapsack.run_experiments --keep 1 --diff IMLE --method SG --ep 1000000 --tl 600 --step_mu 1 --n_iter_mu 10
 
-for TIME_LIMIT in 60 300 1800; do
-  echo "Running with time_limit=$TIME_LIMIT for n=30"
-  python -m portfolio.run_experiments \
-    --n 100 \
-    --ep_ld 1000000 \
-    --method SPOPlus \
-    --n_samples 1 --lambda_imle 10 --sigma 1.0 \
-    --step_mu 1 \
-    --n_iter_mu 10 \
-    --out_file portfolio/results_temps.csv \
-    --time_limit "$TIME_LIMIT"
+# for TIME_LIMIT in 60 300 1800; do
+#   echo "Running with time_limit=$TIME_LIMIT for n=30"
+#   python -m portfolio.run_experiments \
+#     --n 100 \
+#     --ep_ld 1000000 \
+#     --method SPOPlus \
+#     --n_samples 1 --lambda_imle 10 --sigma 1.0 \
+#     --step_mu 1 \
+#     --n_iter_mu 10 \
+#     --out_file portfolio/results_temps.csv \
+#     --time_limit "$TIME_LIMIT"
 
-  echo "Running with time_limit=$TIME_LIMIT for n=50"
-  python -m portfolio.run_experiments \
-    --n 100 \
-    --ep_sg 1000000 \
-    --method SPOPlus \
-    --n_samples 10 --lambda_imle 1 --sigma 1.0 \
-    --step_mu 1 \
-    --n_iter_mu 10 \
-    --out_file portfolio/results_temps.csv \
-    --time_limit "$TIME_LIMIT"
-done
+#   echo "Running with time_limit=$TIME_LIMIT for n=50"
+#   python -m portfolio.run_experiments \
+#     --n 100 \
+#     --ep_sg 1000000 \
+#     --method SPOPlus \
+#     --n_samples 10 --lambda_imle 1 --sigma 1.0 \
+#     --step_mu 1 \
+#     --n_iter_mu 10 \
+#     --out_file portfolio/results_temps.csv \
+#     --time_limit "$TIME_LIMIT"
+# done

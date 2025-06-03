@@ -1,0 +1,22 @@
+Loading /quad/train_100_500_200_2-25.txt
+Loading /quad/eval_100_100_200_2-25.txt
+Loading /quad/test_100_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with dynamic mu and LD bound as loss...
+Epoch 0 | loss: 1.2238
+Eval Epoch 0 | Mean relative regret: 0.2359 | norm_diff_mu: 237.6906
+Epoch 1 | loss: 0.5811
+Eval Epoch 1 | Mean relative regret: 0.2226 | norm_diff_mu: 231.5697
+Epoch 2 | loss: 0.3951
+Eval Epoch 2 | Mean relative regret: 0.2167 | norm_diff_mu: 227.6593
+Epoch 3 | loss: 0.3465
+Eval Epoch 3 | Mean relative regret: 0.2139 | norm_diff_mu: 223.6618
+Epoch 4 | loss: 0.3248
+Eval Epoch 4 | Mean relative regret: 0.2095 | norm_diff_mu: 219.8847
+Time limit reached, stopping training.
+Test relative regret: 0.2095 ± 0.0397
+Test relative regret: 0.1705 ± 0.0336
+Saving the model to portfolio/models/SPOPlus_SG_100_500_200_2-25.pth
+/home/stephecw/projet/DFL_LD/portfolio/my_solver.py:172: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /shared_tmp/build_wheels_tmp.115664/python-3.10/torch/torch/csrc/utils/tensor_new.cpp:254.)
+  return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)

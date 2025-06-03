@@ -1,0 +1,38 @@
+Loading /quad/train_100_500_200_2-25.txt
+Loading /quad/eval_100_100_200_2-25.txt
+Loading /quad/test_100_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with LD bound as loss...
+Epoch 0 | loss: 0.5120
+Eval Epoch 0 | Mean relative regret: 0.2289
+Epoch 1 | loss: 0.2886
+Eval Epoch 1 | Mean relative regret: 0.2178
+Epoch 2 | loss: 0.1905
+Eval Epoch 2 | Mean relative regret: 0.2110
+Epoch 3 | loss: 0.1384
+Eval Epoch 3 | Mean relative regret: 0.2074
+Epoch 4 | loss: 0.1058
+Eval Epoch 4 | Mean relative regret: 0.2018
+Epoch 5 | loss: 0.0864
+Eval Epoch 5 | Mean relative regret: 0.2000
+Epoch 6 | loss: 0.0723
+Eval Epoch 6 | Mean relative regret: 0.1968
+Epoch 7 | loss: 0.0626
+Eval Epoch 7 | Mean relative regret: 0.1948
+Epoch 8 | loss: 0.0563
+Eval Epoch 8 | Mean relative regret: 0.1935
+Epoch 9 | loss: 0.0523
+Eval Epoch 9 | Mean relative regret: 0.1926
+Epoch 10 | loss: 0.0494
+Eval Epoch 10 | Mean relative regret: 0.1911
+Epoch 11 | loss: 0.0467
+Eval Epoch 11 | Mean relative regret: 0.1898
+Epoch 12 | loss: 0.0444
+Eval Epoch 12 | Mean relative regret: 0.1880
+Epoch 13 | loss: 0.0424
+Eval Epoch 13 | Mean relative regret: 0.1862
+Time limit reached, stopping training.
+Test relative regret: 0.1862 ± 0.0400
+Test relative regret: 0.1435 ± 0.0358
+Saving the model to portfolio/models/SPOPlus_LD_100_500_200_2-25.pth

@@ -1,0 +1,15 @@
+{"time":"2025-06-02T13:21:49.885761127-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250602_132149-orv2lcso/logs/debug-core.log"}
+{"time":"2025-06-02T13:21:50.020109466-04:00","level":"INFO","msg":"created new stream","id":"orv2lcso"}
+{"time":"2025-06-02T13:21:50.020165195-04:00","level":"INFO","msg":"stream: started","id":"orv2lcso"}
+{"time":"2025-06-02T13:21:50.020384877-04:00","level":"INFO","msg":"handler: started","stream_id":"orv2lcso"}
+{"time":"2025-06-02T13:21:50.020432348-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"orv2lcso"}
+{"time":"2025-06-02T13:21:50.020614659-04:00","level":"INFO","msg":"sender: started","stream_id":"orv2lcso"}
+{"time":"2025-06-02T13:21:50.078037857-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-06-02T13:35:53.87574221-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-06-02T13:35:53.876454691-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-06-02T13:35:53.877513205-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-06-02T13:35:54.90641805-04:00","level":"INFO","msg":"stream: closing","id":"orv2lcso"}
+{"time":"2025-06-02T13:35:54.906450077-04:00","level":"INFO","msg":"handler: closed","stream_id":"orv2lcso"}
+{"time":"2025-06-02T13:35:54.906477538-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"orv2lcso"}
+{"time":"2025-06-02T13:35:54.906667827-04:00","level":"INFO","msg":"sender: closed","stream_id":"orv2lcso"}
+{"time":"2025-06-02T13:35:54.90688089-04:00","level":"INFO","msg":"stream: closed","id":"orv2lcso"}

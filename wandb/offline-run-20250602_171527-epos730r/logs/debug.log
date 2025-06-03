@@ -1,0 +1,22 @@
+2025-06-02 17:15:27,144 INFO    MainThread:2061075 [wandb_setup.py:_flush():68] Current SDK version is 0.19.6
+2025-06-02 17:15:27,144 INFO    MainThread:2061075 [wandb_setup.py:_flush():68] Configure stats pid to 2061075
+2025-06-02 17:15:27,144 INFO    MainThread:2061075 [wandb_setup.py:_flush():68] Loading settings from /home/stephecw/.config/wandb/settings
+2025-06-02 17:15:27,144 INFO    MainThread:2061075 [wandb_setup.py:_flush():68] Loading settings from /home/stephecw/projet/DFL_LD/wandb/settings
+2025-06-02 17:15:27,144 INFO    MainThread:2061075 [wandb_setup.py:_flush():68] Loading settings from environment variables
+2025-06-02 17:15:27,145 INFO    MainThread:2061075 [wandb_init.py:setup_run_log_directory():637] Logging user logs to ./wandb/offline-run-20250602_171527-epos730r/logs/debug.log
+2025-06-02 17:15:27,145 INFO    MainThread:2061075 [wandb_init.py:setup_run_log_directory():638] Logging internal logs to ./wandb/offline-run-20250602_171527-epos730r/logs/debug-internal.log
+2025-06-02 17:15:27,145 INFO    MainThread:2061075 [wandb_init.py:init():756] calling init triggers
+2025-06-02 17:15:27,145 INFO    MainThread:2061075 [wandb_init.py:init():761] wandb.init called with sweep_config: {}
+config: {'architecture': [200, 100, 100], 'dropout': 0.2, 'dataset_train': 'train_100_500_200_2-25.txt', 'dataset_eval': 'eval_100_500_200_2-25.txt', 'batch_size': 32, 'epochs': 1000000, 'time_limit': 1800, 'learning_rate': 0.001, 'schedulerType': 'ReduceLROnPlateau', 'sched_arg': {'patience': 400, 'factor': 0.5, 'min_lr': 1e-06}, '_wandb': {}}
+2025-06-02 17:15:27,145 INFO    MainThread:2061075 [wandb_init.py:init():789] starting backend
+2025-06-02 17:15:27,363 INFO    MainThread:2061075 [wandb_init.py:init():793] sending inform_init request
+2025-06-02 17:15:27,382 INFO    MainThread:2061075 [backend.py:_multiprocessing_setup():97] multiprocessing start_methods=fork,spawn,forkserver, using: spawn
+2025-06-02 17:15:27,385 INFO    MainThread:2061075 [wandb_init.py:init():808] backend started and connected
+2025-06-02 17:15:27,387 INFO    MainThread:2061075 [wandb_init.py:init():901] updated telemetry
+2025-06-02 17:15:27,387 INFO    MainThread:2061075 [wandb_init.py:init():936] communicating run to backend with 90.0 second timeout
+2025-06-02 17:15:27,525 INFO    MainThread:2061075 [wandb_init.py:init():994] starting run threads in backend
+2025-06-02 17:15:27,691 INFO    MainThread:2061075 [wandb_run.py:_console_start():2385] atexit reg
+2025-06-02 17:15:27,692 INFO    MainThread:2061075 [wandb_run.py:_redirect():2235] redirect: wrap_raw
+2025-06-02 17:15:27,692 INFO    MainThread:2061075 [wandb_run.py:_redirect():2300] Wrapping output streams.
+2025-06-02 17:15:27,692 INFO    MainThread:2061075 [wandb_run.py:_redirect():2325] Redirects installed.
+2025-06-02 17:15:27,695 INFO    MainThread:2061075 [wandb_init.py:init():1036] run started, returning control to user process
