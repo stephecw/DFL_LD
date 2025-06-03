@@ -372,7 +372,7 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f} | train time : {train_time}", flush=True)
 
         ## evaling step (if needed)##
         if epoch % eval_freq == eval_freq-1:

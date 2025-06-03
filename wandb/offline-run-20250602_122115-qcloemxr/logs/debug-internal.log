@@ -1,0 +1,15 @@
+{"time":"2025-06-02T12:21:17.300073185-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250602_122115-qcloemxr/logs/debug-core.log"}
+{"time":"2025-06-02T12:21:17.546313319-04:00","level":"INFO","msg":"created new stream","id":"qcloemxr"}
+{"time":"2025-06-02T12:21:17.546392031-04:00","level":"INFO","msg":"stream: started","id":"qcloemxr"}
+{"time":"2025-06-02T12:21:17.546742362-04:00","level":"INFO","msg":"handler: started","stream_id":"qcloemxr"}
+{"time":"2025-06-02T12:21:17.54682055-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"qcloemxr"}
+{"time":"2025-06-02T12:21:17.54770553-04:00","level":"INFO","msg":"sender: started","stream_id":"qcloemxr"}
+{"time":"2025-06-02T12:21:17.569564357-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-06-02T12:26:40.350295808-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-06-02T12:26:40.361153128-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-06-02T12:26:40.362163847-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-06-02T12:26:41.369935663-04:00","level":"INFO","msg":"stream: closing","id":"qcloemxr"}
+{"time":"2025-06-02T12:26:41.369966227-04:00","level":"INFO","msg":"handler: closed","stream_id":"qcloemxr"}
+{"time":"2025-06-02T12:26:41.369985421-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"qcloemxr"}
+{"time":"2025-06-02T12:26:41.370187924-04:00","level":"INFO","msg":"sender: closed","stream_id":"qcloemxr"}
+{"time":"2025-06-02T12:26:41.370445453-04:00","level":"INFO","msg":"stream: closed","id":"qcloemxr"}

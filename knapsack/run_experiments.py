@@ -164,7 +164,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
         best_relat_regret = train_LD(model, diff_method, eval_solver,
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=1,
+                                    epochs, time_limit, eval_freq=5,
                                     run=run, verbose=verbose)
     elif jobtype == "cla":
         # Differentiation method for backpropagation when training 
@@ -177,7 +177,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             
         best_relat_regret = train_classic(model, diff_method, eval_solver, 
                                             train_loader, eval_loader, optimizer, scheduler, 
-                                            epochs, time_limit, eval_freq=1,
+                                            epochs, time_limit, eval_freq=5,
                                             run=run, verbose=verbose)
 
     elif jobtype == "SG":
@@ -202,7 +202,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
         best_relat_regret = train_SG(model, diff_method, eval_solver, 
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=step_mu,
+                                    epochs, time_limit, eval_freq=5,
                                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                                     mu_global0=mu_global0,
                                     run=run, verbose=verbose)
@@ -211,7 +211,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             print("Training the model with MSE as loss", flush=True)
         best_relat_regret = train_MSE(model, eval_solver, 
                                         train_loader, eval_loader, optimizer, scheduler,
-                                        epochs, time_limit, eval_freq=10,
+                                        epochs, time_limit, eval_freq=100,
                                         run=run, verbose=verbose)
 
     # Save model
@@ -289,9 +289,9 @@ wandbarg = {
         'entity': "hugoper-polytechnique-montr-al",
         'project': "DFL_LD",
         'dir': "./",
-        'name': f"{diff_method_name}_{method}_{dim}_{num_feat}_{num_item}_{num_data_train}",
-        'group': f"{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}",
-        'job_type': f"{method}",
+        'name': f"knapsack_{diff_method_name}_{method}_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}",
+        'group': f"knapsack_{dim}_{num_feat}_{num_item}_{num_data_train}",
+        'job_type': f"{diff_method_name}_{method}",
         'config': {
             "architecture": model_shape,
             "dropout": dropout,

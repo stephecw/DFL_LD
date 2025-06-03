@@ -1,0 +1,7 @@
+{"time":"2025-06-02T17:15:27.397330399-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250602_171527-epos730r/logs/debug-core.log"}
+{"time":"2025-06-02T17:15:27.522491679-04:00","level":"INFO","msg":"created new stream","id":"epos730r"}
+{"time":"2025-06-02T17:15:27.52254517-04:00","level":"INFO","msg":"stream: started","id":"epos730r"}
+{"time":"2025-06-02T17:15:27.522756588-04:00","level":"INFO","msg":"handler: started","stream_id":"epos730r"}
+{"time":"2025-06-02T17:15:27.522806813-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"epos730r"}
+{"time":"2025-06-02T17:15:27.522979953-04:00","level":"INFO","msg":"sender: started","stream_id":"epos730r"}
+{"time":"2025-06-02T17:15:27.559029959-04:00","level":"INFO","msg":"Starting system monitor"}

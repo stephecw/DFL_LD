@@ -1,0 +1,146 @@
+Loading /quad/train_100_500_200_2-25.txt
+Loading /quad/eval_100_100_200_2-25.txt
+Loading /quad/test_100_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with regret as loss...
+Epoch 0 | loss: 0.4909
+Eval Epoch 0 | Mean relative regret: 0.2179
+Epoch 1 | loss: 0.2764
+Eval Epoch 1 | Mean relative regret: 0.2088
+Epoch 2 | loss: 0.1831
+Eval Epoch 2 | Mean relative regret: 0.2025
+Epoch 3 | loss: 0.1326
+Eval Epoch 3 | Mean relative regret: 0.1994
+Epoch 4 | loss: 0.1028
+Eval Epoch 4 | Mean relative regret: 0.1973
+Epoch 5 | loss: 0.0844
+Eval Epoch 5 | Mean relative regret: 0.1980
+Epoch 6 | loss: 0.0701
+Eval Epoch 6 | Mean relative regret: 0.1972
+Epoch 7 | loss: 0.0602
+Eval Epoch 7 | Mean relative regret: 0.1969
+Epoch 8 | loss: 0.0534
+Eval Epoch 8 | Mean relative regret: 0.1964
+Epoch 9 | loss: 0.0490
+Eval Epoch 9 | Mean relative regret: 0.1975
+Epoch 10 | loss: 0.0455
+Eval Epoch 10 | Mean relative regret: 0.1958
+Epoch 11 | loss: 0.0429
+Eval Epoch 11 | Mean relative regret: 0.1965
+Epoch 12 | loss: 0.0406
+Eval Epoch 12 | Mean relative regret: 0.1942
+Epoch 13 | loss: 0.0389
+Eval Epoch 13 | Mean relative regret: 0.1953
+Epoch 14 | loss: 0.0379
+Eval Epoch 14 | Mean relative regret: 0.1938
+Epoch 15 | loss: 0.0373
+Eval Epoch 15 | Mean relative regret: 0.1944
+Epoch 16 | loss: 0.0367
+Eval Epoch 16 | Mean relative regret: 0.1935
+Epoch 17 | loss: 0.0361
+Eval Epoch 17 | Mean relative regret: 0.1944
+Epoch 18 | loss: 0.0347
+Eval Epoch 18 | Mean relative regret: 0.1934
+Epoch 19 | loss: 0.0344
+Eval Epoch 19 | Mean relative regret: 0.1912
+Epoch 20 | loss: 0.0336
+Eval Epoch 20 | Mean relative regret: 0.1905
+Epoch 21 | loss: 0.0337
+Eval Epoch 21 | Mean relative regret: 0.1914
+Epoch 22 | loss: 0.0334
+Eval Epoch 22 | Mean relative regret: 0.1899
+Epoch 23 | loss: 0.0331
+Eval Epoch 23 | Mean relative regret: 0.1904
+Epoch 24 | loss: 0.0325
+Eval Epoch 24 | Mean relative regret: 0.1904
+Epoch 25 | loss: 0.0321
+Eval Epoch 25 | Mean relative regret: 0.1904
+Epoch 26 | loss: 0.0323
+Eval Epoch 26 | Mean relative regret: 0.1902
+Epoch 27 | loss: 0.0321
+Eval Epoch 27 | Mean relative regret: 0.1886
+Epoch 28 | loss: 0.0325
+Eval Epoch 28 | Mean relative regret: 0.1879
+Epoch 29 | loss: 0.0321
+Eval Epoch 29 | Mean relative regret: 0.1873
+Epoch 30 | loss: 0.0321
+Eval Epoch 30 | Mean relative regret: 0.1878
+Epoch 31 | loss: 0.0314
+Eval Epoch 31 | Mean relative regret: 0.1860
+Epoch 32 | loss: 0.0316
+Eval Epoch 32 | Mean relative regret: 0.1866
+Epoch 33 | loss: 0.0315
+Eval Epoch 33 | Mean relative regret: 0.1865
+Epoch 34 | loss: 0.0313
+Eval Epoch 34 | Mean relative regret: 0.1863
+Epoch 35 | loss: 0.0315
+Eval Epoch 35 | Mean relative regret: 0.1855
+Epoch 36 | loss: 0.0307
+Eval Epoch 36 | Mean relative regret: 0.1850
+Epoch 37 | loss: 0.0312
+Eval Epoch 37 | Mean relative regret: 0.1865
+Epoch 38 | loss: 0.0311
+Eval Epoch 38 | Mean relative regret: 0.1856
+Epoch 39 | loss: 0.0313
+Eval Epoch 39 | Mean relative regret: 0.1853
+Epoch 40 | loss: 0.0311
+Eval Epoch 40 | Mean relative regret: 0.1856
+Epoch 41 | loss: 0.0312
+Eval Epoch 41 | Mean relative regret: 0.1846
+Epoch 42 | loss: 0.0311
+Eval Epoch 42 | Mean relative regret: 0.1846
+Epoch 43 | loss: 0.0304
+Eval Epoch 43 | Mean relative regret: 0.1854
+Epoch 44 | loss: 0.0311
+Eval Epoch 44 | Mean relative regret: 0.1852
+Epoch 45 | loss: 0.0313
+Eval Epoch 45 | Mean relative regret: 0.1852
+Epoch 46 | loss: 0.0312
+Eval Epoch 46 | Mean relative regret: 0.1850
+Epoch 47 | loss: 0.0313
+Eval Epoch 47 | Mean relative regret: 0.1843
+Epoch 48 | loss: 0.0309
+Eval Epoch 48 | Mean relative regret: 0.1830
+Epoch 49 | loss: 0.0311
+Eval Epoch 49 | Mean relative regret: 0.1854
+Epoch 50 | loss: 0.0310
+Eval Epoch 50 | Mean relative regret: 0.1857
+Epoch 51 | loss: 0.0307
+Eval Epoch 51 | Mean relative regret: 0.1848
+Epoch 52 | loss: 0.0307
+Eval Epoch 52 | Mean relative regret: 0.1837
+Epoch 53 | loss: 0.0307
+Eval Epoch 53 | Mean relative regret: 0.1853
+Epoch 54 | loss: 0.0307
+Eval Epoch 54 | Mean relative regret: 0.1842
+Epoch 55 | loss: 0.0306
+Eval Epoch 55 | Mean relative regret: 0.1830
+Epoch 56 | loss: 0.0304
+Eval Epoch 56 | Mean relative regret: 0.1851
+Epoch 57 | loss: 0.0314
+Eval Epoch 57 | Mean relative regret: 0.1847
+Epoch 58 | loss: 0.0305
+Eval Epoch 58 | Mean relative regret: 0.1856
+Epoch 59 | loss: 0.0312
+Eval Epoch 59 | Mean relative regret: 0.1839
+Epoch 60 | loss: 0.0306
+Eval Epoch 60 | Mean relative regret: 0.1839
+Epoch 61 | loss: 0.0310
+Eval Epoch 61 | Mean relative regret: 0.1843
+Epoch 62 | loss: 0.0311
+Eval Epoch 62 | Mean relative regret: 0.1859
+Epoch 63 | loss: 0.0312
+Eval Epoch 63 | Mean relative regret: 0.1831
+Epoch 64 | loss: 0.0310
+Eval Epoch 64 | Mean relative regret: 0.1825
+Epoch 65 | loss: 0.0311
+Eval Epoch 65 | Mean relative regret: 0.1846
+Epoch 66 | loss: 0.0308
+Eval Epoch 66 | Mean relative regret: 0.1835
+Epoch 67 | loss: 0.0313
+Eval Epoch 67 | Mean relative regret: 0.1855
+Time limit reached, stopping training.
+Test relative regret: 0.1825 ± 0.0393
+Test relative regret: 0.1365 ± 0.0351
+Saving the model to portfolio/models/SPOPlus_classic_100_500_200_2-25.pth
