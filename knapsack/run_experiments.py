@@ -1,5 +1,6 @@
 import torch
 from torch import optim
+import numpy as np
 
 from pyepo.model.grb import knapsackModel
 from pyepo.func.utlis import sumGammaDistribution
@@ -9,16 +10,17 @@ from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus
 from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack
+from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
 
 import argparse
-
+import os, csv
 
 
 # Define command line arguments
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
+parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
 
 parser.add_argument('--dim', type=int, default=5, help='Number of constraints.')
 parser.add_argument('--n', type=int, default=30, help='Number of items.')
@@ -44,17 +46,19 @@ args = parser.parse_args()
 method = args.method
 # Problem dimensions
 num_feat = 200
-num_data_train = 500  # Training dataset size
-num_data_eval = 100   # eval dataset size
+num_data_train = 200  # Training dataset size
+num_data_eval = 200   # eval dataset size
+num_data_test = 1000  # Test dataset size
 
 dim = args.dim
 num_item = args.n
+keep = args.keep
 
 epochs = args.ep if args.ep > 0 else int(1e10)
 tl = args.tl if args.tl > 0 else int(1e10)
 batch_size = 32
 lr = args.lr
-model_shape = [num_feat, 100, num_item]
+model_shape = [num_feat, num_item]
 dropout = 0.2
 
 schedulerType = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
@@ -75,12 +79,12 @@ step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
 
 
-def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_eval,
+def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None,
               step_mu=None, num_iter_mu=None,
-              test_model=False, num_data_test=200, verbose=False, wandbarg=None, time_limit=None, save_model=True):
+              test_model=False, verbose=False, wandbarg=None, time_limit=None, save_model=True):
     """
     Main function to load dataset and train the model.
     model: nn.Module: Model to train.
@@ -107,23 +111,23 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     run = None
     if wandbarg is not None:
         import wandb
-        #wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9")  # Replace with your API key
+        #wandb.login(key="")  # Replace with your API key
         run = wandb.init(mode="offline", **wandbarg)
 
     # Load training dataset
     if verbose:
-        print(f"Loading train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
+        print(f"Loading train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
     try:
-        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt")
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -152,9 +156,9 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     if jobtype == "LD":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
-            diff_method = I_MLE(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = I_MLE(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            diff_method = SPOPlus(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = SPOPlus(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         if verbose:
             print("Training the model with LD bound as loss...", flush=True)
 
@@ -179,14 +183,19 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
     elif jobtype == "SG":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
-            diff_method = I_MLE(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = I_MLE(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            diff_method = SPOPlus(knapsackModel(weights[0].unsqueeze(0), capacities[0].unsqueeze(0)), device, **diff_method_arg)
+            diff_method = SPOPlus(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         # Optimizer for mu
-        solvers = [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(dim)]
+        solvers = []
+        if keep == 1:
+            solvers = [solver_X_1D_knapsack(weights[0], capacities[0], device)]
+        else:
+            solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
+        solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep, dim)]
         optimizer_mu = OptimizationBatchModel(solvers, device)
         
-        mu_global0 = torch.ones(len(train_loader.dataset), dim - 1, num_item, device=device, dtype=torch.float32)
+        mu_global0 = torch.ones(len(train_loader.dataset), dim - keep, num_item, device=device, dtype=torch.float32)
 
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...", flush=True)
@@ -205,25 +214,11 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
                                         epochs, time_limit, eval_freq=10,
                                         run=run, verbose=verbose)
 
-    # Save model
-    if save_model:
-        if jobtype == "LD":
-            if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method_name}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_LD_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
-        elif jobtype == "classic":
-            if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method_name}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_classic_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
-        elif jobtype == "SG":
-            if verbose:
-                print(f"Saving the model to knapsack/models/{diff_method_name}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
-            torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_SG_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
-        elif jobtype == "MSE":
-            if verbose:
-                print(f"Saving the model to knapsack/models/MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth")
-            torch.save(model.state_dict(), f'knapsack/models/MSE_{dim}_{num_feat}_{num_item}_{num_data_train}.pth')
-
+    with open("knapsack/hp_results_best.txt", mode = "a") as file:
+            line = f"{jobtype};{diff_method_name};{diff_method_arg};{dim};{keep};{num_feat};{num_item};{num_data_train};{lr};"
+            line += f"{step_mu};{num_iter_mu};{schedulerType};{sched_arg};{best_relat_regret}\n"
+            file.write(line)
+    
     if test_model:
         if verbose:
             print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", flush=True)
@@ -231,18 +226,30 @@ def run_train(model, jobtype, dim, num_feat, num_item, num_data_train, num_data_
             test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
         except FileNotFoundError:
             print(f"File not found.", flush=True)
-            return
         test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
-        with open("knapsack/test_results_mini.txt", mode = "a") as file:
+        with open("knapsack/test_results_best.txt", mode = "a") as file:
             rel_regret = test(model, test_loader, eval_solver, device)
-            line = f"{dim};{num_feat};{num_item};{num_data_train};{jobtype};{step_mu};{num_iter_mu};{diff_method_name};{lr};"
+            line = f"{dim};{keep};{num_feat};{num_item};{num_data_train};{jobtype};{step_mu};{num_iter_mu};{diff_method_name};{lr};"
             line += ";".join(str(rel_regret[j]) for j in range(num_data_test - 1)) + f";{rel_regret[-1]}\n"
             file.write(line)
     
-    with open("knapsack/hp_results_mini.txt", mode = "a") as file:
-            line = f"{jobtype};{diff_method_name};{dim};{num_feat};{num_item};{num_data_train};{lr};"
-            line += f"{step_mu};{num_iter_mu};{diff_method_arg};{best_relat_regret}\n"
-            file.write(line)
+    # Save model
+    if save_model:
+        file = f"knapsack/models/{jobtype}"
+        if jobtype != "MSE":
+            file += f"_{diff_method_name}"
+            for v in diff_method_arg.values():
+                file += "_"+str(v).replace(".", "-")
+        file += f"_{dim}_{keep}_{num_feat}_{num_item}_{lr}_{num_data_train}_{num_data_eval}"
+        if jobtype == "SG":
+            file += f"_{step_mu}_{num_iter_mu}"
+        file += f"_{schedulerType}"
+        for v in sched_arg.values():
+            file += "_"+str(v).replace(".", "-")
+        file += ".pth"
+        if verbose:
+            print(f"Saving the model to {file}", flush=True)
+        torch.save(model.state_dict(), file)
     
     # End execution
     if run is not None:
@@ -273,9 +280,9 @@ wandbarg = {
             "diff_method_arg": diff_method_arg
         }
 }
-run_train(model, method, dim, num_feat, num_item, num_data_train, num_data_eval,
+run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
         batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl,
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,
         diff_method_name=diff_method_name, diff_method_arg=diff_method_arg,
-        test_model=True, verbose=True, wandbarg=None, save_model=False)
+        test_model=True,verbose=True, wandbarg=None, save_model=True)

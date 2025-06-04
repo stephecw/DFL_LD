@@ -12,7 +12,9 @@ class OptimizationBatchModel:
         self.dim = len(solvers)
         self.device = device
 
-    ### TO DO: Update val ###
+    def update_val(self):
+        self.solve_X()
+        self.vals = torch.sum((self.c + self.mu.sum(dim=1)) * self.X[:,0], dim=1) - torch.sum(self.mu*self.X[:, 1:], dim=(1,2))
 
     def solve_X(self):
         self.X[:,0] = self.solvers[0](self.c + self.mu.sum(dim=1))
@@ -26,7 +28,7 @@ class OptimizationBatchModel:
         self.solve_X()
         return self.X[:, 0].unsqueeze(1) - self.X[:, 1:]
 
-    def adam_optimizer(self, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=10000, convergence=1e-4, verbose=False):
+    def adam_optimizer(self, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=3000, convergence=1e-4, verbose=False):
         """
         Adam batch for all problems simultaneously
         """
@@ -50,14 +52,14 @@ class OptimizationBatchModel:
             if torch.max(torch.abs(lr * m_hat / (torch.sqrt(v_hat) + eps))) < convergence:
                 print(f"Convergence atteinte")
                 break
-
+        self.update_val()
 
     def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
         self.c = c_batch.clone().to(self.device)  # [B, n]
         batch_size, num_items = self.c.shape
-        self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.float32, device=self.device)
+        self.X = torch.zeros((batch_size, self.dim, num_items), dtype=torch.int32, device=self.device)
         self.vals = torch.zeros(batch_size, dtype=torch.float32, device=self.device)
-
+        
         if mu_init is None:
             self.mu = torch.ones((batch_size, self.dim - 1, num_items), dtype=torch.float32, device=self.device)
         else:
