@@ -1,0 +1,15 @@
+{"time":"2025-05-29T15:09:53.835299927-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_150953-e6zgoxpu/logs/debug-core.log"}
+{"time":"2025-05-29T15:09:53.962405142-04:00","level":"INFO","msg":"created new stream","id":"e6zgoxpu"}
+{"time":"2025-05-29T15:09:53.962477253-04:00","level":"INFO","msg":"stream: started","id":"e6zgoxpu"}
+{"time":"2025-05-29T15:09:53.962740108-04:00","level":"INFO","msg":"handler: started","stream_id":"e6zgoxpu"}
+{"time":"2025-05-29T15:09:53.962805901-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"e6zgoxpu"}
+{"time":"2025-05-29T15:09:53.96298936-04:00","level":"INFO","msg":"sender: started","stream_id":"e6zgoxpu"}
+{"time":"2025-05-29T15:09:53.969084245-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T15:15:20.80122497-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T15:15:20.802036605-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T15:15:20.803103269-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-29T15:15:21.816050744-04:00","level":"INFO","msg":"stream: closing","id":"e6zgoxpu"}
+{"time":"2025-05-29T15:15:21.816084305-04:00","level":"INFO","msg":"handler: closed","stream_id":"e6zgoxpu"}
+{"time":"2025-05-29T15:15:21.816106619-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"e6zgoxpu"}
+{"time":"2025-05-29T15:15:21.816304302-04:00","level":"INFO","msg":"sender: closed","stream_id":"e6zgoxpu"}
+{"time":"2025-05-29T15:15:21.81654538-04:00","level":"INFO","msg":"stream: closed","id":"e6zgoxpu"}

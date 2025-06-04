@@ -22,8 +22,8 @@ parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL mo
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
 parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
 
-parser.add_argument('--dim', type=int, default=5, help='Number of constraints.')
-parser.add_argument('--n', type=int, default=30, help='Number of items.')
+parser.add_argument('--dim', type=int, default=10, help='Number of constraints.')
+parser.add_argument('--n', type=int, default=50, help='Number of items.')
 parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
 
 parser.add_argument('--ep', type=int, default=1, help='Number of epochs. (0 to use time limit)')
@@ -32,7 +32,7 @@ parser.add_argument('--tl', type=int, default=0, help='Time limit. (0 for doing 
 parser.add_argument('--step_mu', type=int, default=0, help='Number of epochs between mu updates. (0 to skip)')
 parser.add_argument('--n_iter_mu', type=int, default=0, help='Number of iterations for mu optimization. (0 to skip)')
 
-parser.add_argument("--lambd", type=float, default=1., help="Interpolation parameter for IMLE")
+parser.add_argument("--lambd", type=float, default=10, help="Interpolation parameter for IMLE")
 parser.add_argument("--sigma", type=float, default=1., help="Noise parameter for IMLE")
 parser.add_argument("--n_samples", type=int, default=1, help="Number of samples for IMLE")
 parser.add_argument("--kappa", type=int, default=5, help="Parameter kappa for IMLE noise distribution")
@@ -46,9 +46,9 @@ args = parser.parse_args()
 method = args.method
 # Problem dimensions
 num_feat = 200
-num_data_train = 100  # Training dataset size
-num_data_eval = 5   # eval dataset size
-num_data_test = 5  # Test dataset size
+num_data_train = 500  # Training dataset size
+num_data_eval = 100   # eval dataset size
+num_data_test = 400  # Test dataset size
 
 dim = args.dim
 num_item = args.n
@@ -124,10 +124,10 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -164,7 +164,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
         best_relat_regret = train_LD(model, diff_method, eval_solver,
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=10,
+                                    epochs, time_limit, eval_freq=1,
                                     run=run, verbose=verbose)
     elif jobtype == "cla":
         # Differentiation method for backpropagation when training 
@@ -177,7 +177,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             
         best_relat_regret = train_classic(model, diff_method, eval_solver, 
                                             train_loader, eval_loader, optimizer, scheduler, 
-                                            epochs, time_limit, eval_freq=10,
+                                            epochs, time_limit, eval_freq=1,
                                             run=run, verbose=verbose)
 
     elif jobtype == "SG":
@@ -240,9 +240,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     std_relat_eval = np.std(regrets_eval)
 
     if verbose:
-        print(f"Loading knapsack/datasets/test_{dim}_{keep}_{num_feat}_{num_item}_{num_data_test}.txt")
+        print(f"Loading knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     try:
-        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{keep}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
+        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.")
 
@@ -290,7 +290,7 @@ wandbarg = {
         'project': "DFL_LD",
         'dir': "./",
         'name': f"{diff_method_name}_{method}_{dim}_{num_feat}_{num_item}_{num_data_train}",
-        'group': f"presentation_05_26",
+        'group': f"{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}",
         'job_type': f"{method}",
         'config': {
             "architecture": model_shape,

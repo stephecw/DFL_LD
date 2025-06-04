@@ -1,0 +1,15 @@
+{"time":"2025-05-29T15:20:20.578885471-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250529_152020-dilemf9r/logs/debug-core.log"}
+{"time":"2025-05-29T15:20:20.691142838-04:00","level":"INFO","msg":"created new stream","id":"dilemf9r"}
+{"time":"2025-05-29T15:20:20.69120301-04:00","level":"INFO","msg":"stream: started","id":"dilemf9r"}
+{"time":"2025-05-29T15:20:20.691450076-04:00","level":"INFO","msg":"handler: started","stream_id":"dilemf9r"}
+{"time":"2025-05-29T15:20:20.691514351-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"dilemf9r"}
+{"time":"2025-05-29T15:20:20.691684458-04:00","level":"INFO","msg":"sender: started","stream_id":"dilemf9r"}
+{"time":"2025-05-29T15:20:20.697622251-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-29T15:30:24.248673653-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-29T15:30:24.249338564-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-29T15:30:24.250385825-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-29T15:30:25.261902242-04:00","level":"INFO","msg":"stream: closing","id":"dilemf9r"}
+{"time":"2025-05-29T15:30:25.26192664-04:00","level":"INFO","msg":"handler: closed","stream_id":"dilemf9r"}
+{"time":"2025-05-29T15:30:25.2619448-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"dilemf9r"}
+{"time":"2025-05-29T15:30:25.262138941-04:00","level":"INFO","msg":"sender: closed","stream_id":"dilemf9r"}
+{"time":"2025-05-29T15:30:25.262329897-04:00","level":"INFO","msg":"stream: closed","id":"dilemf9r"}

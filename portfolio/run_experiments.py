@@ -211,9 +211,9 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         'jobtype': jobtype,
         'time limit': time_limit,
         'method': diff_method_name or 'MSE',
-        'n_samples': diff_method_arg.get('n_samples', ''),
-        'lambda_imle': diff_method_arg.get('lambd', ''),
-        'sigma': diff_method_arg.get('sigma', ''),
+        'n_samples': diff_method_arg.get('n_samples', '') if diff_method_arg else '',
+        'lambda_imle': diff_method_arg.get('lambd', '') if diff_method_arg else '',
+        'sigma': diff_method_arg.get('sigma', '') if diff_method_arg else '',
         'step_mu': step_mu if 'step_mu' in locals() else '',
         'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
         'mean_relat_eval': mean_relat_eval,
@@ -275,7 +275,7 @@ lr_classic = 0.002
 model_shape_classic = [num_feat, 100, num_item]
 dropout_classic = 0.2
 schedulerType_classic = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_classic = {'patience': 50,
+sched_arg_classic = {'patience': 100,
                      'factor': 0.5,
                      'min_lr':1e-6
                      }
@@ -291,7 +291,7 @@ lr_LD = 0.002
 model_shape_LD = [num_feat, 100, num_item]
 dropout_LD = 0.2
 schedulerType_LD = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_LD = {'patience': 50,
+sched_arg_LD = {'patience': 100,
                 'factor': 0.5,
                 'min_lr':1e-6
                 }
@@ -308,7 +308,7 @@ lr_SG = 0.002
 model_shape_SG = [num_feat, 100, num_item]
 dropout_SG = 0.2
 schedulerType_SG = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_SG = {'patience': 50,
+sched_arg_SG = {'patience': 100,
                 'factor': 0.5,
                 'min_lr':1e-6
                 }

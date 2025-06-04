@@ -1,0 +1,334 @@
+Loading /quad/train_30_500_200_2-25.txt
+Loading /quad/eval_30_100_200_2-25.txt
+Loading /quad/test_30_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with dynamic mu and LD bound as loss...
+Epoch 0 | loss: 0.0190
+Eval Epoch 0 | Mean relative regret: 0.2085 | norm_diff_mu: 116.7246
+Epoch 1 | loss: 0.0167
+Eval Epoch 1 | Mean relative regret: 0.2009 | norm_diff_mu: 116.7246
+Epoch 2 | loss: 0.0154
+Eval Epoch 2 | Mean relative regret: 0.1946 | norm_diff_mu: 116.7246
+Epoch 3 | loss: 0.0140
+Eval Epoch 3 | Mean relative regret: 0.1854 | norm_diff_mu: 116.7246
+Epoch 4 | loss: 0.0129
+Eval Epoch 4 | Mean relative regret: 0.1767 | norm_diff_mu: 116.7246
+Epoch 5 | loss: 0.0117
+Eval Epoch 5 | Mean relative regret: 0.1671 | norm_diff_mu: 100.0854
+Epoch 6 | loss: 0.0106
+Eval Epoch 6 | Mean relative regret: 0.1623 | norm_diff_mu: 100.0854
+Epoch 7 | loss: 0.0097
+Eval Epoch 7 | Mean relative regret: 0.1600 | norm_diff_mu: 100.0854
+Epoch 8 | loss: 0.0088
+Eval Epoch 8 | Mean relative regret: 0.1578 | norm_diff_mu: 100.0854
+Epoch 9 | loss: 0.0084
+Eval Epoch 9 | Mean relative regret: 0.1550 | norm_diff_mu: 100.0854
+Epoch 10 | loss: 0.0078
+Eval Epoch 10 | Mean relative regret: 0.1542 | norm_diff_mu: 90.8023
+Epoch 11 | loss: 0.0073
+Eval Epoch 11 | Mean relative regret: 0.1534 | norm_diff_mu: 90.8023
+Epoch 12 | loss: 0.0071
+Eval Epoch 12 | Mean relative regret: 0.1537 | norm_diff_mu: 90.8023
+Epoch 13 | loss: 0.0067
+Eval Epoch 13 | Mean relative regret: 0.1523 | norm_diff_mu: 90.8023
+Epoch 14 | loss: 0.0066
+Eval Epoch 14 | Mean relative regret: 0.1518 | norm_diff_mu: 90.8023
+Epoch 15 | loss: 0.0063
+Eval Epoch 15 | Mean relative regret: 0.1528 | norm_diff_mu: 82.6485
+Epoch 16 | loss: 0.0061
+Eval Epoch 16 | Mean relative regret: 0.1517 | norm_diff_mu: 82.6485
+Epoch 17 | loss: 0.0058
+Eval Epoch 17 | Mean relative regret: 0.1515 | norm_diff_mu: 82.6485
+Epoch 18 | loss: 0.0057
+Eval Epoch 18 | Mean relative regret: 0.1514 | norm_diff_mu: 82.6485
+Epoch 19 | loss: 0.0056
+Eval Epoch 19 | Mean relative regret: 0.1523 | norm_diff_mu: 82.6485
+Epoch 20 | loss: 0.0053
+Eval Epoch 20 | Mean relative regret: 0.1522 | norm_diff_mu: 74.9964
+Epoch 21 | loss: 0.0052
+Eval Epoch 21 | Mean relative regret: 0.1525 | norm_diff_mu: 74.9964
+Epoch 22 | loss: 0.0052
+Eval Epoch 22 | Mean relative regret: 0.1515 | norm_diff_mu: 74.9964
+Epoch 23 | loss: 0.0050
+Eval Epoch 23 | Mean relative regret: 0.1516 | norm_diff_mu: 74.9964
+Epoch 24 | loss: 0.0049
+Eval Epoch 24 | Mean relative regret: 0.1521 | norm_diff_mu: 74.9964
+Epoch 25 | loss: 0.0048
+Eval Epoch 25 | Mean relative regret: 0.1531 | norm_diff_mu: 67.5983
+Epoch 26 | loss: 0.0047
+Eval Epoch 26 | Mean relative regret: 0.1532 | norm_diff_mu: 67.5983
+Epoch 27 | loss: 0.0048
+Eval Epoch 27 | Mean relative regret: 0.1523 | norm_diff_mu: 67.5983
+Epoch 28 | loss: 0.0046
+Eval Epoch 28 | Mean relative regret: 0.1524 | norm_diff_mu: 67.5983
+Epoch 29 | loss: 0.0046
+Eval Epoch 29 | Mean relative regret: 0.1533 | norm_diff_mu: 67.5983
+Epoch 30 | loss: 0.0045
+Eval Epoch 30 | Mean relative regret: 0.1536 | norm_diff_mu: 60.1598
+Epoch 31 | loss: 0.0045
+Eval Epoch 31 | Mean relative regret: 0.1543 | norm_diff_mu: 60.1598
+Epoch 32 | loss: 0.0043
+Eval Epoch 32 | Mean relative regret: 0.1546 | norm_diff_mu: 60.1598
+Epoch 33 | loss: 0.0043
+Eval Epoch 33 | Mean relative regret: 0.1542 | norm_diff_mu: 60.1598
+Epoch 34 | loss: 0.0043
+Eval Epoch 34 | Mean relative regret: 0.1541 | norm_diff_mu: 60.1598
+Epoch 35 | loss: 0.0042
+Eval Epoch 35 | Mean relative regret: 0.1541 | norm_diff_mu: 53.0194
+Epoch 36 | loss: 0.0040
+Eval Epoch 36 | Mean relative regret: 0.1548 | norm_diff_mu: 53.0194
+Epoch 37 | loss: 0.0042
+Eval Epoch 37 | Mean relative regret: 0.1542 | norm_diff_mu: 53.0194
+Epoch 38 | loss: 0.0040
+Eval Epoch 38 | Mean relative regret: 0.1546 | norm_diff_mu: 53.0194
+Epoch 39 | loss: 0.0040
+Eval Epoch 39 | Mean relative regret: 0.1542 | norm_diff_mu: 53.0194
+Epoch 40 | loss: 0.0042
+Eval Epoch 40 | Mean relative regret: 0.1545 | norm_diff_mu: 45.9412
+Epoch 41 | loss: 0.0039
+Eval Epoch 41 | Mean relative regret: 0.1541 | norm_diff_mu: 45.9412
+Epoch 42 | loss: 0.0039
+Eval Epoch 42 | Mean relative regret: 0.1537 | norm_diff_mu: 45.9412
+Epoch 43 | loss: 0.0039
+Eval Epoch 43 | Mean relative regret: 0.1542 | norm_diff_mu: 45.9412
+Epoch 44 | loss: 0.0038
+Eval Epoch 44 | Mean relative regret: 0.1547 | norm_diff_mu: 45.9412
+Epoch 45 | loss: 0.0039
+Eval Epoch 45 | Mean relative regret: 0.1554 | norm_diff_mu: 38.8281
+Epoch 46 | loss: 0.0038
+Eval Epoch 46 | Mean relative regret: 0.1558 | norm_diff_mu: 38.8281
+Epoch 47 | loss: 0.0037
+Eval Epoch 47 | Mean relative regret: 0.1559 | norm_diff_mu: 38.8281
+Epoch 48 | loss: 0.0038
+Eval Epoch 48 | Mean relative regret: 0.1560 | norm_diff_mu: 38.8281
+Epoch 49 | loss: 0.0038
+Eval Epoch 49 | Mean relative regret: 0.1555 | norm_diff_mu: 38.8281
+Epoch 50 | loss: 0.0037
+Eval Epoch 50 | Mean relative regret: 0.1547 | norm_diff_mu: 31.9089
+Epoch 51 | loss: 0.0037
+Eval Epoch 51 | Mean relative regret: 0.1546 | norm_diff_mu: 31.9089
+Epoch 52 | loss: 0.0037
+Eval Epoch 52 | Mean relative regret: 0.1545 | norm_diff_mu: 31.9089
+Epoch 53 | loss: 0.0036
+Eval Epoch 53 | Mean relative regret: 0.1549 | norm_diff_mu: 31.9089
+Epoch 54 | loss: 0.0036
+Eval Epoch 54 | Mean relative regret: 0.1539 | norm_diff_mu: 31.9089
+Epoch 55 | loss: 0.0035
+Eval Epoch 55 | Mean relative regret: 0.1538 | norm_diff_mu: 25.0701
+Epoch 56 | loss: 0.0035
+Eval Epoch 56 | Mean relative regret: 0.1541 | norm_diff_mu: 25.0701
+Epoch 57 | loss: 0.0035
+Eval Epoch 57 | Mean relative regret: 0.1542 | norm_diff_mu: 25.0701
+Epoch 58 | loss: 0.0035
+Eval Epoch 58 | Mean relative regret: 0.1545 | norm_diff_mu: 25.0701
+Epoch 59 | loss: 0.0034
+Eval Epoch 59 | Mean relative regret: 0.1551 | norm_diff_mu: 25.0701
+Epoch 60 | loss: 0.0035
+Eval Epoch 60 | Mean relative regret: 0.1551 | norm_diff_mu: 18.4669
+Epoch 61 | loss: 0.0035
+Eval Epoch 61 | Mean relative regret: 0.1558 | norm_diff_mu: 18.4669
+Epoch 62 | loss: 0.0034
+Eval Epoch 62 | Mean relative regret: 0.1561 | norm_diff_mu: 18.4669
+Epoch 63 | loss: 0.0034
+Eval Epoch 63 | Mean relative regret: 0.1560 | norm_diff_mu: 18.4669
+Epoch 64 | loss: 0.0033
+Eval Epoch 64 | Mean relative regret: 0.1559 | norm_diff_mu: 18.4669
+Epoch 65 | loss: 0.0033
+Eval Epoch 65 | Mean relative regret: 0.1559 | norm_diff_mu: 12.6389
+Epoch 66 | loss: 0.0032
+Eval Epoch 66 | Mean relative regret: 0.1562 | norm_diff_mu: 12.6389
+Epoch 67 | loss: 0.0033
+Eval Epoch 67 | Mean relative regret: 0.1563 | norm_diff_mu: 12.6389
+Epoch 68 | loss: 0.0034
+Eval Epoch 68 | Mean relative regret: 0.1564 | norm_diff_mu: 12.6389
+Epoch 69 | loss: 0.0034
+Eval Epoch 69 | Mean relative regret: 0.1561 | norm_diff_mu: 12.6389
+Epoch 70 | loss: 0.0033
+Eval Epoch 70 | Mean relative regret: 0.1565 | norm_diff_mu: 8.5694
+Epoch 71 | loss: 0.0033
+Eval Epoch 71 | Mean relative regret: 0.1561 | norm_diff_mu: 8.5694
+Epoch 72 | loss: 0.0033
+Eval Epoch 72 | Mean relative regret: 0.1566 | norm_diff_mu: 8.5694
+Epoch 73 | loss: 0.0031
+Eval Epoch 73 | Mean relative regret: 0.1569 | norm_diff_mu: 8.5694
+Epoch 74 | loss: 0.0033
+Eval Epoch 74 | Mean relative regret: 0.1564 | norm_diff_mu: 8.5694
+Epoch 75 | loss: 0.0033
+Eval Epoch 75 | Mean relative regret: 0.1559 | norm_diff_mu: 9.3729
+Epoch 76 | loss: 0.0032
+Eval Epoch 76 | Mean relative regret: 0.1558 | norm_diff_mu: 9.3729
+Epoch 77 | loss: 0.0031
+Eval Epoch 77 | Mean relative regret: 0.1559 | norm_diff_mu: 9.3729
+Epoch 78 | loss: 0.0032
+Eval Epoch 78 | Mean relative regret: 0.1563 | norm_diff_mu: 9.3729
+Epoch 79 | loss: 0.0031
+Eval Epoch 79 | Mean relative regret: 0.1561 | norm_diff_mu: 9.3729
+Epoch 80 | loss: 0.0032
+Eval Epoch 80 | Mean relative regret: 0.1569 | norm_diff_mu: 14.1969
+Epoch 81 | loss: 0.0031
+Eval Epoch 81 | Mean relative regret: 0.1571 | norm_diff_mu: 14.1969
+Epoch 82 | loss: 0.0032
+Eval Epoch 82 | Mean relative regret: 0.1567 | norm_diff_mu: 14.1969
+Epoch 83 | loss: 0.0032
+Eval Epoch 83 | Mean relative regret: 0.1569 | norm_diff_mu: 14.1969
+Epoch 84 | loss: 0.0031
+Eval Epoch 84 | Mean relative regret: 0.1570 | norm_diff_mu: 14.1969
+Epoch 85 | loss: 0.0030
+Eval Epoch 85 | Mean relative regret: 0.1568 | norm_diff_mu: 20.4097
+Epoch 86 | loss: 0.0031
+Eval Epoch 86 | Mean relative regret: 0.1567 | norm_diff_mu: 20.4097
+Epoch 87 | loss: 0.0031
+Eval Epoch 87 | Mean relative regret: 0.1569 | norm_diff_mu: 20.4097
+Epoch 88 | loss: 0.0031
+Eval Epoch 88 | Mean relative regret: 0.1573 | norm_diff_mu: 20.4097
+Epoch 89 | loss: 0.0030
+Eval Epoch 89 | Mean relative regret: 0.1578 | norm_diff_mu: 20.4097
+Epoch 90 | loss: 0.0029
+Eval Epoch 90 | Mean relative regret: 0.1583 | norm_diff_mu: 26.8885
+Epoch 91 | loss: 0.0031
+Eval Epoch 91 | Mean relative regret: 0.1581 | norm_diff_mu: 26.8885
+Epoch 92 | loss: 0.0031
+Eval Epoch 92 | Mean relative regret: 0.1577 | norm_diff_mu: 26.8885
+Epoch 93 | loss: 0.0030
+Eval Epoch 93 | Mean relative regret: 0.1579 | norm_diff_mu: 26.8885
+Epoch 94 | loss: 0.0031
+Eval Epoch 94 | Mean relative regret: 0.1573 | norm_diff_mu: 26.8885
+Epoch 95 | loss: 0.0030
+Eval Epoch 95 | Mean relative regret: 0.1577 | norm_diff_mu: 33.6812
+Epoch 96 | loss: 0.0029
+Eval Epoch 96 | Mean relative regret: 0.1577 | norm_diff_mu: 33.6812
+Epoch 97 | loss: 0.0030
+Eval Epoch 97 | Mean relative regret: 0.1577 | norm_diff_mu: 33.6812
+Epoch 98 | loss: 0.0030
+Eval Epoch 98 | Mean relative regret: 0.1582 | norm_diff_mu: 33.6812
+Epoch 99 | loss: 0.0029
+Eval Epoch 99 | Mean relative regret: 0.1584 | norm_diff_mu: 33.6812
+Epoch 100 | loss: 0.0029
+Eval Epoch 100 | Mean relative regret: 0.1583 | norm_diff_mu: 40.6059
+Epoch 101 | loss: 0.0029
+Eval Epoch 101 | Mean relative regret: 0.1579 | norm_diff_mu: 40.6059
+Epoch 102 | loss: 0.0031
+Eval Epoch 102 | Mean relative regret: 0.1579 | norm_diff_mu: 40.6059
+Epoch 103 | loss: 0.0030
+Eval Epoch 103 | Mean relative regret: 0.1578 | norm_diff_mu: 40.6059
+Epoch 104 | loss: 0.0028
+Eval Epoch 104 | Mean relative regret: 0.1574 | norm_diff_mu: 40.6059
+Epoch 105 | loss: 0.0028
+Eval Epoch 105 | Mean relative regret: 0.1575 | norm_diff_mu: 47.5723
+Epoch 106 | loss: 0.0029
+Eval Epoch 106 | Mean relative regret: 0.1574 | norm_diff_mu: 47.5723
+Epoch 107 | loss: 0.0030
+Eval Epoch 107 | Mean relative regret: 0.1577 | norm_diff_mu: 47.5723
+Epoch 108 | loss: 0.0029
+Eval Epoch 108 | Mean relative regret: 0.1581 | norm_diff_mu: 47.5723
+Epoch 109 | loss: 0.0029
+Eval Epoch 109 | Mean relative regret: 0.1584 | norm_diff_mu: 47.5723
+Epoch 110 | loss: 0.0029
+Eval Epoch 110 | Mean relative regret: 0.1583 | norm_diff_mu: 54.6080
+Epoch 111 | loss: 0.0029
+Eval Epoch 111 | Mean relative regret: 0.1583 | norm_diff_mu: 54.6080
+Epoch 112 | loss: 0.0028
+Eval Epoch 112 | Mean relative regret: 0.1583 | norm_diff_mu: 54.6080
+Epoch 113 | loss: 0.0028
+Eval Epoch 113 | Mean relative regret: 0.1579 | norm_diff_mu: 54.6080
+Epoch 114 | loss: 0.0028
+Eval Epoch 114 | Mean relative regret: 0.1581 | norm_diff_mu: 54.6080
+Epoch 115 | loss: 0.0028
+Eval Epoch 115 | Mean relative regret: 0.1582 | norm_diff_mu: 61.5694
+Epoch 116 | loss: 0.0028
+Eval Epoch 116 | Mean relative regret: 0.1580 | norm_diff_mu: 61.5694
+Epoch 117 | loss: 0.0028
+Eval Epoch 117 | Mean relative regret: 0.1581 | norm_diff_mu: 61.5694
+Epoch 118 | loss: 0.0029
+Eval Epoch 118 | Mean relative regret: 0.1579 | norm_diff_mu: 61.5694
+Epoch 119 | loss: 0.0027
+Eval Epoch 119 | Mean relative regret: 0.1583 | norm_diff_mu: 61.5694
+Epoch 120 | loss: 0.0027
+Eval Epoch 120 | Mean relative regret: 0.1581 | norm_diff_mu: 68.6452
+Epoch 121 | loss: 0.0028
+Eval Epoch 121 | Mean relative regret: 0.1577 | norm_diff_mu: 68.6452
+Epoch 122 | loss: 0.0027
+Eval Epoch 122 | Mean relative regret: 0.1578 | norm_diff_mu: 68.6452
+Epoch 123 | loss: 0.0027
+Eval Epoch 123 | Mean relative regret: 0.1580 | norm_diff_mu: 68.6452
+Epoch 124 | loss: 0.0028
+Eval Epoch 124 | Mean relative regret: 0.1575 | norm_diff_mu: 68.6452
+Epoch 125 | loss: 0.0027
+Eval Epoch 125 | Mean relative regret: 0.1573 | norm_diff_mu: 75.6507
+Epoch 126 | loss: 0.0028
+Eval Epoch 126 | Mean relative regret: 0.1573 | norm_diff_mu: 75.6507
+Epoch 127 | loss: 0.0027
+Eval Epoch 127 | Mean relative regret: 0.1575 | norm_diff_mu: 75.6507
+Epoch 128 | loss: 0.0028
+Eval Epoch 128 | Mean relative regret: 0.1574 | norm_diff_mu: 75.6507
+Epoch 129 | loss: 0.0028
+Eval Epoch 129 | Mean relative regret: 0.1577 | norm_diff_mu: 75.6507
+Epoch 130 | loss: 0.0027
+Eval Epoch 130 | Mean relative regret: 0.1579 | norm_diff_mu: 82.8176
+Epoch 131 | loss: 0.0027
+Eval Epoch 131 | Mean relative regret: 0.1585 | norm_diff_mu: 82.8176
+Epoch 132 | loss: 0.0027
+Eval Epoch 132 | Mean relative regret: 0.1593 | norm_diff_mu: 82.8176
+Epoch 133 | loss: 0.0026
+Eval Epoch 133 | Mean relative regret: 0.1592 | norm_diff_mu: 82.8176
+Epoch 134 | loss: 0.0028
+Eval Epoch 134 | Mean relative regret: 0.1587 | norm_diff_mu: 82.8176
+Epoch 135 | loss: 0.0026
+Eval Epoch 135 | Mean relative regret: 0.1590 | norm_diff_mu: 89.8571
+Epoch 136 | loss: 0.0027
+Eval Epoch 136 | Mean relative regret: 0.1590 | norm_diff_mu: 89.8571
+Epoch 137 | loss: 0.0027
+Eval Epoch 137 | Mean relative regret: 0.1589 | norm_diff_mu: 89.8571
+Epoch 138 | loss: 0.0028
+Eval Epoch 138 | Mean relative regret: 0.1587 | norm_diff_mu: 89.8571
+Epoch 139 | loss: 0.0027
+Eval Epoch 139 | Mean relative regret: 0.1580 | norm_diff_mu: 89.8571
+Epoch 140 | loss: 0.0027
+Eval Epoch 140 | Mean relative regret: 0.1583 | norm_diff_mu: 96.9106
+Epoch 141 | loss: 0.0027
+Eval Epoch 141 | Mean relative regret: 0.1584 | norm_diff_mu: 96.9106
+Epoch 142 | loss: 0.0027
+Eval Epoch 142 | Mean relative regret: 0.1584 | norm_diff_mu: 96.9106
+Epoch 143 | loss: 0.0027
+Eval Epoch 143 | Mean relative regret: 0.1587 | norm_diff_mu: 96.9106
+Epoch 144 | loss: 0.0026
+Eval Epoch 144 | Mean relative regret: 0.1587 | norm_diff_mu: 96.9106
+Epoch 145 | loss: 0.0026
+Eval Epoch 145 | Mean relative regret: 0.1582 | norm_diff_mu: 104.0371
+Epoch 146 | loss: 0.0027
+Eval Epoch 146 | Mean relative regret: 0.1578 | norm_diff_mu: 104.0371
+Epoch 147 | loss: 0.0025
+Eval Epoch 147 | Mean relative regret: 0.1578 | norm_diff_mu: 104.0371
+Epoch 148 | loss: 0.0025
+Eval Epoch 148 | Mean relative regret: 0.1580 | norm_diff_mu: 104.0371
+Epoch 149 | loss: 0.0026
+Eval Epoch 149 | Mean relative regret: 0.1579 | norm_diff_mu: 104.0371
+Epoch 150 | loss: 0.0025
+Eval Epoch 150 | Mean relative regret: 0.1579 | norm_diff_mu: 111.1332
+Epoch 151 | loss: 0.0026
+Eval Epoch 151 | Mean relative regret: 0.1577 | norm_diff_mu: 111.1332
+Epoch 152 | loss: 0.0027
+Eval Epoch 152 | Mean relative regret: 0.1574 | norm_diff_mu: 111.1332
+Epoch 153 | loss: 0.0027
+Eval Epoch 153 | Mean relative regret: 0.1574 | norm_diff_mu: 111.1332
+Epoch 154 | loss: 0.0026
+Eval Epoch 154 | Mean relative regret: 0.1576 | norm_diff_mu: 111.1332
+Epoch 155 | loss: 0.0027
+Eval Epoch 155 | Mean relative regret: 0.1577 | norm_diff_mu: 118.1936
+Epoch 156 | loss: 0.0026
+Eval Epoch 156 | Mean relative regret: 0.1579 | norm_diff_mu: 118.1936
+Epoch 157 | loss: 0.0024
+Eval Epoch 157 | Mean relative regret: 0.1584 | norm_diff_mu: 118.1936
+Epoch 158 | loss: 0.0026
+Eval Epoch 158 | Mean relative regret: 0.1586 | norm_diff_mu: 118.1936
+Epoch 159 | loss: 0.0025
+Eval Epoch 159 | Mean relative regret: 0.1584 | norm_diff_mu: 118.1936
+Epoch 160 | loss: 0.0026
+Eval Epoch 160 | Mean relative regret: 0.1580 | norm_diff_mu: 125.4396
+Time limit reached, stopping training.
+Test relative regret: 0.1514 ± 0.0465
+Test relative regret: 0.1306 ± 0.0524
+Saving the model to portfolio/models/IMLE_SG_30_500_200_2-25.pth
+/home/stephecw/projet/DFL_LD/portfolio/my_solver.py:172: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /shared_tmp/build_wheels_tmp.115664/python-3.10/torch/torch/csrc/utils/tensor_new.cpp:254.)
+  return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)

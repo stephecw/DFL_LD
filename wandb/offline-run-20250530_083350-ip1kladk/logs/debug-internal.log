@@ -1,0 +1,15 @@
+{"time":"2025-05-30T08:33:51.151122393-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250530_083350-ip1kladk/logs/debug-core.log"}
+{"time":"2025-05-30T08:33:51.277773446-04:00","level":"INFO","msg":"created new stream","id":"ip1kladk"}
+{"time":"2025-05-30T08:33:51.277837338-04:00","level":"INFO","msg":"stream: started","id":"ip1kladk"}
+{"time":"2025-05-30T08:33:51.27806663-04:00","level":"INFO","msg":"handler: started","stream_id":"ip1kladk"}
+{"time":"2025-05-30T08:33:51.278115355-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"ip1kladk"}
+{"time":"2025-05-30T08:33:51.278286068-04:00","level":"INFO","msg":"sender: started","stream_id":"ip1kladk"}
+{"time":"2025-05-30T08:33:51.322193425-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-30T09:03:59.025830933-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-30T09:03:59.026523147-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-30T09:03:59.027591438-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-30T09:04:00.039058806-04:00","level":"INFO","msg":"stream: closing","id":"ip1kladk"}
+{"time":"2025-05-30T09:04:00.039082809-04:00","level":"INFO","msg":"handler: closed","stream_id":"ip1kladk"}
+{"time":"2025-05-30T09:04:00.039100663-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"ip1kladk"}
+{"time":"2025-05-30T09:04:00.039282501-04:00","level":"INFO","msg":"sender: closed","stream_id":"ip1kladk"}
+{"time":"2025-05-30T09:04:00.03944798-04:00","level":"INFO","msg":"stream: closed","id":"ip1kladk"}

@@ -1,0 +1,38 @@
+Loading /quad/train_50_500_200_2-25.txt
+Loading /quad/eval_50_100_200_2-25.txt
+Loading /quad/test_50_200_200_2-25.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with dynamic mu and LD bound as loss...
+Epoch 0 | loss: 0.9474
+Eval Epoch 0 | Mean relative regret: 0.2167 | norm_diff_mu: 159.5329
+Epoch 1 | loss: 0.4199
+Eval Epoch 1 | Mean relative regret: 0.1913 | norm_diff_mu: 148.5813
+Epoch 2 | loss: 0.2638
+Eval Epoch 2 | Mean relative regret: 0.1888 | norm_diff_mu: 139.9670
+Epoch 3 | loss: 0.1985
+Eval Epoch 3 | Mean relative regret: 0.1840 | norm_diff_mu: 129.8482
+Epoch 4 | loss: 0.1594
+Eval Epoch 4 | Mean relative regret: 0.1808 | norm_diff_mu: 119.8851
+Epoch 5 | loss: 0.1312
+Eval Epoch 5 | Mean relative regret: 0.1797 | norm_diff_mu: 110.1832
+Epoch 6 | loss: 0.1170
+Eval Epoch 6 | Mean relative regret: 0.1781 | norm_diff_mu: 99.8209
+Epoch 7 | loss: 0.1043
+Eval Epoch 7 | Mean relative regret: 0.1782 | norm_diff_mu: 89.9137
+Epoch 8 | loss: 0.0932
+Eval Epoch 8 | Mean relative regret: 0.1793 | norm_diff_mu: 79.5504
+Epoch 9 | loss: 0.0828
+Eval Epoch 9 | Mean relative regret: 0.1780 | norm_diff_mu: 69.2723
+Epoch 10 | loss: 0.0738
+Eval Epoch 10 | Mean relative regret: 0.1801 | norm_diff_mu: 58.7407
+Epoch 11 | loss: 0.0681
+Eval Epoch 11 | Mean relative regret: 0.1760 | norm_diff_mu: 48.2216
+Epoch 12 | loss: 0.0635
+Eval Epoch 12 | Mean relative regret: 0.1753 | norm_diff_mu: 37.7705
+Time limit reached, stopping training.
+Test relative regret: 0.1753 ± 0.0428
+Test relative regret: 0.1463 ± 0.0377
+Saving the model to portfolio/models/SPOPlus_SG_50_500_200_2-25.pth
+/home/stephecw/projet/DFL_LD/portfolio/my_solver.py:172: UserWarning: Creating a tensor from a list of numpy.ndarrays is extremely slow. Please consider converting the list to a single numpy.ndarray with numpy.array() before converting to a tensor. (Triggered internally at /shared_tmp/build_wheels_tmp.115664/python-3.10/torch/torch/csrc/utils/tensor_new.cpp:254.)
+  return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)
