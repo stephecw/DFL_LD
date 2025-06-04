@@ -4,9 +4,7 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 class ImportDataset:
-
     def __init__(self, fname, model=None, z_stats=None, test=False):
-
         self.read_file(fname, test)
 
         Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
@@ -43,7 +41,7 @@ class ImportDataset:
         """
         with open(fname, 'r') as f:
             lines = f.readlines()
-            self.global_dim, self.num_feat, self.num_item, self.num_data = map(int, lines[0].split(","))
+            self.global_dim, self.keep ,self.num_feat, self.num_item, self.num_data = map(int, lines[0].split(","))
                 
             self.capacities = []
             self.weights = []
@@ -72,10 +70,10 @@ class ImportDataset:
             self.x = np.array(self.x)
             if test:
                 self.X = np.zeros((self.num_data, self.num_item))
-                self.mu = np.zeros((self.num_data, self.global_dim-1, self.num_item))
+                self.mu = np.zeros((self.num_data, self.global_dim-self.keep, self.num_item))
             else: 
                 self.X = np.array(self.X)
-                self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim-1, self.num_item)
+                self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim-self.keep, self.num_item)
 
     def get_z_stats(self):
         """Retourne (mean, std) utilisés pour la normalisation."""
