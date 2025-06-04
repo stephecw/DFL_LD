@@ -1,7 +1,0 @@
-{"time":"2025-06-02T21:28:19.887260307-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250602_212819-je28laop/logs/debug-core.log"}
-{"time":"2025-06-02T21:28:19.998439243-04:00","level":"INFO","msg":"created new stream","id":"je28laop"}
-{"time":"2025-06-02T21:28:19.998499023-04:00","level":"INFO","msg":"stream: started","id":"je28laop"}
-{"time":"2025-06-02T21:28:19.998712161-04:00","level":"INFO","msg":"handler: started","stream_id":"je28laop"}
-{"time":"2025-06-02T21:28:19.99875783-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"je28laop"}
-{"time":"2025-06-02T21:28:19.9989296-04:00","level":"INFO","msg":"sender: started","stream_id":"je28laop"}
-{"time":"2025-06-02T21:28:20.004995983-04:00","level":"INFO","msg":"Starting system monitor"}

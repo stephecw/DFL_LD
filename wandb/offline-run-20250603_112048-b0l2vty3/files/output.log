@@ -1,7 +1,0 @@
-Loading train_10_3_200_50_500.txt
-Loading eval_10_200_50_100.txt
-Restricted license - for non-production use only - expires 2026-11-23
-Num of cores: 1
-Training the model with dynamic mu and LD bound as loss...
-/home/stephecw/env_projet/lib/python3.10/site-packages/numba/cuda/dispatcher.py:536: NumbaPerformanceWarning: Grid size 32 will likely result in GPU under-utilization due to low occupancy.
-  warn(NumbaPerformanceWarning(msg))
