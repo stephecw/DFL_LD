@@ -1,0 +1,15 @@
+{"time":"2025-05-30T09:39:43.611734173-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250530_093942-43ibmpp1/logs/debug-core.log"}
+{"time":"2025-05-30T09:39:43.85898131-04:00","level":"INFO","msg":"created new stream","id":"43ibmpp1"}
+{"time":"2025-05-30T09:39:43.859091135-04:00","level":"INFO","msg":"stream: started","id":"43ibmpp1"}
+{"time":"2025-05-30T09:39:43.859437646-04:00","level":"INFO","msg":"handler: started","stream_id":"43ibmpp1"}
+{"time":"2025-05-30T09:39:43.859528501-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"43ibmpp1"}
+{"time":"2025-05-30T09:39:43.86104972-04:00","level":"INFO","msg":"sender: started","stream_id":"43ibmpp1"}
+{"time":"2025-05-30T09:39:43.866425872-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-30T09:41:28.578292434-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-30T09:41:28.582644931-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-30T09:41:28.58363263-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-30T09:41:29.590450625-04:00","level":"INFO","msg":"stream: closing","id":"43ibmpp1"}
+{"time":"2025-05-30T09:41:29.590473935-04:00","level":"INFO","msg":"handler: closed","stream_id":"43ibmpp1"}
+{"time":"2025-05-30T09:41:29.590493466-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"43ibmpp1"}
+{"time":"2025-05-30T09:41:29.590654388-04:00","level":"INFO","msg":"sender: closed","stream_id":"43ibmpp1"}
+{"time":"2025-05-30T09:41:29.591373484-04:00","level":"INFO","msg":"stream: closed","id":"43ibmpp1"}

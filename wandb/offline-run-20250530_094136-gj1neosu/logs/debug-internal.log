@@ -1,0 +1,15 @@
+{"time":"2025-05-30T09:41:37.084693361-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250530_094136-gj1neosu/logs/debug-core.log"}
+{"time":"2025-05-30T09:41:37.230677895-04:00","level":"INFO","msg":"created new stream","id":"gj1neosu"}
+{"time":"2025-05-30T09:41:37.230733869-04:00","level":"INFO","msg":"stream: started","id":"gj1neosu"}
+{"time":"2025-05-30T09:41:37.230958035-04:00","level":"INFO","msg":"handler: started","stream_id":"gj1neosu"}
+{"time":"2025-05-30T09:41:37.231003434-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"gj1neosu"}
+{"time":"2025-05-30T09:41:37.231172709-04:00","level":"INFO","msg":"sender: started","stream_id":"gj1neosu"}
+{"time":"2025-05-30T09:41:37.236985322-04:00","level":"INFO","msg":"Starting system monitor"}
+{"time":"2025-05-30T09:42:50.27987567-04:00","level":"INFO","msg":"Stopping system monitor"}
+{"time":"2025-05-30T09:42:50.280547706-04:00","level":"INFO","msg":"Stopped system monitor"}
+{"time":"2025-05-30T09:42:50.281353569-04:00","level":"INFO","msg":"handler: operation stats","stats":{}}
+{"time":"2025-05-30T09:42:51.288566795-04:00","level":"INFO","msg":"stream: closing","id":"gj1neosu"}
+{"time":"2025-05-30T09:42:51.288603239-04:00","level":"INFO","msg":"handler: closed","stream_id":"gj1neosu"}
+{"time":"2025-05-30T09:42:51.288623127-04:00","level":"INFO","msg":"writer: Close: closed","stream_id":"gj1neosu"}
+{"time":"2025-05-30T09:42:51.288786166-04:00","level":"INFO","msg":"sender: closed","stream_id":"gj1neosu"}
+{"time":"2025-05-30T09:42:51.289144456-04:00","level":"INFO","msg":"stream: closed","id":"gj1neosu"}
