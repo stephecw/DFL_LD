@@ -1,16 +1,25 @@
 import time
 import torch
+import numpy as np
 import torch.nn as nn
-
+from joblib import Parallel, delayed
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def get_learning_rate(optimizer):
     for param_group in optimizer.param_groups:
         return param_group['lr']
+    
+def _compute_regret(c_hat_i, x_true_i, c_true_i, eval_solver):
+    # run solver and compute one sample’s regret
+    eval_solver.setObj(c_hat_i)
+    x_hat, _ = eval_solver.solve()
+    num = (c_true_i * (x_true_i - x_hat)).sum()
+    den = max((c_true_i * x_true_i).sum(), 1e-6)
+    return num / den
 
 def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1):
     """
     Training a PFL-model by minimizing the MSE.
 
@@ -93,26 +102,27 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
 
             with torch.no_grad():
                 model.eval()
-                relat_regrets = []
+                all_regrets = []
+
                 for z, c, x, _, _ in dataloader_eval:
-                    z, c, x = [t.to(device) for t in (z, c, x)]
-                    c_hat = model(z)  # cost prediction [batch, n]
+                    z = z.to(device)
+                    c_hat = model(z)  # [batch, n]
+
+                    # prepare the inputs for the helper
+                    c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+                    x_true_cpu = x.float().cpu().numpy()              # shape [B,n], torch Tensor
+                    c_true_cpu = c.float().cpu().numpy() 
 
                     for i in range(z.size(0)):
-                        c_numpy = c_hat[i].detach().cpu().numpy()
-                        eval_solver.setObj(c_numpy)
-                        x_hat_np, _ = eval_solver.solve()
-                        x_true = x[i].to(dtype=torch.float32, device=device)
-                        c_true = c[i].to(dtype=torch.float32, device=device)
-                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
-                        # Compute regret
-                        relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
-                            
-                        relat_regrets.append(relat_regret)
+                        eval_solver.setObj(c_hat_np[i]) 
+                        x_hat, _ = eval_solver.solve()
+                        num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                        den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                        rel_regret = num / den
+                        all_regrets.append(rel_regret)
 
-                relat_regrets = torch.stack(relat_regrets)
-                mean_relat_regret = relat_regrets.mean().item()
-                std_relat_regret = relat_regrets.std().item()
+                mean_relat_regret = float(np.mean(all_regrets))
+                std_relat_regret  = float(np.std(all_regrets))
                 if run is not None:
                     # Log results in wandb
                     run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
@@ -134,9 +144,9 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
 
         # Check time limit
         if time_limit is not None:
-            if time.time() - start_time > time_limit:
-                print("Time limit reached, stopping training.", flush=True)
-                break    
+            if train_time > time_limit:
+                print("Time limit reached, stopping training.")
+                break
 
     if best_model_state is not None:
         device = next(model.parameters()).device
@@ -153,7 +163,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
 
 def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1):
     """
     Training a DFL-model by minimizing classical regret loss.
 
@@ -230,25 +240,27 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
         if epoch % eval_freq == eval_freq-1:
             with torch.no_grad():
                 model.eval()
-                relat_regrets = []
+                all_regrets = []
+
                 for z, c, x, _, _ in dataloader_eval:
-                    z, c, x = [t.to(device) for t in (z, c, x)]
-                    c_hat = model(z)  # cost prediction [batch, n]
+                    z = z.to(device)
+                    c_hat = model(z)  # [batch, n]
+
+                    # prepare the inputs for the helper
+                    c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+                    x_true_cpu = x.float().cpu().numpy()               # shape [B,n], torch Tensor
+                    c_true_cpu = c.float().cpu().numpy()  
 
                     for i in range(z.size(0)):
-                        c_numpy = c_hat[i].detach().cpu().numpy()
-                        eval_solver.setObj(c_numpy)
-                        x_hat_np, _ = eval_solver.solve()
-                        x_true = x[i].to(dtype=torch.float32, device=device)
-                        c_true = c[i].to(dtype=torch.float32, device=device)
-                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
-                        # Compute regret
-                        relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
-                        relat_regrets.append(relat_regret)
+                        eval_solver.setObj(c_hat_np[i]) 
+                        x_hat, _ = eval_solver.solve()
+                        num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                        den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                        rel_regret = num / den
+                        all_regrets.append(rel_regret)
 
-                relat_regrets = torch.stack(relat_regrets)
-                mean_relat_regret = relat_regrets.mean().item()
-                std_relat_regret = relat_regrets.std().item()
+                mean_relat_regret = float(np.mean(all_regrets))
+                std_relat_regret  = float(np.std(all_regrets))
                 if run is not None:
                     # Log results in wandb
                     run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
@@ -270,7 +282,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
 
         # Check time limit
         if time_limit is not None:
-            if time.time() - start_time > time_limit:
+            if train_time > time_limit:
                 print("Time limit reached, stopping training.", flush=True)
                 break
 
@@ -289,7 +301,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
 
 def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1):
     """
     Training a DFL-model by minimizing LD loss.
 
@@ -360,31 +372,33 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
-            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f} | train time : {train_time}", flush=True)
 
         ## evaling step (if needed)##
         if epoch % eval_freq == eval_freq-1:
             with torch.no_grad():
                 model.eval()
-                relat_regrets = []
+                all_regrets = []
+
                 for z, c, x, _, _ in dataloader_eval:
-                    z, c, x = [t.to(device) for t in (z, c, x)]
-                    c_hat = model(z)  # cost prediction [batch, n]
+                    z = z.to(device)
+                    c_hat = model(z)  # [batch, n]
+
+                    # prepare the inputs for the helper
+                    c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+                    x_true_cpu = x.float().cpu().numpy()               # shape [B,n], torch Tensor
+                    c_true_cpu = c.float().cpu().numpy()  
 
                     for i in range(z.size(0)):
-                        c_numpy = c_hat[i].detach().cpu().numpy()
-                        eval_solver.setObj(c_numpy)
-                        x_hat_np, _ = eval_solver.solve()
-                        x_true = x[i].to(dtype=torch.float32, device=device)
-                        c_true = c[i].to(dtype=torch.float32, device=device)
-                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
-                        # Compute regret
-                        relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
-                        relat_regrets.append(relat_regret)
+                        eval_solver.setObj(c_hat_np[i]) 
+                        x_hat, _ = eval_solver.solve()
+                        num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                        den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                        rel_regret = num / den
+                        all_regrets.append(rel_regret)
 
-                relat_regrets = torch.stack(relat_regrets)
-                mean_relat_regret = relat_regrets.mean().item()
-                std_relat_regret = relat_regrets.std().item()
+                mean_relat_regret = float(np.mean(all_regrets))
+                std_relat_regret  = float(np.std(all_regrets))
                 if run is not None:
                     # Log results in wandb
                     run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
@@ -406,7 +420,7 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 
         # Check time limit
         if time_limit is not None:
-            if time.time() - start_time > time_limit:
+            if train_time > time_limit:
                 print("Time limit reached, stopping training.", flush=True)
                 break
 
@@ -427,7 +441,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
           epochs, time_limit, eval_freq,
           step_mu, num_iter_mu, optimizer_mu,
           mu_global0,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
@@ -484,7 +498,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 
             # Update mu_global
             if epoch % step_mu == 0:
-                optimizer_mu.optim_mu(c_batch=c_hat.detach(),verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
+                optimizer_mu.optim_mu(c_batch=c_hat.detach(),verbose=True, max_iter=num_iter_mu, mu_init=mu_tilde)
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
 
@@ -524,29 +538,32 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         if epoch % eval_freq == eval_freq-1:
             with torch.no_grad():
                 model.eval()
-                relat_regrets = []
+                all_regrets = []
+
                 for z, c, x, _, _ in dataloader_eval:
-                    z, c, x = [t.to(device) for t in (z, c, x)]
-                    c_hat = model(z)  # cost prediction [batch, n]
+                    z = z.to(device)
+                    c_hat = model(z)  # [batch, n]
+
+                    # prepare the inputs for the helper
+                    c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+                    x_true_cpu = x.float().cpu().numpy()               # shape [B,n], torch Tensor
+                    c_true_cpu = c.float().cpu().numpy()  
 
                     for i in range(z.size(0)):
-                        c_numpy = c_hat[i].detach().cpu().numpy()
-                        eval_solver.setObj(c_numpy)
-                        x_hat_np, _ = eval_solver.solve()
-                        x_true = x[i].to(dtype=torch.float32, device=device)
-                        c_true = c[i].to(dtype=torch.float32, device=device)
-                        x_hat_tensor = torch.tensor(x_hat_np, dtype=torch.float32, device=device)
-                        # Compute regret
-                        relat_regret = torch.dot(c_true, x_true - x_hat_tensor)/torch.dot(c_true, x_true)
-                        relat_regrets.append(relat_regret)
+                        eval_solver.setObj(c_hat_np[i]) 
+                        x_hat, _ = eval_solver.solve()
+                        num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                        den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                        rel_regret = num / den
+                        all_regrets.append(rel_regret)
+
+                mean_relat_regret = float(np.mean(all_regrets))
+                std_relat_regret  = float(np.std(all_regrets))
 
                 # Compute difference between optimal mu*(c) and adaptive mu
                 mu_data = dataloader_train.dataset.tensors[4].to(device)
                 mu_diff = torch.norm(mu_data - mu_global, p='fro').item()
 
-                relat_regrets = torch.stack(relat_regrets)
-                mean_relat_regret = relat_regrets.mean().item()
-                std_relat_regret = relat_regrets.std().item()
                 if run is not None:
                     # Log results in wandb
                     run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
@@ -569,7 +586,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 
         # Check time limit
         if time_limit is not None:
-            if time.time() - start_time > time_limit:
+            if train_time > time_limit:
                 print("Time limit reached, stopping training.", flush=True)
                 break
     

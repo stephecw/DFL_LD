@@ -29,7 +29,7 @@ parser.add_argument('--lambda_imle', type=float, default=0.1, help='Lambda for I
 parser.add_argument('--sigma', type=float, default=0.1, help='Sigma for IMLE. Only used if method is "IMLE".')
 parser.add_argument('--out_file', type=str, default='portfolio/results.csv',
                     help='Chemin du fichier CSV où stocker les résultats.')
-parser.add_argument('time_limit', type=int, default=300, help='Time limit for training in seconds. Default is 300 seconds.')
+parser.add_argument('--time_limit', type=int, default=300, help='Time limit for training in seconds. Default is 300 seconds.')
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -196,19 +196,24 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
                     run=run, verbose=verbose, patience=patience)
         
     # Évaluer d’abord sur le set d’éval avec le modèle au meilleur epoch
-    mean_relat_eval, std_relat_eval = test(model, eval_loader, eval_solver, device, run=None)
+    regrets_eval = test(model, eval_loader, eval_solver, device, run=None)
+    mean_relat_eval = np.mean(regrets_eval)
+    std_relat_eval = np.std(regrets_eval)
 
     # Test the model on the test set
-    mean_relat_test, std_relat_test = test(model, test_loader, eval_solver, device, run)
+    regrets_test = test(model, test_loader, eval_solver, device, run)
+    mean_relat_test = np.mean(regrets_test)
+    std_relat_test = np.std(regrets_test)
 
     
     row = {
         'n': num_item,
         'jobtype': jobtype,
+        'time limit': time_limit,
         'method': diff_method_name or 'MSE',
-        'n_samples': diff_method_arg.get('n_samples', ''),
-        'lambda_imle': diff_method_arg.get('lambd', ''),
-        'sigma': diff_method_arg.get('sigma', ''),
+        'n_samples': diff_method_arg.get('n_samples', '') if diff_method_arg else '',
+        'lambda_imle': diff_method_arg.get('lambd', '') if diff_method_arg else '',
+        'sigma': diff_method_arg.get('sigma', '') if diff_method_arg else '',
         'step_mu': step_mu if 'step_mu' in locals() else '',
         'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
         'mean_relat_eval': mean_relat_eval,
@@ -217,12 +222,12 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         'std_relat_test': std_relat_test
     }
     # Écrire en mode « append » avec en‑têtes créés si le fichier n’existe pas
-    # write_header = not os.path.exists(args.out_file)
-    # with open(args.out_file, 'a', newline='') as f:
-    #     writer = csv.DictWriter(f, fieldnames=row.keys())
-    #     if write_header:
-    #         writer.writeheader()
-    #     writer.writerow(row)
+    write_header = not os.path.exists(args.out_file)
+    with open(args.out_file, 'a', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=row.keys())
+        if write_header:
+            writer.writeheader()
+        writer.writerow(row)
 
     # Save model
     if save_model:
@@ -250,7 +255,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
-eval_freq = 1
+eval_freq = 100
 
 # Problem dimensions
 num_feat = 200
@@ -270,8 +275,9 @@ lr_classic = 0.002
 model_shape_classic = [num_feat, 100, num_item]
 dropout_classic = 0.2
 schedulerType_classic = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_classic = {'patience': 10,
-                     'factor': 0.5
+sched_arg_classic = {'patience': 100,
+                     'factor': 0.5,
+                     'min_lr':1e-6
                      }
 diff_method_classic = args.method  # "StepLR", "SPOPlus"
 diff_method_arg_classic = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
@@ -285,8 +291,9 @@ lr_LD = 0.002
 model_shape_LD = [num_feat, 100, num_item]
 dropout_LD = 0.2
 schedulerType_LD = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_LD = {'patience': 10,
-                'factor': 0.5
+sched_arg_LD = {'patience': 100,
+                'factor': 0.5,
+                'min_lr':1e-6
                 }
 diff_method_LD = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_LD = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
@@ -301,8 +308,9 @@ lr_SG = 0.002
 model_shape_SG = [num_feat, 100, num_item]
 dropout_SG = 0.2
 schedulerType_SG = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_SG = {'patience': 10,
-                'factor': 0.5
+sched_arg_SG = {'patience': 100,
+                'factor': 0.5,
+                'min_lr':1e-6
                 }
 diff_method_SG = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
@@ -319,7 +327,8 @@ model_shape_MSE = [num_feat, 100, num_item]
 dropout_MSE = 0.2
 schedulerType_MSE = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_MSE = {'patience': 400,
-                'factor': 0.5
+                'factor': 0.5,
+                'min_lr':1e-6
                 }
 patience_MSE = 50000000
 diff_method_SG = args.method  # "IMLE", "SPOPlus"
@@ -338,7 +347,7 @@ if epochs_LD > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"{diff_method_LD}_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_LD}sec_LD",
             'config': {
                 "architecture": model_shape_LD,
@@ -369,7 +378,7 @@ if epochs_classic > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"{diff_method_classic}_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_classic}sec_classic",
             'config': {
                 "architecture": model_shape_classic,
@@ -400,7 +409,7 @@ if epochs_SG > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"{diff_method_SG}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_SG}sec_SG",
             'config': {
                 "architecture": model_shape_SG,
@@ -434,7 +443,7 @@ if epochs_MSE > 0:
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
             'name': f"MSE_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
             'job_type': f"{time_limit_MSE}sec_MSE",
             'config': {
                 "architecture": model_shape_MSE,
@@ -452,4 +461,4 @@ if epochs_MSE > 0:
     run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, principal_lin,
             batch_size=batch_size_MSE, epochs=epochs_MSE, lr=lr_MSE,
             schedulerType=schedulerType_MSE, sched_arg=sched_arg_MSE,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=5, patience=patience_MSE)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=100, patience=patience_MSE)
