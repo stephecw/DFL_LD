@@ -58,7 +58,6 @@ class OptimizationBatchModel:
             # bias-correct
             m_hat = self.m / (1 - beta1**t)
             v_hat = self.v / (1 - beta2**t)
-
             step = m_hat.div_(v_hat.sqrt().add_(eps)).mul_(lr)
             self.mu.add_(-step)   # mu = mu - step
 
@@ -70,6 +69,7 @@ class OptimizationBatchModel:
                 if verbose:
                     print("Converged.")
                 break
+        self.update_val()
 
     def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
         """

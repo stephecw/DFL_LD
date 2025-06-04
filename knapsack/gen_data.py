@@ -1,3 +1,4 @@
+
 import numpy as np
 import torch
 import pyepo
@@ -34,7 +35,9 @@ def write_dataset_file(fname, global_dim, keep,num_feat, num_item, num_data, cap
                 line += ",".join(str(int(x_star_array[i][j])) for j in range(num_item-1)) + f",{int(x_star_array[i][-1])}\n"
                 f.write(line)
 
-def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_items, global_dim, keep ,num_iter, convergence, verbose=False):
+
+def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_items, global_dim, keep, deg, num_iter=10000, noise_width=0.5, convergence=1e-8, verbose=False):
+
     
     total_data = num_data_train + num_data_test + num_data_eval
     if verbose:
@@ -42,7 +45,7 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
         print(f"➡ Dimensions : {global_dim} constraints, {num_items} items, {num_feat} features, {keep} constraints kept in the main subproblem")
 
     # Random data generation
-    weights, Z, c = pyepo.data.knapsack.genData(total_data, num_feat, num_items, global_dim, deg=4, noise_width=0, seed=135)
+    weights, Z, c = pyepo.data.knapsack.genData(total_data, num_feat, num_items, global_dim, deg=deg, noise_width=noise_width, seed=42)
     c = c.astype(int)
     weights = weights.astype(int)
     capacities = (np.random.random() * 0.1 + 0.2 * np.sum(weights, axis=1)).astype(int)
@@ -51,12 +54,15 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     if verbose:
         print(" Exact solving x*...")
     x_star_list = []
+    obj_list = []
     for i in range(total_data):
         model = knapsackModel(weights=weights, capacity=capacities)
         model.setObj(c[i])
-        x_star, _ = model.solve()
+        x_star, obj = model.solve()
+        obj_list.append(obj)
         x_star_list.append(x_star)
     x_star_array = np.array(x_star_list)
+    obj_array = np.array(obj_list)
 
     # µ optimisation
     if verbose:
@@ -77,6 +83,15 @@ def gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, num_ite
     optimizer_mu.optim_mu(c_batch=c_train, verbose=verbose, max_iter=num_iter, convergence=convergence)
     X_train = optimizer_mu.get_X()
     mu_train = optimizer_mu.get_mu()
+    vals = optimizer_mu.get_value().cpu().numpy()
+    
+    with open(f"knapsack/datasets/trainset_gap/gap_{num_items}_{global_dim}_{num_iter}.txt", mode="w") as f:
+        line = f""
+        rapport = (vals - obj_array[:num_data_train])/torch.tensor(obj_array[:num_data_train])
+        for i in range(rapport.shape[0]):
+            line += f"{rapport[i]};"
+        line += f"{rapport[-1]}\n"
+        f.write(line)
 
     X = X_train[:, 0, :].cpu()
     mu = mu_train.view(num_data_train, -1).cpu()
@@ -232,16 +247,5 @@ if __name__ == "__main__":
     
     for n in num_item:
         for gd in global_dim:
+            gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, keep,num_iter, convergence, verbose=True)
 
-            # gen_datafile(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, keep,num_iter, convergence, verbose=True)
-            transform_keep_train(
-                num_data_train=num_data_train,
-                num_feat=num_feat,
-                num_item=n,
-                global_dim=gd,
-                old_keep=1,
-                new_keep=keep,  # Example of transforming to keep=1
-                num_iter=num_iter,
-                convergence=convergence,
-                verbose=True
-            )
