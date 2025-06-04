@@ -1,19 +1,19 @@
 l_methods = ["SG"] #["cla", "LD", "SG", "MSE"]
 timetable = {
-            '30,5':'04:00:00',
-            '30,10':'05:00:00',
             '50,5':'02:00:00',
-            '50,10':'06:00:00',
-            '100,5':'06:00:00',
-            '100,10':'0:00:00'
+            '50,10':'04:00:00',
+            '100,5':'04:00:00',
+            '100,10':'06:00:00',
+            '200,5':'06:00:00',
+            '200,10':'08:00:00'
             }
 timetable_sec = {
-            '30,5':10800,
-            '30,10':14400,
-            '50,5':5000,
-            '50,10':18000,
-            '100,5':18000,
-            '100,10':21600
+            '50,5':6000,
+            '50,10':13200,
+            '100,5':13200,
+            '100,10':20400,
+            '200,5':20400,
+            '200,10':27600
             }
 
 
@@ -111,8 +111,8 @@ for i, job in enumerate(jobs):
         f.write("#SBATCH --cpus-per-task=1\n")
         f.write("#SBATCH --gres=gpu:1\n")
         f.write(f"#SBATCH --job-name=job_{i}\n")
-        f.write(f"#SBATCH --output=knapsack/output/output_{i}_spo.log\n")
-        f.write(f"#SBATCH --error=knapsack/output/error_{i}_spo.log\n")
+        f.write(f"#SBATCH --output=knapsack/output/output_{i}_sg.log\n")
+        f.write(f"#SBATCH --error=knapsack/output/error_{i}_sg.log\n")
         f.write(f"#SBATCH --time={time}\n")
         f.write("module load cuda/12.2\n")
         f.write("module load python/3.10\n")

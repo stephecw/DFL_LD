@@ -4,9 +4,7 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 class ImportDataset:
-
     def __init__(self, fname, model=None, z_stats=None, test=False):
-
         self.read_file(fname, test)
 
         Z_tensor = torch.tensor(self.Z, dtype=torch.float32)

@@ -1,21 +1,21 @@
 timetable = {
-            '30,5':'03:00:00',
-            '30,10':'04:00:00',
-            '50,5':'04:00:00',
+            '50,5':'03:00:00',
             '50,10':'05:00:00',
             '100,5':'05:00:00',
-            '100,10':'06:00:00'
+            '100,10':'07:00:00',
+            '200,5':'07:00:00',
+            '200,10':'09:00:00'
             }
 timetable_sec = {
-            '30,5':9000,
-            '30,10':12600,
-            '50,5':12600,
-            '50,10':16200,
-            '100,5':16200,
-            '100,10':19800
+            '50,5':6000,
+            '50,10':13200,
+            '100,5':13200,
+            '100,10':20400,
+            '200,5':20400,
+            '200,10':27600
             }
 
-with open("best_spo.txt") as f:
+with open("hp_results_best_for_test.txt") as f:
     lines = f.readlines()
 '''    
 jobs = []
@@ -38,14 +38,16 @@ for line in lines:
 '''
 
 jobs = []
-n = 0
 for line in lines[1:]:
     job = {}
     line = line.split(";")
     job["method"] = line[0]
     job["diff"] = line[1]
-    job["dim"] = int(line[2])
-    job["n"] = int(line[4])
+    if line[0] == "IMLE":
+        job["n_samples"] = int(line[2])
+        job["lambd"] = float(line[3])
+    job["dim"] = int(line[4])
+    job['n'] = int(line[5])
     job["lr"] = float(line[6])
     job["step_mu"] = int(line[7])
     job["n_iter_mu"] = int(line[8])
