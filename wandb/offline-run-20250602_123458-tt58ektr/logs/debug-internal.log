@@ -1,7 +1,0 @@
-{"time":"2025-06-02T12:34:58.803709223-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250602_123458-tt58ektr/logs/debug-core.log"}
-{"time":"2025-06-02T12:34:58.914390901-04:00","level":"INFO","msg":"created new stream","id":"tt58ektr"}
-{"time":"2025-06-02T12:34:58.914445429-04:00","level":"INFO","msg":"stream: started","id":"tt58ektr"}
-{"time":"2025-06-02T12:34:58.914665346-04:00","level":"INFO","msg":"handler: started","stream_id":"tt58ektr"}
-{"time":"2025-06-02T12:34:58.91471578-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"tt58ektr"}
-{"time":"2025-06-02T12:34:58.914881764-04:00","level":"INFO","msg":"sender: started","stream_id":"tt58ektr"}
-{"time":"2025-06-02T12:34:58.933823372-04:00","level":"INFO","msg":"Starting system monitor"}
