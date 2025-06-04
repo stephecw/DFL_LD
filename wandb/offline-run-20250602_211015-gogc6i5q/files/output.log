@@ -17088,7 +17088,6 @@ Eval Epoch 8540 | Mean relative regret: 0.1692
 Epoch 8541 | loss: 0.0009 | train time : 359.041606426239
 Eval Epoch 8541 | Mean relative regret: 0.1692
 Epoch 8542 | loss: 0.0009 | train time : 359.08348870277405
-Eval Epoch 8542 | Mean relative regret: 0.1692
 Epoch 8543 | loss: 0.0008 | train time : 359.12547183036804
 Eval Epoch 8543 | Mean relative regret: 0.1692
 Epoch 8544 | loss: 0.0009 | train time : 359.1673278808594
@@ -17133,6 +17132,137 @@ Epoch 8563 | loss: 0.0009 | train time : 359.95974493026733
 Eval Epoch 8563 | Mean relative regret: 0.1692
 Epoch 8564 | loss: 0.0009 | train time : 360.00152254104614
 Eval Epoch 8564 | Mean relative regret: 0.1692
+Epoch 8565 | loss: 0.0008 | train time : 360.0433621406555
+Eval Epoch 8565 | Mean relative regret: 0.1692
+Epoch 8566 | loss: 0.0010 | train time : 360.0852029323578
+Eval Epoch 8566 | Mean relative regret: 0.1692
+Epoch 8567 | loss: 0.0009 | train time : 360.12696838378906
+Eval Epoch 8567 | Mean relative regret: 0.1692
+Epoch 8568 | loss: 0.0010 | train time : 360.16882967948914
+Eval Epoch 8568 | Mean relative regret: 0.1692
+Epoch 8569 | loss: 0.0009 | train time : 360.21043848991394
+Eval Epoch 8569 | Mean relative regret: 0.1692
+Epoch 8570 | loss: 0.0009 | train time : 360.2521848678589
+Eval Epoch 8570 | Mean relative regret: 0.1692
+Epoch 8571 | loss: 0.0008 | train time : 360.2938754558563
+Eval Epoch 8571 | Mean relative regret: 0.1692
+Epoch 8572 | loss: 0.0008 | train time : 360.33558893203735
+Eval Epoch 8572 | Mean relative regret: 0.1692
+Epoch 8573 | loss: 0.0010 | train time : 360.3773076534271
+Eval Epoch 8573 | Mean relative regret: 0.1692
+Epoch 8574 | loss: 0.0009 | train time : 360.41903281211853
+Eval Epoch 8574 | Mean relative regret: 0.1692
+Epoch 8575 | loss: 0.0009 | train time : 360.460773229599
+Eval Epoch 8575 | Mean relative regret: 0.1692
+Epoch 8576 | loss: 0.0008 | train time : 360.50250339508057
+Eval Epoch 8576 | Mean relative regret: 0.1692
+Epoch 8577 | loss: 0.0009 | train time : 360.5442247390747
+Eval Epoch 8577 | Mean relative regret: 0.1692
+Epoch 8578 | loss: 0.0009 | train time : 360.586003780365
+Eval Epoch 8578 | Mean relative regret: 0.1692
+Epoch 8579 | loss: 0.0010 | train time : 360.62768721580505
+Eval Epoch 8579 | Mean relative regret: 0.1692
+Epoch 8580 | loss: 0.0008 | train time : 360.6696810722351
+Eval Epoch 8580 | Mean relative regret: 0.1692
+Epoch 8581 | loss: 0.0008 | train time : 360.71162009239197
+Eval Epoch 8581 | Mean relative regret: 0.1692
+Epoch 8582 | loss: 0.0010 | train time : 360.753520488739
+Eval Epoch 8582 | Mean relative regret: 0.1692
+Epoch 8583 | loss: 0.0009 | train time : 360.7954761981964
+Eval Epoch 8583 | Mean relative regret: 0.1692
+Epoch 8584 | loss: 0.0009 | train time : 360.83742928504944
+Eval Epoch 8584 | Mean relative regret: 0.1692
+Epoch 8585 | loss: 0.0009 | train time : 360.8792884349823
+Eval Epoch 8585 | Mean relative regret: 0.1692
+Epoch 8586 | loss: 0.0009 | train time : 360.92118525505066
+Eval Epoch 8586 | Mean relative regret: 0.1692
+Epoch 8587 | loss: 0.0010 | train time : 360.96289563179016
+Eval Epoch 8587 | Mean relative regret: 0.1692
+Epoch 8588 | loss: 0.0010 | train time : 361.00468826293945
+Eval Epoch 8588 | Mean relative regret: 0.1692
+Epoch 8589 | loss: 0.0008 | train time : 361.0464565753937
+Eval Epoch 8589 | Mean relative regret: 0.1692
+Epoch 8590 | loss: 0.0010 | train time : 361.08822441101074
+Eval Epoch 8590 | Mean relative regret: 0.1692
+Epoch 8591 | loss: 0.0009 | train time : 361.12994170188904
+Eval Epoch 8591 | Mean relative regret: 0.1692
+Epoch 8592 | loss: 0.0009 | train time : 361.1716482639313
+Eval Epoch 8592 | Mean relative regret: 0.1692
+Epoch 8593 | loss: 0.0009 | train time : 361.21334052085876
+Eval Epoch 8593 | Mean relative regret: 0.1692
+Epoch 8594 | loss: 0.0009 | train time : 361.25503039360046
+Eval Epoch 8594 | Mean relative regret: 0.1692
+Epoch 8595 | loss: 0.0009 | train time : 361.29678535461426
+Eval Epoch 8595 | Mean relative regret: 0.1692
+Epoch 8596 | loss: 0.0009 | train time : 361.33849716186523
+Eval Epoch 8596 | Mean relative regret: 0.1692
+Epoch 8597 | loss: 0.0009 | train time : 361.38024497032166
+Eval Epoch 8597 | Mean relative regret: 0.1692
+Epoch 8598 | loss: 0.0009 | train time : 361.4219455718994
+Eval Epoch 8598 | Mean relative regret: 0.1692
+Epoch 8599 | loss: 0.0008 | train time : 361.4636445045471
+Eval Epoch 8599 | Mean relative regret: 0.1692
+Epoch 8600 | loss: 0.0010 | train time : 361.5053834915161
+Eval Epoch 8600 | Mean relative regret: 0.1692
+Epoch 8601 | loss: 0.0010 | train time : 361.5469641685486
+Eval Epoch 8601 | Mean relative regret: 0.1692
+Epoch 8602 | loss: 0.0009 | train time : 361.5886900424957
+Eval Epoch 8602 | Mean relative regret: 0.1692
+Epoch 8603 | loss: 0.0009 | train time : 361.6303732395172
+Eval Epoch 8603 | Mean relative regret: 0.1692
+Epoch 8604 | loss: 0.0010 | train time : 361.67208194732666
+Eval Epoch 8604 | Mean relative regret: 0.1692
+Epoch 8605 | loss: 0.0009 | train time : 361.71379804611206
+Eval Epoch 8605 | Mean relative regret: 0.1692
+Epoch 8606 | loss: 0.0009 | train time : 361.7554874420166
+Eval Epoch 8606 | Mean relative regret: 0.1692
+Epoch 8607 | loss: 0.0009 | train time : 361.79719257354736
+Eval Epoch 8607 | Mean relative regret: 0.1692
+Epoch 8608 | loss: 0.0009 | train time : 361.83888387680054
+Eval Epoch 8608 | Mean relative regret: 0.1692
+Epoch 8609 | loss: 0.0009 | train time : 361.88058590888977
+Eval Epoch 8609 | Mean relative regret: 0.1692
+Epoch 8610 | loss: 0.0008 | train time : 361.9223301410675
+Eval Epoch 8610 | Mean relative regret: 0.1692
+Epoch 8611 | loss: 0.0009 | train time : 361.96401286125183
+Eval Epoch 8611 | Mean relative regret: 0.1692
+Epoch 8612 | loss: 0.0010 | train time : 362.0057361125946
+Eval Epoch 8612 | Mean relative regret: 0.1692
+Epoch 8613 | loss: 0.0009 | train time : 362.04755783081055
+Eval Epoch 8613 | Mean relative regret: 0.1692
+Epoch 8614 | loss: 0.0009 | train time : 362.09165382385254
+Eval Epoch 8614 | Mean relative regret: 0.1692
+Epoch 8615 | loss: 0.0009 | train time : 362.13334441185
+Eval Epoch 8615 | Mean relative regret: 0.1692
+Epoch 8616 | loss: 0.0009 | train time : 362.1750247478485
+Eval Epoch 8616 | Mean relative regret: 0.1692
+Epoch 8617 | loss: 0.0010 | train time : 362.21673560142517
+Eval Epoch 8617 | Mean relative regret: 0.1692
+Epoch 8618 | loss: 0.0008 | train time : 362.2585027217865
+Eval Epoch 8618 | Mean relative regret: 0.1692
+Epoch 8619 | loss: 0.0009 | train time : 362.3003571033478
+Eval Epoch 8619 | Mean relative regret: 0.1692
+Epoch 8620 | loss: 0.0009 | train time : 362.34214448928833
+Eval Epoch 8620 | Mean relative regret: 0.1692
+Epoch 8621 | loss: 0.0010 | train time : 362.38396883010864
+Eval Epoch 8621 | Mean relative regret: 0.1692
+Epoch 8622 | loss: 0.0009 | train time : 362.425719499588
+Eval Epoch 8622 | Mean relative regret: 0.1692
+Epoch 8623 | loss: 0.0009 | train time : 362.46759581565857
+Eval Epoch 8623 | Mean relative regret: 0.1692
+Epoch 8624 | loss: 0.0010 | train time : 362.50940227508545
+Eval Epoch 8624 | Mean relative regret: 0.1692
+Epoch 8625 | loss: 0.0009 | train time : 362.5511178970337
+Eval Epoch 8625 | Mean relative regret: 0.1692
+Epoch 8626 | loss: 0.0009 | train time : 362.5929434299469
+Eval Epoch 8626 | Mean relative regret: 0.1692
+Epoch 8627 | loss: 0.0010 | train time : 362.6345462799072
+Eval Epoch 8627 | Mean relative regret: 0.1692
+Epoch 8628 | loss: 0.0009 | train time : 362.6768398284912
+Eval Epoch 8628 | Mean relative regret: 0.1692
+Epoch 8629 | loss: 0.0009 | train time : 362.7186703681946
+Eval Epoch 8629 | Mean relative regret: 0.1692
+Epoch 8630 | loss: 0.0009 | train time : 362.7605981826782
 Eval Epoch 8630 | Mean relative regret: 0.1692
 Epoch 8631 | loss: 0.0009 | train time : 362.8025870323181
 Eval Epoch 8631 | Mean relative regret: 0.1692
@@ -22960,137 +23090,106 @@ Epoch 11542 | loss: 0.0009 | train time : 484.59569811820984
 Eval Epoch 11542 | Mean relative regret: 0.1692
 Epoch 11543 | loss: 0.0009 | train time : 484.6376028060913
 Eval Epoch 11543 | Mean relative regret: 0.1692
-Epoch 8565 | loss: 0.0008 | train time : 360.0433621406555
-Eval Epoch 8565 | Mean relative regret: 0.1692
-Epoch 8566 | loss: 0.0010 | train time : 360.0852029323578
-Eval Epoch 8566 | Mean relative regret: 0.1692
-Epoch 8567 | loss: 0.0009 | train time : 360.12696838378906
-Eval Epoch 8567 | Mean relative regret: 0.1692
-Epoch 8568 | loss: 0.0010 | train time : 360.16882967948914
-Eval Epoch 8568 | Mean relative regret: 0.1692
-Epoch 8569 | loss: 0.0009 | train time : 360.21043848991394
-Eval Epoch 8569 | Mean relative regret: 0.1692
-Epoch 8570 | loss: 0.0009 | train time : 360.2521848678589
-Eval Epoch 8570 | Mean relative regret: 0.1692
-Epoch 8571 | loss: 0.0008 | train time : 360.2938754558563
-Eval Epoch 8571 | Mean relative regret: 0.1692
-Epoch 8572 | loss: 0.0008 | train time : 360.33558893203735
-Eval Epoch 8572 | Mean relative regret: 0.1692
-Epoch 8573 | loss: 0.0010 | train time : 360.3773076534271
-Eval Epoch 8573 | Mean relative regret: 0.1692
-Epoch 8574 | loss: 0.0009 | train time : 360.41903281211853
-Eval Epoch 8574 | Mean relative regret: 0.1692
-Epoch 8575 | loss: 0.0009 | train time : 360.460773229599
-Eval Epoch 8575 | Mean relative regret: 0.1692
-Epoch 8576 | loss: 0.0008 | train time : 360.50250339508057
-Eval Epoch 8576 | Mean relative regret: 0.1692
-Epoch 8577 | loss: 0.0009 | train time : 360.5442247390747
-Eval Epoch 8577 | Mean relative regret: 0.1692
-Epoch 8578 | loss: 0.0009 | train time : 360.586003780365
-Eval Epoch 8578 | Mean relative regret: 0.1692
-Epoch 8579 | loss: 0.0010 | train time : 360.62768721580505
-Eval Epoch 8579 | Mean relative regret: 0.1692
-Epoch 8580 | loss: 0.0008 | train time : 360.6696810722351
-Eval Epoch 8580 | Mean relative regret: 0.1692
-Epoch 8581 | loss: 0.0008 | train time : 360.71162009239197
-Eval Epoch 8581 | Mean relative regret: 0.1692
-Epoch 8582 | loss: 0.0010 | train time : 360.753520488739
-Eval Epoch 8582 | Mean relative regret: 0.1692
-Epoch 8583 | loss: 0.0009 | train time : 360.7954761981964
-Eval Epoch 8583 | Mean relative regret: 0.1692
-Epoch 8584 | loss: 0.0009 | train time : 360.83742928504944
-Eval Epoch 8584 | Mean relative regret: 0.1692
-Epoch 8585 | loss: 0.0009 | train time : 360.8792884349823
-Eval Epoch 8585 | Mean relative regret: 0.1692
-Epoch 8586 | loss: 0.0009 | train time : 360.92118525505066
-Eval Epoch 8586 | Mean relative regret: 0.1692
-Epoch 8587 | loss: 0.0010 | train time : 360.96289563179016
-Eval Epoch 8587 | Mean relative regret: 0.1692
-Epoch 8588 | loss: 0.0010 | train time : 361.00468826293945
-Eval Epoch 8588 | Mean relative regret: 0.1692
-Epoch 8589 | loss: 0.0008 | train time : 361.0464565753937
-Eval Epoch 8589 | Mean relative regret: 0.1692
-Epoch 8590 | loss: 0.0010 | train time : 361.08822441101074
-Eval Epoch 8590 | Mean relative regret: 0.1692
-Epoch 8591 | loss: 0.0009 | train time : 361.12994170188904
-Eval Epoch 8591 | Mean relative regret: 0.1692
-Epoch 8592 | loss: 0.0009 | train time : 361.1716482639313
-Eval Epoch 8592 | Mean relative regret: 0.1692
-Epoch 8593 | loss: 0.0009 | train time : 361.21334052085876
-Eval Epoch 8593 | Mean relative regret: 0.1692
-Epoch 8594 | loss: 0.0009 | train time : 361.25503039360046
-Eval Epoch 8594 | Mean relative regret: 0.1692
-Epoch 8595 | loss: 0.0009 | train time : 361.29678535461426
-Eval Epoch 8595 | Mean relative regret: 0.1692
-Epoch 8596 | loss: 0.0009 | train time : 361.33849716186523
-Eval Epoch 8596 | Mean relative regret: 0.1692
-Epoch 8597 | loss: 0.0009 | train time : 361.38024497032166
-Eval Epoch 8597 | Mean relative regret: 0.1692
-Epoch 8598 | loss: 0.0009 | train time : 361.4219455718994
-Eval Epoch 8598 | Mean relative regret: 0.1692
-Epoch 8599 | loss: 0.0008 | train time : 361.4636445045471
-Eval Epoch 8599 | Mean relative regret: 0.1692
-Epoch 8600 | loss: 0.0010 | train time : 361.5053834915161
-Eval Epoch 8600 | Mean relative regret: 0.1692
-Epoch 8601 | loss: 0.0010 | train time : 361.5469641685486
-Eval Epoch 8601 | Mean relative regret: 0.1692
-Epoch 8602 | loss: 0.0009 | train time : 361.5886900424957
-Eval Epoch 8602 | Mean relative regret: 0.1692
-Epoch 8603 | loss: 0.0009 | train time : 361.6303732395172
-Eval Epoch 8603 | Mean relative regret: 0.1692
-Epoch 8604 | loss: 0.0010 | train time : 361.67208194732666
-Eval Epoch 8604 | Mean relative regret: 0.1692
-Epoch 8605 | loss: 0.0009 | train time : 361.71379804611206
-Eval Epoch 8605 | Mean relative regret: 0.1692
-Epoch 8606 | loss: 0.0009 | train time : 361.7554874420166
-Eval Epoch 8606 | Mean relative regret: 0.1692
-Epoch 8607 | loss: 0.0009 | train time : 361.79719257354736
-Eval Epoch 8607 | Mean relative regret: 0.1692
-Epoch 8608 | loss: 0.0009 | train time : 361.83888387680054
-Eval Epoch 8608 | Mean relative regret: 0.1692
-Epoch 8609 | loss: 0.0009 | train time : 361.88058590888977
-Eval Epoch 8609 | Mean relative regret: 0.1692
-Epoch 8610 | loss: 0.0008 | train time : 361.9223301410675
-Eval Epoch 8610 | Mean relative regret: 0.1692
-Epoch 8611 | loss: 0.0009 | train time : 361.96401286125183
-Eval Epoch 8611 | Mean relative regret: 0.1692
-Epoch 8612 | loss: 0.0010 | train time : 362.0057361125946
-Eval Epoch 8612 | Mean relative regret: 0.1692
-Epoch 8613 | loss: 0.0009 | train time : 362.04755783081055
-Eval Epoch 8613 | Mean relative regret: 0.1692
-Epoch 8614 | loss: 0.0009 | train time : 362.09165382385254
-Eval Epoch 8614 | Mean relative regret: 0.1692
-Epoch 8615 | loss: 0.0009 | train time : 362.13334441185
-Eval Epoch 8615 | Mean relative regret: 0.1692
-Epoch 8616 | loss: 0.0009 | train time : 362.1750247478485
-Eval Epoch 8616 | Mean relative regret: 0.1692
-Epoch 8617 | loss: 0.0010 | train time : 362.21673560142517
-Eval Epoch 8617 | Mean relative regret: 0.1692
-Epoch 8618 | loss: 0.0008 | train time : 362.2585027217865
-Eval Epoch 8618 | Mean relative regret: 0.1692
-Epoch 8619 | loss: 0.0009 | train time : 362.3003571033478
-Eval Epoch 8619 | Mean relative regret: 0.1692
-Epoch 8620 | loss: 0.0009 | train time : 362.34214448928833
-Eval Epoch 8620 | Mean relative regret: 0.1692
-Epoch 8621 | loss: 0.0010 | train time : 362.38396883010864
-Eval Epoch 8621 | Mean relative regret: 0.1692
-Epoch 8622 | loss: 0.0009 | train time : 362.425719499588
-Eval Epoch 8622 | Mean relative regret: 0.1692
-Epoch 8623 | loss: 0.0009 | train time : 362.46759581565857
-Eval Epoch 8623 | Mean relative regret: 0.1692
-Epoch 8624 | loss: 0.0010 | train time : 362.50940227508545
-Eval Epoch 8624 | Mean relative regret: 0.1692
-Epoch 8625 | loss: 0.0009 | train time : 362.5511178970337
-Eval Epoch 8625 | Mean relative regret: 0.1692
-Epoch 8626 | loss: 0.0009 | train time : 362.5929434299469
-Eval Epoch 8626 | Mean relative regret: 0.1692
-Epoch 8627 | loss: 0.0010 | train time : 362.6345462799072
-Eval Epoch 8627 | Mean relative regret: 0.1692
-Epoch 8628 | loss: 0.0009 | train time : 362.6768398284912
-Eval Epoch 8628 | Mean relative regret: 0.1692
-Epoch 8629 | loss: 0.0009 | train time : 362.7186703681946
-Eval Epoch 8629 | Mean relative regret: 0.1692
-Eval Epoch 11593 | Mean relative regret: 0.169205981826782
+Epoch 11544 | loss: 0.0008 | train time : 484.6856632232666
+Eval Epoch 11544 | Mean relative regret: 0.1692
+Epoch 11545 | loss: 0.0009 | train time : 484.72761058807373
+Eval Epoch 11545 | Mean relative regret: 0.1692
+Epoch 11546 | loss: 0.0010 | train time : 484.7699248790741
+Eval Epoch 11546 | Mean relative regret: 0.1692
+Epoch 11547 | loss: 0.0011 | train time : 484.8118553161621
+Eval Epoch 11547 | Mean relative regret: 0.1692
+Epoch 11548 | loss: 0.0009 | train time : 484.8529727458954
+Eval Epoch 11548 | Mean relative regret: 0.1692
+Epoch 11549 | loss: 0.0008 | train time : 484.894216299057
+Eval Epoch 11549 | Mean relative regret: 0.1692
+Epoch 11550 | loss: 0.0008 | train time : 484.9353594779968
+Eval Epoch 11550 | Mean relative regret: 0.1692
+Epoch 11551 | loss: 0.0009 | train time : 484.97673892974854
+Eval Epoch 11551 | Mean relative regret: 0.1692
+Epoch 11552 | loss: 0.0010 | train time : 485.0186462402344
+Eval Epoch 11552 | Mean relative regret: 0.1692
+Epoch 11553 | loss: 0.0010 | train time : 485.06039094924927
+Eval Epoch 11553 | Mean relative regret: 0.1692
+Epoch 11554 | loss: 0.0009 | train time : 485.1018490791321
+Eval Epoch 11554 | Mean relative regret: 0.1692
+Epoch 11555 | loss: 0.0009 | train time : 485.1429936885834
+Eval Epoch 11555 | Mean relative regret: 0.1692
+Epoch 11556 | loss: 0.0009 | train time : 485.184059381485
+Eval Epoch 11556 | Mean relative regret: 0.1692
+Epoch 11557 | loss: 0.0009 | train time : 485.2257158756256
+Eval Epoch 11557 | Mean relative regret: 0.1692
+Epoch 11558 | loss: 0.0009 | train time : 485.26814007759094
+Eval Epoch 11558 | Mean relative regret: 0.1692
+Epoch 11559 | loss: 0.0009 | train time : 485.3092784881592
+Eval Epoch 11559 | Mean relative regret: 0.1692
+Epoch 11560 | loss: 0.0009 | train time : 485.3503723144531
+Eval Epoch 11560 | Mean relative regret: 0.1692
+Epoch 11561 | loss: 0.0010 | train time : 485.3913857936859
+Eval Epoch 11561 | Mean relative regret: 0.1692
+Epoch 11562 | loss: 0.0009 | train time : 485.4323830604553
+Eval Epoch 11562 | Mean relative regret: 0.1692
+Epoch 11563 | loss: 0.0009 | train time : 485.473349571228
+Eval Epoch 11563 | Mean relative regret: 0.1692
+Epoch 11564 | loss: 0.0008 | train time : 485.51433658599854
+Eval Epoch 11564 | Mean relative regret: 0.1692
+Epoch 11565 | loss: 0.0008 | train time : 485.5551176071167
+Eval Epoch 11565 | Mean relative regret: 0.1692
+Epoch 11566 | loss: 0.0009 | train time : 485.5959851741791
+Eval Epoch 11566 | Mean relative regret: 0.1692
+Epoch 11567 | loss: 0.0009 | train time : 485.6368627548218
+Eval Epoch 11567 | Mean relative regret: 0.1692
+Epoch 11568 | loss: 0.0008 | train time : 485.6781463623047
+Eval Epoch 11568 | Mean relative regret: 0.1692
+Epoch 11569 | loss: 0.0008 | train time : 485.7194423675537
+Eval Epoch 11569 | Mean relative regret: 0.1692
+Epoch 11570 | loss: 0.0009 | train time : 485.7609157562256
+Eval Epoch 11570 | Mean relative regret: 0.1692
+Epoch 11571 | loss: 0.0008 | train time : 485.80234384536743
+Eval Epoch 11571 | Mean relative regret: 0.1692
+Epoch 11572 | loss: 0.0010 | train time : 485.84356331825256
+Eval Epoch 11572 | Mean relative regret: 0.1692
+Epoch 11573 | loss: 0.0010 | train time : 485.88572788238525
+Eval Epoch 11573 | Mean relative regret: 0.1692
+Epoch 11574 | loss: 0.0008 | train time : 485.9274525642395
+Eval Epoch 11574 | Mean relative regret: 0.1692
+Epoch 11575 | loss: 0.0008 | train time : 485.96902656555176
+Eval Epoch 11575 | Mean relative regret: 0.1692
+Epoch 11576 | loss: 0.0009 | train time : 486.01085567474365
+Eval Epoch 11576 | Mean relative regret: 0.1692
+Epoch 11577 | loss: 0.0009 | train time : 486.05244612693787
+Eval Epoch 11577 | Mean relative regret: 0.1692
+Epoch 11578 | loss: 0.0010 | train time : 486.0940914154053
+Eval Epoch 11578 | Mean relative regret: 0.1692
+Epoch 11579 | loss: 0.0010 | train time : 486.13539576530457
+Eval Epoch 11579 | Mean relative regret: 0.1692
+Epoch 11580 | loss: 0.0009 | train time : 486.17634749412537
+Eval Epoch 11580 | Mean relative regret: 0.1692
+Epoch 11581 | loss: 0.0010 | train time : 486.2173261642456
+Eval Epoch 11581 | Mean relative regret: 0.1692
+Epoch 11582 | loss: 0.0008 | train time : 486.25848507881165
+Eval Epoch 11582 | Mean relative regret: 0.1692
+Epoch 11583 | loss: 0.0010 | train time : 486.29922342300415
+Eval Epoch 11583 | Mean relative regret: 0.1692
+Epoch 11584 | loss: 0.0009 | train time : 486.34014415740967
+Eval Epoch 11584 | Mean relative regret: 0.1692
+Epoch 11585 | loss: 0.0009 | train time : 486.3810603618622
+Eval Epoch 11585 | Mean relative regret: 0.1692
+Epoch 11586 | loss: 0.0009 | train time : 486.4220190048218
+Eval Epoch 11586 | Mean relative regret: 0.1692
+Epoch 11587 | loss: 0.0009 | train time : 486.4628949165344
+Eval Epoch 11587 | Mean relative regret: 0.1692
+Epoch 11588 | loss: 0.0009 | train time : 486.50370478630066
+Eval Epoch 11588 | Mean relative regret: 0.1692
+Epoch 11589 | loss: 0.0010 | train time : 486.54459524154663
+Eval Epoch 11589 | Mean relative regret: 0.1692
+Epoch 11590 | loss: 0.0009 | train time : 486.5854434967041
+Eval Epoch 11590 | Mean relative regret: 0.1692
+Epoch 11591 | loss: 0.0009 | train time : 486.6263267993927
+Eval Epoch 11591 | Mean relative regret: 0.1692
+Epoch 11592 | loss: 0.0010 | train time : 486.66723108291626
+Eval Epoch 11592 | Mean relative regret: 0.1692
+Epoch 11593 | loss: 0.0009 | train time : 486.70812129974365
+Eval Epoch 11593 | Mean relative regret: 0.1692
 Epoch 11594 | loss: 0.0007 | train time : 486.7488749027252
 Eval Epoch 11594 | Mean relative regret: 0.1692
 Epoch 11595 | loss: 0.0008 | train time : 486.7897458076477
@@ -23416,317 +23515,6 @@ Eval Epoch 11754 | Mean relative regret: 0.1692
 Epoch 11755 | loss: 0.0010 | train time : 493.40010118484497
 Eval Epoch 11755 | Mean relative regret: 0.1692
 Epoch 11756 | loss: 0.0010 | train time : 493.44113659858704
-Eval Epoch 11756 | Mean relative regret: 0.1692
-Epoch 11757 | loss: 0.0008 | train time : 493.4821848869324
-Eval Epoch 11757 | Mean relative regret: 0.1692
-Epoch 11758 | loss: 0.0010 | train time : 493.5230531692505
-Eval Epoch 11758 | Mean relative regret: 0.1692
-Epoch 11759 | loss: 0.0008 | train time : 493.5641462802887
-Eval Epoch 11759 | Mean relative regret: 0.1692
-Epoch 11760 | loss: 0.0010 | train time : 493.60514760017395
-Eval Epoch 11760 | Mean relative regret: 0.1692
-Epoch 11761 | loss: 0.0008 | train time : 493.64625000953674
-Eval Epoch 11761 | Mean relative regret: 0.1692
-Epoch 11762 | loss: 0.0009 | train time : 493.6872329711914
-Eval Epoch 11762 | Mean relative regret: 0.1692
-Epoch 11763 | loss: 0.0008 | train time : 493.72819423675537
-Eval Epoch 11763 | Mean relative regret: 0.1692
-Epoch 11764 | loss: 0.0010 | train time : 493.77013778686523
-Eval Epoch 11764 | Mean relative regret: 0.1692
-Epoch 11765 | loss: 0.0010 | train time : 493.8120093345642
-Eval Epoch 11765 | Mean relative regret: 0.1692
-Epoch 11766 | loss: 0.0008 | train time : 493.85371685028076
-Eval Epoch 11766 | Mean relative regret: 0.1692
-Epoch 11767 | loss: 0.0009 | train time : 493.89516735076904
-Eval Epoch 11767 | Mean relative regret: 0.1692
-Epoch 11768 | loss: 0.0008 | train time : 493.93614625930786
-Eval Epoch 11768 | Mean relative regret: 0.1692
-Epoch 11769 | loss: 0.0010 | train time : 493.97710967063904
-Eval Epoch 11769 | Mean relative regret: 0.1692
-Epoch 11770 | loss: 0.0009 | train time : 494.0180757045746
-Eval Epoch 11770 | Mean relative regret: 0.1692
-Epoch 11771 | loss: 0.0008 | train time : 494.0589852333069
-Eval Epoch 11771 | Mean relative regret: 0.1692
-Epoch 11772 | loss: 0.0009 | train time : 494.099981546402
-Eval Epoch 11772 | Mean relative regret: 0.1692
-Epoch 11773 | loss: 0.0010 | train time : 494.14096331596375
-Eval Epoch 11773 | Mean relative regret: 0.1692
-Epoch 11774 | loss: 0.0009 | train time : 494.18196415901184
-Eval Epoch 11774 | Mean relative regret: 0.1692
-Epoch 11775 | loss: 0.0009 | train time : 494.22295093536377
-Eval Epoch 11775 | Mean relative regret: 0.1692
-Epoch 11776 | loss: 0.0009 | train time : 494.26391434669495
-Eval Epoch 11776 | Mean relative regret: 0.1692
-Epoch 11777 | loss: 0.0009 | train time : 494.3049168586731
-Eval Epoch 11777 | Mean relative regret: 0.1692
-Epoch 11778 | loss: 0.0009 | train time : 494.3459384441376
-Eval Epoch 11778 | Mean relative regret: 0.1692
-Epoch 11779 | loss: 0.0008 | train time : 494.3866455554962
-Eval Epoch 11779 | Mean relative regret: 0.1692
-Epoch 11780 | loss: 0.0009 | train time : 494.4276614189148
-Eval Epoch 11780 | Mean relative regret: 0.1692
-Epoch 11781 | loss: 0.0009 | train time : 494.46903562545776
-Eval Epoch 11781 | Mean relative regret: 0.1692
-Epoch 11782 | loss: 0.0009 | train time : 494.5101463794708
-Eval Epoch 11782 | Mean relative regret: 0.1692
-Epoch 11783 | loss: 0.0009 | train time : 494.5512270927429
-Eval Epoch 11783 | Mean relative regret: 0.1692
-Epoch 11784 | loss: 0.0009 | train time : 494.5924208164215
-Eval Epoch 11784 | Mean relative regret: 0.1692
-Epoch 11785 | loss: 0.0009 | train time : 494.6337263584137
-Eval Epoch 11785 | Mean relative regret: 0.1692
-Epoch 11786 | loss: 0.0010 | train time : 494.6747169494629
-Eval Epoch 11786 | Mean relative regret: 0.1692
-Epoch 11787 | loss: 0.0009 | train time : 494.7158772945404
-Eval Epoch 11787 | Mean relative regret: 0.1692
-Epoch 11788 | loss: 0.0009 | train time : 494.7569091320038
-Eval Epoch 11788 | Mean relative regret: 0.1692
-Epoch 11789 | loss: 0.0010 | train time : 494.79767084121704
-Eval Epoch 11789 | Mean relative regret: 0.1692
-Epoch 11790 | loss: 0.0010 | train time : 494.83842611312866
-Eval Epoch 11790 | Mean relative regret: 0.1692
-Epoch 11791 | loss: 0.0009 | train time : 494.8792493343353
-Eval Epoch 11791 | Mean relative regret: 0.1692
-Epoch 11792 | loss: 0.0009 | train time : 494.9199674129486
-Eval Epoch 11792 | Mean relative regret: 0.1692
-Epoch 11793 | loss: 0.0010 | train time : 494.9607663154602
-Eval Epoch 11793 | Mean relative regret: 0.1692
-Epoch 11794 | loss: 0.0008 | train time : 495.0015604496002
-Eval Epoch 11794 | Mean relative regret: 0.1692
-Epoch 11795 | loss: 0.0010 | train time : 495.0423107147217
-Eval Epoch 11795 | Mean relative regret: 0.1692
-Epoch 11796 | loss: 0.0009 | train time : 495.08302545547485
-Eval Epoch 11796 | Mean relative regret: 0.1692
-Epoch 11797 | loss: 0.0009 | train time : 495.12368154525757
-Eval Epoch 11797 | Mean relative regret: 0.1692
-Epoch 11798 | loss: 0.0009 | train time : 495.1644184589386
-Eval Epoch 11798 | Mean relative regret: 0.1692
-Epoch 11799 | loss: 0.0010 | train time : 495.20529079437256
-Eval Epoch 11799 | Mean relative regret: 0.1692
-Epoch 11800 | loss: 0.0009 | train time : 495.24603390693665
-Eval Epoch 11800 | Mean relative regret: 0.1692
-Epoch 11801 | loss: 0.0010 | train time : 495.2868654727936
-Eval Epoch 11801 | Mean relative regret: 0.1692
-Epoch 11802 | loss: 0.0009 | train time : 495.32783365249634
-Eval Epoch 11802 | Mean relative regret: 0.1692
-Epoch 11803 | loss: 0.0009 | train time : 495.36892223358154
-Eval Epoch 11803 | Mean relative regret: 0.1692
-Epoch 11804 | loss: 0.0010 | train time : 495.41023802757263
-Eval Epoch 11804 | Mean relative regret: 0.1692
-Epoch 11805 | loss: 0.0009 | train time : 495.45134949684143
-Eval Epoch 11805 | Mean relative regret: 0.1692
-Epoch 11806 | loss: 0.0009 | train time : 495.4924464225769
-Eval Epoch 11806 | Mean relative regret: 0.1692
-Epoch 11807 | loss: 0.0009 | train time : 495.53377389907837
-Eval Epoch 11807 | Mean relative regret: 0.1692
-Epoch 11808 | loss: 0.0009 | train time : 495.57503962516785
-Eval Epoch 11808 | Mean relative regret: 0.1692
-Epoch 11809 | loss: 0.0009 | train time : 495.61615800857544
-Eval Epoch 11809 | Mean relative regret: 0.1692
-Epoch 11810 | loss: 0.0010 | train time : 495.6573507785797
-Eval Epoch 11810 | Mean relative regret: 0.1692
-Epoch 11811 | loss: 0.0008 | train time : 495.69894313812256
-Eval Epoch 11811 | Mean relative regret: 0.1692
-Epoch 11812 | loss: 0.0009 | train time : 495.7403542995453
-Eval Epoch 11812 | Mean relative regret: 0.1692
-Epoch 11813 | loss: 0.0009 | train time : 495.7817380428314
-Eval Epoch 11813 | Mean relative regret: 0.1692
-Epoch 11814 | loss: 0.0009 | train time : 495.82315611839294
-Eval Epoch 11814 | Mean relative regret: 0.1692
-Epoch 11815 | loss: 0.0009 | train time : 495.8644485473633
-Eval Epoch 11815 | Mean relative regret: 0.1692
-Epoch 11816 | loss: 0.0008 | train time : 495.9058527946472
-Eval Epoch 11816 | Mean relative regret: 0.1692
-Epoch 11817 | loss: 0.0009 | train time : 495.9470555782318
-Eval Epoch 11817 | Mean relative regret: 0.1692
-Epoch 11818 | loss: 0.0010 | train time : 495.9885492324829
-Eval Epoch 11818 | Mean relative regret: 0.1692
-Epoch 11819 | loss: 0.0009 | train time : 496.0298755168915
-Eval Epoch 11819 | Mean relative regret: 0.1692
-Epoch 11820 | loss: 0.0010 | train time : 496.07095074653625
-Eval Epoch 11820 | Mean relative regret: 0.1692
-Epoch 11821 | loss: 0.0010 | train time : 496.1123299598694
-Eval Epoch 11821 | Mean relative regret: 0.1692
-Epoch 11822 | loss: 0.0008 | train time : 496.1537802219391
-Eval Epoch 11822 | Mean relative regret: 0.1692
-Epoch 11823 | loss: 0.0009 | train time : 496.19541001319885
-Eval Epoch 11823 | Mean relative regret: 0.1692
-Epoch 11824 | loss: 0.0010 | train time : 496.23630475997925
-Eval Epoch 11824 | Mean relative regret: 0.1692
-Epoch 11825 | loss: 0.0009 | train time : 496.2770290374756
-Eval Epoch 11825 | Mean relative regret: 0.1692
-Epoch 11826 | loss: 0.0010 | train time : 496.31789112091064
-Eval Epoch 11826 | Mean relative regret: 0.1692
-Epoch 11827 | loss: 0.0009 | train time : 496.35884165763855
-Eval Epoch 11827 | Mean relative regret: 0.1692
-Epoch 11828 | loss: 0.0011 | train time : 496.3997526168823
-Eval Epoch 11828 | Mean relative regret: 0.1692
-Epoch 11829 | loss: 0.0009 | train time : 496.4463756084442
-Eval Epoch 11829 | Mean relative regret: 0.1692
-Epoch 11830 | loss: 0.0009 | train time : 496.48723316192627
-Eval Epoch 11830 | Mean relative regret: 0.1692
-Epoch 11831 | loss: 0.0009 | train time : 496.5281434059143
-Eval Epoch 11831 | Mean relative regret: 0.1692
-Epoch 11832 | loss: 0.0009 | train time : 496.56944704055786
-Eval Epoch 11832 | Mean relative regret: 0.1692
-Epoch 11833 | loss: 0.0009 | train time : 496.6108753681183
-Eval Epoch 11833 | Mean relative regret: 0.1692
-Epoch 11834 | loss: 0.0009 | train time : 496.6522397994995
-Eval Epoch 11834 | Mean relative regret: 0.1692
-Epoch 11835 | loss: 0.0008 | train time : 496.6934025287628
-Eval Epoch 11835 | Mean relative regret: 0.1692
-Epoch 11836 | loss: 0.0009 | train time : 496.7347090244293
-Eval Epoch 11836 | Mean relative regret: 0.1692
-Epoch 11837 | loss: 0.0009 | train time : 496.77620577812195
-Eval Epoch 11837 | Mean relative regret: 0.1692
-Epoch 11838 | loss: 0.0010 | train time : 496.8175940513611
-Eval Epoch 11838 | Mean relative regret: 0.1692
-Epoch 11839 | loss: 0.0009 | train time : 496.859037399292
-Eval Epoch 11839 | Mean relative regret: 0.1692
-Epoch 11840 | loss: 0.0010 | train time : 496.9004793167114
-Eval Epoch 11840 | Mean relative regret: 0.1692
-Epoch 11841 | loss: 0.0009 | train time : 496.941401720047
-Eval Epoch 11841 | Mean relative regret: 0.1692
-Epoch 11842 | loss: 0.0008 | train time : 496.9824903011322
-Eval Epoch 11842 | Mean relative regret: 0.1692
-Epoch 11843 | loss: 0.0008 | train time : 497.02394342422485
-Eval Epoch 11843 | Mean relative regret: 0.1692
-Epoch 11844 | loss: 0.0009 | train time : 497.0649013519287
-Eval Epoch 11844 | Mean relative regret: 0.1692
-Epoch 11845 | loss: 0.0009 | train time : 497.105833530426
-Eval Epoch 11845 | Mean relative regret: 0.1692
-Epoch 11846 | loss: 0.0008 | train time : 497.14675784111023
-Eval Epoch 11846 | Mean relative regret: 0.1692
-Epoch 11847 | loss: 0.0009 | train time : 497.1876730918884
-Eval Epoch 11847 | Mean relative regret: 0.1692
-Epoch 11848 | loss: 0.0009 | train time : 497.22857189178467
-Eval Epoch 11848 | Mean relative regret: 0.1692
-Epoch 11849 | loss: 0.0009 | train time : 497.26975679397583
-Eval Epoch 11849 | Mean relative regret: 0.1692
-Epoch 11850 | loss: 0.0008 | train time : 497.31122612953186
-Eval Epoch 11850 | Mean relative regret: 0.1692
-Epoch 11851 | loss: 0.0010 | train time : 497.35280537605286
-Eval Epoch 11851 | Mean relative regret: 0.1692
-Epoch 11852 | loss: 0.0008 | train time : 497.3940107822418
-Eval Epoch 11852 | Mean relative regret: 0.1692
-Epoch 11853 | loss: 0.0009 | train time : 497.4349937438965
-Eval Epoch 11853 | Mean relative regret: 0.1692
-Epoch 11854 | loss: 0.0010 | train time : 497.475900888443
-Eval Epoch 11854 | Mean relative regret: 0.1692
-Epoch 11855 | loss: 0.0009 | train time : 497.51675391197205
-Eval Epoch 11855 | Mean relative regret: 0.1692
-Epoch 11856 | loss: 0.0008 | train time : 497.5576207637787
-Eval Epoch 11856 | Mean relative regret: 0.1692
-Epoch 11857 | loss: 0.0008 | train time : 497.59837675094604
-Eval Epoch 11857 | Mean relative regret: 0.1692
-Epoch 11858 | loss: 0.0009 | train time : 497.63898730278015
-Eval Epoch 11858 | Mean relative regret: 0.1692
-Epoch 11859 | loss: 0.0010 | train time : 497.67974495887756
-Eval Epoch 11859 | Mean relative regret: 0.1692
-Epoch 11860 | loss: 0.0009 | train time : 497.72052931785583
-Eval Epoch 11860 | Mean relative regret: 0.1692
-Epoch 11861 | loss: 0.0010 | train time : 497.76132559776306
-Eval Epoch 11861 | Mean relative regret: 0.1692
-Epoch 11862 | loss: 0.0009 | train time : 497.8021876811981
-Eval Epoch 11862 | Mean relative regret: 0.1692
-Epoch 11863 | loss: 0.0009 | train time : 497.8432102203369
-Eval Epoch 11863 | Mean relative regret: 0.1692
-Epoch 11864 | loss: 0.0009 | train time : 497.88404512405396
-Eval Epoch 11864 | Mean relative regret: 0.1692
-Epoch 11865 | loss: 0.0009 | train time : 497.92528462409973
-Eval Epoch 11865 | Mean relative regret: 0.1692
-Epoch 11866 | loss: 0.0008 | train time : 497.96639108657837
-Eval Epoch 11866 | Mean relative regret: 0.1692
-Epoch 11867 | loss: 0.0009 | train time : 498.0074734687805
-Eval Epoch 11867 | Mean relative regret: 0.1692
-Epoch 11868 | loss: 0.0010 | train time : 498.04871439933777
-Eval Epoch 11868 | Mean relative regret: 0.1692
-Epoch 11869 | loss: 0.0009 | train time : 498.08978366851807
-Eval Epoch 11869 | Mean relative regret: 0.1692
-Epoch 11870 | loss: 0.0010 | train time : 498.13103127479553
-Eval Epoch 11870 | Mean relative regret: 0.1692
-Epoch 11871 | loss: 0.0009 | train time : 498.17288064956665
-Eval Epoch 11871 | Mean relative regret: 0.1692
-Epoch 11872 | loss: 0.0008 | train time : 498.21466183662415
-Eval Epoch 11872 | Mean relative regret: 0.1692
-Epoch 11873 | loss: 0.0008 | train time : 498.25646901130676
-Eval Epoch 11873 | Mean relative regret: 0.1692
-Epoch 11874 | loss: 0.0009 | train time : 498.298152923584
-Eval Epoch 11874 | Mean relative regret: 0.1692
-Epoch 11875 | loss: 0.0009 | train time : 498.3399932384491
-Eval Epoch 11875 | Mean relative regret: 0.1692
-Epoch 11876 | loss: 0.0009 | train time : 498.3816225528717
-Eval Epoch 11876 | Mean relative regret: 0.1692
-Epoch 11877 | loss: 0.0009 | train time : 498.42343282699585
-Eval Epoch 11877 | Mean relative regret: 0.1692
-Epoch 11878 | loss: 0.0009 | train time : 498.47494292259216
-Eval Epoch 11878 | Mean relative regret: 0.1692
-Epoch 11879 | loss: 0.0008 | train time : 498.516606092453
-Eval Epoch 11879 | Mean relative regret: 0.1692
-Epoch 11880 | loss: 0.0008 | train time : 498.55822682380676
-Eval Epoch 11880 | Mean relative regret: 0.1692
-Epoch 11881 | loss: 0.0009 | train time : 498.6005344390869
-Eval Epoch 11881 | Mean relative regret: 0.1692
-Epoch 11882 | loss: 0.0008 | train time : 498.64192390441895
-Eval Epoch 11882 | Mean relative regret: 0.1692
-Epoch 11883 | loss: 0.0009 | train time : 498.6829333305359
-Eval Epoch 11883 | Mean relative regret: 0.1692
-Epoch 11884 | loss: 0.0010 | train time : 498.72403621673584
-Eval Epoch 11884 | Mean relative regret: 0.1692
-Epoch 11885 | loss: 0.0008 | train time : 498.7653822898865
-Eval Epoch 11885 | Mean relative regret: 0.1692
-Epoch 11886 | loss: 0.0009 | train time : 498.80639839172363
-Eval Epoch 11886 | Mean relative regret: 0.1692
-Epoch 11887 | loss: 0.0008 | train time : 498.84723687171936
-Eval Epoch 11887 | Mean relative regret: 0.1692
-Epoch 11888 | loss: 0.0009 | train time : 498.8883647918701
-Eval Epoch 11888 | Mean relative regret: 0.1692
-Epoch 11889 | loss: 0.0008 | train time : 498.9293489456177
-Eval Epoch 11889 | Mean relative regret: 0.1692
-Epoch 11890 | loss: 0.0010 | train time : 498.9705352783203
-Eval Epoch 11890 | Mean relative regret: 0.1692
-Epoch 11891 | loss: 0.0010 | train time : 499.0123817920685
-Eval Epoch 11891 | Mean relative regret: 0.1692
-Epoch 11892 | loss: 0.0008 | train time : 499.0537979602814
-Eval Epoch 11892 | Mean relative regret: 0.1692
-Epoch 11893 | loss: 0.0008 | train time : 499.0949809551239
-Eval Epoch 11893 | Mean relative regret: 0.1692
-Epoch 11894 | loss: 0.0010 | train time : 499.1362771987915
-Eval Epoch 11894 | Mean relative regret: 0.1692
-Epoch 11895 | loss: 0.0009 | train time : 499.177503824234
-Eval Epoch 11895 | Mean relative regret: 0.1692
-Epoch 11896 | loss: 0.0009 | train time : 499.21856331825256
-Eval Epoch 11896 | Mean relative regret: 0.1692
-Epoch 11897 | loss: 0.0009 | train time : 499.25981402397156
-Eval Epoch 11897 | Mean relative regret: 0.1692
-Epoch 11898 | loss: 0.0010 | train time : 499.3013777732849
-Eval Epoch 11898 | Mean relative regret: 0.1692
-Epoch 11899 | loss: 0.0009 | train time : 499.34234619140625
-Eval Epoch 11899 | Mean relative regret: 0.1692
-Epoch 11900 | loss: 0.0009 | train time : 499.3835799694061
-Eval Epoch 11900 | Mean relative regret: 0.1692
-Epoch 11901 | loss: 0.0010 | train time : 499.42617297172546
-Eval Epoch 11901 | Mean relative regret: 0.1692
-Epoch 11902 | loss: 0.0009 | train time : 499.4674782752991
-Eval Epoch 11902 | Mean relative regret: 0.1692
-Epoch 11903 | loss: 0.0009 | train time : 499.5085480213165
-Eval Epoch 11903 | Mean relative regret: 0.1692
-Epoch 11904 | loss: 0.0009 | train time : 499.5495936870575
-Eval Epoch 11904 | Mean relative regret: 0.1692
-Epoch 11905 | loss: 0.0008 | train time : 499.5902588367462
-Eval Epoch 11905 | Mean relative regret: 0.1692
-Epoch 11906 | loss: 0.0009 | train time : 499.63106417655945
-Eval Epoch 11906 | Mean relative regret: 0.1692
-Epoch 11907 | loss: 0.0009 | train time : 499.6719505786896
-Eval Epoch 11907 | Mean relative regret: 0.1692
-Epoch 11908 | loss: 0.0010 | train time : 499.71255254745483
-Eval Epoch 11908 | Mean relative regret: 0.1692
-Epoch 11909 | loss: 0.0009 | train time : 499.75323820114136
-Eval Epoch 11909 | Mean relative regret: 0.1692
-Epoch 11910 | loss: 0.0009 | train time : 499.79381680488586
-Eval Epoch 11910 | Mean relative regret: 0.1692
-Epoch 11911 | loss: 0.0008 | train time : 499.83459210395813
-Eval Epoch 11911 | Mean relative regret: 0.1692
 Epoch 11912 | loss: 0.0010 | train time : 499.87525057792664
 Eval Epoch 11912 | Mean relative regret: 0.1692
 Epoch 11913 | loss: 0.0009 | train time : 499.9160008430481
@@ -27918,7 +27706,251 @@ Eval Epoch 14005 | Mean relative regret: 0.1692
 Epoch 14006 | loss: 0.0009 | train time : 585.6886165142059
 Eval Epoch 14006 | Mean relative regret: 0.1692
 Epoch 14007 | loss: 0.0009 | train time : 585.7294158935547
-Eval Epoch 14129 | Mean relative regret: 0.169205981826782
+Eval Epoch 14007 | Mean relative regret: 0.1692
+Epoch 14008 | loss: 0.0009 | train time : 585.7702353000641
+Eval Epoch 14008 | Mean relative regret: 0.1692
+Epoch 14009 | loss: 0.0008 | train time : 585.8111002445221
+Eval Epoch 14009 | Mean relative regret: 0.1692
+Epoch 14010 | loss: 0.0009 | train time : 585.8519361019135
+Eval Epoch 14010 | Mean relative regret: 0.1692
+Epoch 14011 | loss: 0.0010 | train time : 585.89257645607
+Eval Epoch 14011 | Mean relative regret: 0.1692
+Epoch 14012 | loss: 0.0009 | train time : 585.9332265853882
+Eval Epoch 14012 | Mean relative regret: 0.1692
+Epoch 14013 | loss: 0.0008 | train time : 585.973973274231
+Eval Epoch 14013 | Mean relative regret: 0.1692
+Epoch 14014 | loss: 0.0008 | train time : 586.0146682262421
+Eval Epoch 14014 | Mean relative regret: 0.1692
+Epoch 14015 | loss: 0.0010 | train time : 586.0553524494171
+Eval Epoch 14015 | Mean relative regret: 0.1692
+Epoch 14016 | loss: 0.0009 | train time : 586.0960159301758
+Eval Epoch 14016 | Mean relative regret: 0.1692
+Epoch 14017 | loss: 0.0010 | train time : 586.1369278430939
+Eval Epoch 14017 | Mean relative regret: 0.1692
+Epoch 14018 | loss: 0.0009 | train time : 586.1780505180359
+Eval Epoch 14018 | Mean relative regret: 0.1692
+Epoch 14019 | loss: 0.0008 | train time : 586.21901679039
+Eval Epoch 14019 | Mean relative regret: 0.1692
+Epoch 14020 | loss: 0.0009 | train time : 586.2601511478424
+Eval Epoch 14020 | Mean relative regret: 0.1692
+Epoch 14021 | loss: 0.0008 | train time : 586.3014726638794
+Eval Epoch 14021 | Mean relative regret: 0.1692
+Epoch 14022 | loss: 0.0009 | train time : 586.3426692485809
+Eval Epoch 14022 | Mean relative regret: 0.1692
+Epoch 14023 | loss: 0.0010 | train time : 586.3835949897766
+Eval Epoch 14023 | Mean relative regret: 0.1692
+Epoch 14024 | loss: 0.0009 | train time : 586.4243388175964
+Eval Epoch 14024 | Mean relative regret: 0.1692
+Epoch 14025 | loss: 0.0008 | train time : 586.4651274681091
+Eval Epoch 14025 | Mean relative regret: 0.1692
+Epoch 14026 | loss: 0.0009 | train time : 586.5057091712952
+Eval Epoch 14026 | Mean relative regret: 0.1692
+Epoch 14027 | loss: 0.0009 | train time : 586.5464651584625
+Eval Epoch 14027 | Mean relative regret: 0.1692
+Epoch 14028 | loss: 0.0010 | train time : 586.5871086120605
+Eval Epoch 14028 | Mean relative regret: 0.1692
+Epoch 14029 | loss: 0.0009 | train time : 586.627836227417
+Eval Epoch 14029 | Mean relative regret: 0.1692
+Epoch 14030 | loss: 0.0009 | train time : 586.668607711792
+Eval Epoch 14030 | Mean relative regret: 0.1692
+Epoch 14031 | loss: 0.0009 | train time : 586.7094299793243
+Eval Epoch 14031 | Mean relative regret: 0.1692
+Epoch 14032 | loss: 0.0009 | train time : 586.7502229213715
+Eval Epoch 14032 | Mean relative regret: 0.1692
+Epoch 14033 | loss: 0.0009 | train time : 586.7909252643585
+Eval Epoch 14033 | Mean relative regret: 0.1692
+Epoch 14034 | loss: 0.0011 | train time : 586.8316602706909
+Eval Epoch 14034 | Mean relative regret: 0.1692
+Epoch 14035 | loss: 0.0008 | train time : 586.8728632926941
+Eval Epoch 14035 | Mean relative regret: 0.1692
+Epoch 14036 | loss: 0.0010 | train time : 586.9141516685486
+Eval Epoch 14036 | Mean relative regret: 0.1692
+Epoch 14037 | loss: 0.0009 | train time : 586.9554703235626
+Eval Epoch 14037 | Mean relative regret: 0.1692
+Epoch 14038 | loss: 0.0009 | train time : 586.9968993663788
+Eval Epoch 14038 | Mean relative regret: 0.1692
+Epoch 14039 | loss: 0.0009 | train time : 587.0379469394684
+Eval Epoch 14039 | Mean relative regret: 0.1692
+Epoch 14040 | loss: 0.0009 | train time : 587.0789988040924
+Eval Epoch 14040 | Mean relative regret: 0.1692
+Epoch 14041 | loss: 0.0009 | train time : 587.1209688186646
+Eval Epoch 14041 | Mean relative regret: 0.1692
+Epoch 14042 | loss: 0.0008 | train time : 587.1729428768158
+Eval Epoch 14042 | Mean relative regret: 0.1692
+Epoch 14043 | loss: 0.0010 | train time : 587.2147777080536
+Eval Epoch 14043 | Mean relative regret: 0.1692
+Epoch 14044 | loss: 0.0009 | train time : 587.2566504478455
+Eval Epoch 14044 | Mean relative regret: 0.1692
+Epoch 14045 | loss: 0.0009 | train time : 587.2982835769653
+Eval Epoch 14045 | Mean relative regret: 0.1692
+Epoch 14046 | loss: 0.0009 | train time : 587.3400521278381
+Eval Epoch 14046 | Mean relative regret: 0.1692
+Epoch 14047 | loss: 0.0007 | train time : 587.3816454410553
+Eval Epoch 14047 | Mean relative regret: 0.1692
+Epoch 14048 | loss: 0.0008 | train time : 587.4233114719391
+Eval Epoch 14048 | Mean relative regret: 0.1692
+Epoch 14049 | loss: 0.0009 | train time : 587.4652376174927
+Eval Epoch 14049 | Mean relative regret: 0.1692
+Epoch 14050 | loss: 0.0009 | train time : 587.506977558136
+Eval Epoch 14050 | Mean relative regret: 0.1692
+Epoch 14051 | loss: 0.0009 | train time : 587.5481762886047
+Eval Epoch 14051 | Mean relative regret: 0.1692
+Epoch 14052 | loss: 0.0010 | train time : 587.5895087718964
+Eval Epoch 14052 | Mean relative regret: 0.1692
+Epoch 14053 | loss: 0.0009 | train time : 587.6308455467224
+Eval Epoch 14053 | Mean relative regret: 0.1692
+Epoch 14054 | loss: 0.0009 | train time : 587.6727344989777
+Eval Epoch 14054 | Mean relative regret: 0.1692
+Epoch 14055 | loss: 0.0009 | train time : 587.7141213417053
+Eval Epoch 14055 | Mean relative regret: 0.1692
+Epoch 14056 | loss: 0.0010 | train time : 587.7555766105652
+Eval Epoch 14056 | Mean relative regret: 0.1692
+Epoch 14057 | loss: 0.0009 | train time : 587.7969682216644
+Eval Epoch 14057 | Mean relative regret: 0.1692
+Epoch 14058 | loss: 0.0009 | train time : 587.8384008407593
+Eval Epoch 14058 | Mean relative regret: 0.1692
+Epoch 14059 | loss: 0.0009 | train time : 587.8798170089722
+Eval Epoch 14059 | Mean relative regret: 0.1692
+Epoch 14060 | loss: 0.0009 | train time : 587.9212546348572
+Eval Epoch 14060 | Mean relative regret: 0.1692
+Epoch 14061 | loss: 0.0009 | train time : 587.9626176357269
+Eval Epoch 14061 | Mean relative regret: 0.1692
+Epoch 14062 | loss: 0.0009 | train time : 588.003782749176
+Eval Epoch 14062 | Mean relative regret: 0.1692
+Epoch 14063 | loss: 0.0008 | train time : 588.0449495315552
+Eval Epoch 14063 | Mean relative regret: 0.1692
+Epoch 14064 | loss: 0.0010 | train time : 588.085996389389
+Eval Epoch 14064 | Mean relative regret: 0.1692
+Epoch 14065 | loss: 0.0008 | train time : 588.127081155777
+Eval Epoch 14065 | Mean relative regret: 0.1692
+Epoch 14066 | loss: 0.0009 | train time : 588.1681351661682
+Eval Epoch 14066 | Mean relative regret: 0.1692
+Epoch 14067 | loss: 0.0009 | train time : 588.2177140712738
+Eval Epoch 14067 | Mean relative regret: 0.1692
+Epoch 14068 | loss: 0.0008 | train time : 588.2587697505951
+Eval Epoch 14068 | Mean relative regret: 0.1692
+Epoch 14069 | loss: 0.0009 | train time : 588.2998359203339
+Eval Epoch 14069 | Mean relative regret: 0.1692
+Epoch 14070 | loss: 0.0008 | train time : 588.3408348560333
+Eval Epoch 14070 | Mean relative regret: 0.1692
+Epoch 14071 | loss: 0.0009 | train time : 588.3818309307098
+Eval Epoch 14071 | Mean relative regret: 0.1692
+Epoch 14072 | loss: 0.0010 | train time : 588.4226984977722
+Eval Epoch 14072 | Mean relative regret: 0.1692
+Epoch 14073 | loss: 0.0009 | train time : 588.4636425971985
+Eval Epoch 14073 | Mean relative regret: 0.1692
+Epoch 14074 | loss: 0.0009 | train time : 588.5048241615295
+Eval Epoch 14074 | Mean relative regret: 0.1692
+Epoch 14075 | loss: 0.0009 | train time : 588.5460197925568
+Eval Epoch 14075 | Mean relative regret: 0.1692
+Epoch 14076 | loss: 0.0009 | train time : 588.5871188640594
+Eval Epoch 14076 | Mean relative regret: 0.1692
+Epoch 14077 | loss: 0.0009 | train time : 588.6283733844757
+Eval Epoch 14077 | Mean relative regret: 0.1692
+Epoch 14078 | loss: 0.0009 | train time : 588.6695580482483
+Eval Epoch 14078 | Mean relative regret: 0.1692
+Epoch 14079 | loss: 0.0008 | train time : 588.7107145786285
+Eval Epoch 14079 | Mean relative regret: 0.1692
+Epoch 14080 | loss: 0.0010 | train time : 588.7521028518677
+Eval Epoch 14080 | Mean relative regret: 0.1692
+Epoch 14081 | loss: 0.0008 | train time : 588.7932660579681
+Eval Epoch 14081 | Mean relative regret: 0.1692
+Epoch 14082 | loss: 0.0010 | train time : 588.8346683979034
+Eval Epoch 14082 | Mean relative regret: 0.1692
+Epoch 14083 | loss: 0.0008 | train time : 588.876252412796
+Eval Epoch 14083 | Mean relative regret: 0.1692
+Epoch 14084 | loss: 0.0008 | train time : 588.9176023006439
+Eval Epoch 14084 | Mean relative regret: 0.1692
+Epoch 14085 | loss: 0.0009 | train time : 588.9585292339325
+Eval Epoch 14085 | Mean relative regret: 0.1692
+Epoch 14086 | loss: 0.0009 | train time : 588.9994065761566
+Eval Epoch 14086 | Mean relative regret: 0.1692
+Epoch 14087 | loss: 0.0009 | train time : 589.0408890247345
+Eval Epoch 14087 | Mean relative regret: 0.1692
+Epoch 14088 | loss: 0.0009 | train time : 589.081972360611
+Eval Epoch 14088 | Mean relative regret: 0.1692
+Epoch 14089 | loss: 0.0009 | train time : 589.1229462623596
+Eval Epoch 14089 | Mean relative regret: 0.1692
+Epoch 14090 | loss: 0.0009 | train time : 589.1647253036499
+Eval Epoch 14090 | Mean relative regret: 0.1692
+Epoch 14091 | loss: 0.0008 | train time : 589.2061560153961
+Eval Epoch 14091 | Mean relative regret: 0.1692
+Epoch 14092 | loss: 0.0008 | train time : 589.2476761341095
+Eval Epoch 14092 | Mean relative regret: 0.1692
+Epoch 14093 | loss: 0.0009 | train time : 589.2892200946808
+Eval Epoch 14093 | Mean relative regret: 0.1692
+Epoch 14094 | loss: 0.0008 | train time : 589.3310360908508
+Eval Epoch 14094 | Mean relative regret: 0.1692
+Epoch 14095 | loss: 0.0007 | train time : 589.3726370334625
+Eval Epoch 14095 | Mean relative regret: 0.1692
+Epoch 14096 | loss: 0.0009 | train time : 589.4145789146423
+Eval Epoch 14096 | Mean relative regret: 0.1692
+Epoch 14097 | loss: 0.0008 | train time : 589.4561104774475
+Eval Epoch 14097 | Mean relative regret: 0.1692
+Epoch 14098 | loss: 0.0009 | train time : 589.497606754303
+Eval Epoch 14098 | Mean relative regret: 0.1692
+Epoch 14099 | loss: 0.0008 | train time : 589.5389921665192
+Eval Epoch 14099 | Mean relative regret: 0.1692
+Epoch 14100 | loss: 0.0009 | train time : 589.580091714859
+Eval Epoch 14100 | Mean relative regret: 0.1692
+Epoch 14101 | loss: 0.0008 | train time : 589.6209733486176
+Eval Epoch 14101 | Mean relative regret: 0.1692
+Epoch 14102 | loss: 0.0009 | train time : 589.6624734401703
+Eval Epoch 14102 | Mean relative regret: 0.1692
+Epoch 14103 | loss: 0.0010 | train time : 589.7041165828705
+Eval Epoch 14103 | Mean relative regret: 0.1692
+Epoch 14104 | loss: 0.0010 | train time : 589.7455396652222
+Eval Epoch 14104 | Mean relative regret: 0.1692
+Epoch 14105 | loss: 0.0009 | train time : 589.7864391803741
+Eval Epoch 14105 | Mean relative regret: 0.1692
+Epoch 14106 | loss: 0.0009 | train time : 589.827398777008
+Eval Epoch 14106 | Mean relative regret: 0.1692
+Epoch 14107 | loss: 0.0009 | train time : 589.868968963623
+Eval Epoch 14107 | Mean relative regret: 0.1692
+Epoch 14108 | loss: 0.0009 | train time : 589.909886598587
+Eval Epoch 14108 | Mean relative regret: 0.1692
+Epoch 14109 | loss: 0.0009 | train time : 589.9508683681488
+Eval Epoch 14109 | Mean relative regret: 0.1692
+Epoch 14110 | loss: 0.0009 | train time : 589.992354631424
+Eval Epoch 14110 | Mean relative regret: 0.1692
+Epoch 14111 | loss: 0.0008 | train time : 590.033810377121
+Eval Epoch 14111 | Mean relative regret: 0.1692
+Epoch 14112 | loss: 0.0008 | train time : 590.0750768184662
+Eval Epoch 14112 | Mean relative regret: 0.1692
+Epoch 14113 | loss: 0.0010 | train time : 590.116448879242
+Eval Epoch 14113 | Mean relative regret: 0.1692
+Epoch 14114 | loss: 0.0008 | train time : 590.1579463481903
+Eval Epoch 14114 | Mean relative regret: 0.1692
+Epoch 14115 | loss: 0.0009 | train time : 590.2000930309296
+Eval Epoch 14115 | Mean relative regret: 0.1692
+Epoch 14116 | loss: 0.0008 | train time : 590.2417693138123
+Eval Epoch 14116 | Mean relative regret: 0.1692
+Epoch 14117 | loss: 0.0010 | train time : 590.2832310199738
+Eval Epoch 14117 | Mean relative regret: 0.1692
+Epoch 14118 | loss: 0.0008 | train time : 590.3245434761047
+Eval Epoch 14118 | Mean relative regret: 0.1692
+Epoch 14119 | loss: 0.0010 | train time : 590.3657059669495
+Eval Epoch 14119 | Mean relative regret: 0.1692
+Epoch 14120 | loss: 0.0010 | train time : 590.4066150188446
+Eval Epoch 14120 | Mean relative regret: 0.1692
+Epoch 14121 | loss: 0.0009 | train time : 590.4475557804108
+Eval Epoch 14121 | Mean relative regret: 0.1692
+Epoch 14122 | loss: 0.0008 | train time : 590.4884791374207
+Eval Epoch 14122 | Mean relative regret: 0.1692
+Epoch 14123 | loss: 0.0009 | train time : 590.5292663574219
+Eval Epoch 14123 | Mean relative regret: 0.1692
+Epoch 14124 | loss: 0.0008 | train time : 590.5700562000275
+Eval Epoch 14124 | Mean relative regret: 0.1692
+Epoch 14125 | loss: 0.0009 | train time : 590.610931634903
+Eval Epoch 14125 | Mean relative regret: 0.1692
+Epoch 14126 | loss: 0.0009 | train time : 590.6517429351807
+Eval Epoch 14126 | Mean relative regret: 0.1692
+Epoch 14127 | loss: 0.0009 | train time : 590.6925685405731
+Eval Epoch 14127 | Mean relative regret: 0.1692
+Epoch 14128 | loss: 0.0008 | train time : 590.7334089279175
+Eval Epoch 14128 | Mean relative regret: 0.1692
+Epoch 14129 | loss: 0.0009 | train time : 590.7748911380768
+Eval Epoch 14129 | Mean relative regret: 0.1692
 Epoch 14130 | loss: 0.0008 | train time : 590.8156707286835
 Eval Epoch 14130 | Mean relative regret: 0.1692
 Epoch 14131 | loss: 0.0009 | train time : 590.8565158843994
@@ -29701,106 +29733,7 @@ Epoch 15019 | loss: 0.0008 | train time : 627.2042722702026
 Eval Epoch 15019 | Mean relative regret: 0.1692
 Epoch 15020 | loss: 0.0009 | train time : 627.2450873851776
 Eval Epoch 15020 | Mean relative regret: 0.1692
-Epoch 15021 | loss: 0.0010 | train time : 627.2858126163483
-Eval Epoch 15021 | Mean relative regret: 0.1692
-Epoch 15022 | loss: 0.0009 | train time : 627.3266806602478
-Eval Epoch 15022 | Mean relative regret: 0.1692
-Epoch 15023 | loss: 0.0009 | train time : 627.3674516677856
-Eval Epoch 15023 | Mean relative regret: 0.1692
-Epoch 15024 | loss: 0.0009 | train time : 627.4082274436951
-Eval Epoch 15024 | Mean relative regret: 0.1692
-Epoch 15025 | loss: 0.0009 | train time : 627.4489860534668
-Eval Epoch 15025 | Mean relative regret: 0.1692
-Epoch 15026 | loss: 0.0009 | train time : 627.4897439479828
-Eval Epoch 15026 | Mean relative regret: 0.1692
-Epoch 15027 | loss: 0.0009 | train time : 627.5305540561676
-Eval Epoch 15027 | Mean relative regret: 0.1692
-Epoch 15028 | loss: 0.0010 | train time : 627.5712556838989
-Eval Epoch 15028 | Mean relative regret: 0.1692
-Epoch 15029 | loss: 0.0010 | train time : 627.6120433807373
-Eval Epoch 15029 | Mean relative regret: 0.1692
-Epoch 15030 | loss: 0.0011 | train time : 627.6528034210205
-Eval Epoch 15030 | Mean relative regret: 0.1692
-Epoch 15031 | loss: 0.0009 | train time : 627.693596124649
-Eval Epoch 15031 | Mean relative regret: 0.1692
-Epoch 15032 | loss: 0.0010 | train time : 627.7343587875366
-Eval Epoch 15032 | Mean relative regret: 0.1692
-Epoch 15033 | loss: 0.0009 | train time : 627.77516746521
-Eval Epoch 15033 | Mean relative regret: 0.1692
-Epoch 15034 | loss: 0.0009 | train time : 627.820191860199
-Eval Epoch 15034 | Mean relative regret: 0.1692
-Epoch 15035 | loss: 0.0008 | train time : 627.8610711097717
-Eval Epoch 15035 | Mean relative regret: 0.1692
-Epoch 15036 | loss: 0.0008 | train time : 627.9019441604614
-Eval Epoch 15036 | Mean relative regret: 0.1692
-Epoch 15037 | loss: 0.0009 | train time : 627.9427342414856
-Eval Epoch 15037 | Mean relative regret: 0.1692
-Epoch 15038 | loss: 0.0008 | train time : 627.9838538169861
-Eval Epoch 15038 | Mean relative regret: 0.1692
-Epoch 15039 | loss: 0.0009 | train time : 628.0246756076813
-Eval Epoch 15039 | Mean relative regret: 0.1692
-Epoch 15040 | loss: 0.0009 | train time : 628.0655086040497
-Eval Epoch 15040 | Mean relative regret: 0.1692
-Epoch 15041 | loss: 0.0009 | train time : 628.106219291687
-Eval Epoch 15041 | Mean relative regret: 0.1692
-Epoch 15042 | loss: 0.0008 | train time : 628.147045135498
-Eval Epoch 15042 | Mean relative regret: 0.1692
-Epoch 15043 | loss: 0.0009 | train time : 628.1878669261932
-Eval Epoch 15043 | Mean relative regret: 0.1692
-Epoch 15044 | loss: 0.0009 | train time : 628.2286922931671
-Eval Epoch 15044 | Mean relative regret: 0.1692
-Epoch 15045 | loss: 0.0009 | train time : 628.2695076465607
-Eval Epoch 15045 | Mean relative regret: 0.1692
-Epoch 15046 | loss: 0.0009 | train time : 628.3103964328766
-Eval Epoch 15046 | Mean relative regret: 0.1692
-Epoch 15047 | loss: 0.0010 | train time : 628.3511829376221
-Eval Epoch 15047 | Mean relative regret: 0.1692
-Epoch 15048 | loss: 0.0008 | train time : 628.3919343948364
-Eval Epoch 15048 | Mean relative regret: 0.1692
-Epoch 15049 | loss: 0.0009 | train time : 628.4326894283295
-Eval Epoch 15049 | Mean relative regret: 0.1692
-Epoch 15050 | loss: 0.0009 | train time : 628.4733431339264
-Eval Epoch 15050 | Mean relative regret: 0.1692
-Epoch 15051 | loss: 0.0011 | train time : 628.5141203403473
-Eval Epoch 15051 | Mean relative regret: 0.1692
-Epoch 15052 | loss: 0.0010 | train time : 628.5549674034119
-Eval Epoch 15052 | Mean relative regret: 0.1692
-Epoch 15053 | loss: 0.0009 | train time : 628.5956101417542
-Eval Epoch 15053 | Mean relative regret: 0.1692
-Epoch 15054 | loss: 0.0009 | train time : 628.6364228725433
-Eval Epoch 15054 | Mean relative regret: 0.1692
-Epoch 15055 | loss: 0.0010 | train time : 628.6770815849304
-Eval Epoch 15055 | Mean relative regret: 0.1692
-Epoch 15056 | loss: 0.0009 | train time : 628.7180256843567
-Eval Epoch 15056 | Mean relative regret: 0.1692
-Epoch 15057 | loss: 0.0009 | train time : 628.7588829994202
-Eval Epoch 15057 | Mean relative regret: 0.1692
-Epoch 15058 | loss: 0.0009 | train time : 628.7997462749481
-Eval Epoch 15058 | Mean relative regret: 0.1692
-Epoch 15059 | loss: 0.0009 | train time : 628.8406174182892
-Eval Epoch 15059 | Mean relative regret: 0.1692
-Epoch 15060 | loss: 0.0009 | train time : 628.8819370269775
-Eval Epoch 15060 | Mean relative regret: 0.1692
-Epoch 15061 | loss: 0.0009 | train time : 628.9226779937744
-Eval Epoch 15061 | Mean relative regret: 0.1692
-Epoch 15062 | loss: 0.0008 | train time : 628.9633932113647
-Eval Epoch 15062 | Mean relative regret: 0.1692
-Epoch 15063 | loss: 0.0010 | train time : 629.0041732788086
-Eval Epoch 15063 | Mean relative regret: 0.1692
-Epoch 15064 | loss: 0.0008 | train time : 629.044858455658
-Eval Epoch 15064 | Mean relative regret: 0.1692
-Epoch 15065 | loss: 0.0008 | train time : 629.0856649875641
-Eval Epoch 15065 | Mean relative regret: 0.1692
-Epoch 15066 | loss: 0.0011 | train time : 629.1263492107391
-Eval Epoch 15066 | Mean relative regret: 0.1692
-Epoch 15067 | loss: 0.0009 | train time : 629.1671888828278
-Eval Epoch 15067 | Mean relative regret: 0.1692
-Epoch 15068 | loss: 0.0008 | train time : 629.2078292369843
-Eval Epoch 15068 | Mean relative regret: 0.1692
-Epoch 15069 | loss: 0.0009 | train time : 629.2486901283264
-Eval Epoch 15069 | Mean relative regret: 0.1692
-Epoch 15070 | loss: 0.0009 | train time : 629.2894148826599
-Eval Epoch 15070 | Mean relative regret: 0.1692
+Eval Epoch 15070 | Mean relative regret: 0.16927525057792664
 Epoch 15071 | loss: 0.0008 | train time : 629.330194234848
 Eval Epoch 15071 | Mean relative regret: 0.1692
 Epoch 15072 | loss: 0.0008 | train time : 629.3709547519684
@@ -29988,4 +29921,4 @@ Eval Epoch 15162 | Mean relative regret: 0.1692
 Epoch 15163 | loss: 0.0007 | train time : 633.0975375175476
 Eval Epoch 15163 | Mean relative regret: 0.1692
 Epoch 15164 | loss: 0.0009 | train time : 633.1381599903107
-Eval Epoch 14129 | Mean relative regret: 0.169205981826782
+Eval Epoch 15070 | Mean relative regret: 0.16927525057792664

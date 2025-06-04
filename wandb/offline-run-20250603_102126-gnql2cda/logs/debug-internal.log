@@ -1,0 +1,7 @@
+{"time":"2025-06-03T10:21:28.511534198-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250603_102126-gnql2cda/logs/debug-core.log"}
+{"time":"2025-06-03T10:21:28.936919044-04:00","level":"INFO","msg":"created new stream","id":"gnql2cda"}
+{"time":"2025-06-03T10:21:28.937009189-04:00","level":"INFO","msg":"stream: started","id":"gnql2cda"}
+{"time":"2025-06-03T10:21:28.937035637-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"gnql2cda"}
+{"time":"2025-06-03T10:21:28.937123804-04:00","level":"INFO","msg":"handler: started","stream_id":"gnql2cda"}
+{"time":"2025-06-03T10:21:28.937128648-04:00","level":"INFO","msg":"sender: started","stream_id":"gnql2cda"}
+{"time":"2025-06-03T10:21:28.983924602-04:00","level":"INFO","msg":"Starting system monitor"}

@@ -1,0 +1,8 @@
+Loading train_10_1_200_50_500.txt
+Loading eval_10_200_50_100.txt
+Restricted license - for non-production use only - expires 2026-11-23
+Num of cores: 1
+Training the model with regret as loss...
+Epoch 0 | loss: 33.0320
+Epoch 1 | loss: 31.7305
+Epoch 2 | loss: 29.2512

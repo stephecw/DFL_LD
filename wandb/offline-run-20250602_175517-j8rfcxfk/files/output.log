@@ -30369,6 +30369,7 @@ Epoch 15181 | loss: 0.0009
 Eval Epoch 15181 | Mean relative regret: 0.1701
 Epoch 15182 | loss: 0.0010
 Eval Epoch 15182 | Mean relative regret: 0.1701
+Epoch 15183 | loss: 0.0008
 Eval Epoch 15183 | Mean relative regret: 0.1701
 Epoch 15184 | loss: 0.0009
 Eval Epoch 15184 | Mean relative regret: 0.1701
@@ -30780,7 +30781,6 @@ Epoch 15387 | loss: 0.0008
 Eval Epoch 15387 | Mean relative regret: 0.1701
 Epoch 15388 | loss: 0.0007
 Eval Epoch 15388 | Mean relative regret: 0.1701
-Epoch 15389 | loss: 0.0008
 Eval Epoch 15389 | Mean relative regret: 0.1701
 Epoch 15390 | loss: 0.0009
 Eval Epoch 15390 | Mean relative regret: 0.1701
@@ -45101,7 +45101,6 @@ Eval Epoch 22547 | Mean relative regret: 0.1702
 Epoch 22548 | loss: 0.0009
 Eval Epoch 22548 | Mean relative regret: 0.1702
 Epoch 22549 | loss: 0.0009
-Eval Epoch 22549 | Mean relative regret: 0.1702
 Epoch 22550 | loss: 0.0010
 Eval Epoch 22550 | Mean relative regret: 0.1702
 Epoch 22551 | loss: 0.0008
@@ -55853,6 +55852,7 @@ Eval Epoch 27923 | Mean relative regret: 0.1702
 Epoch 27924 | loss: 0.0009
 Eval Epoch 27924 | Mean relative regret: 0.1702
 Epoch 27925 | loss: 0.0008
+Eval Epoch 27925 | Mean relative regret: 0.1702
 Epoch 27926 | loss: 0.0010
 Eval Epoch 27926 | Mean relative regret: 0.1702
 Epoch 27927 | loss: 0.0009
@@ -57740,7 +57740,6 @@ Eval Epoch 28867 | Mean relative regret: 0.1702
 Epoch 28868 | loss: 0.0008
 Eval Epoch 28868 | Mean relative regret: 0.1702
 Epoch 28869 | loss: 0.0009
-Eval Epoch 28869 | Mean relative regret: 0.1702
 Epoch 28870 | loss: 0.0009
 Eval Epoch 28870 | Mean relative regret: 0.1702
 Epoch 28871 | loss: 0.0007

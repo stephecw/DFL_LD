@@ -17602,6 +17602,7 @@ Epoch 14662 | loss: 0.0002
 Epoch 14663 | loss: 0.0002
 Epoch 14664 | loss: 0.0002
 Epoch 14665 | loss: 0.0002
+Eval Epoch 14665 | Mean relative regret: 0.1642
 Epoch 14666 | loss: 0.0002
 Epoch 14667 | loss: 0.0002
 Epoch 14668 | loss: 0.0002
@@ -18874,7 +18875,6 @@ Epoch 15723 | loss: 0.0002
 Epoch 15724 | loss: 0.0002
 Epoch 15725 | loss: 0.0002
 Eval Epoch 15725 | Mean relative regret: 0.1642
-Epoch 15726 | loss: 0.0002
 Epoch 15727 | loss: 0.0002
 Epoch 15728 | loss: 0.0002
 Epoch 15729 | loss: 0.0002
