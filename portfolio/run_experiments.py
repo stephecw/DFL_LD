@@ -255,7 +255,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
-eval_freq = 1
+eval_freq = 100
 
 # Problem dimensions
 num_feat = 200
@@ -461,4 +461,4 @@ if epochs_MSE > 0:
     run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, principal_lin,
             batch_size=batch_size_MSE, epochs=epochs_MSE, lr=lr_MSE,
             schedulerType=schedulerType_MSE, sched_arg=sched_arg_MSE,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=5, patience=patience_MSE)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=100, patience=patience_MSE)
