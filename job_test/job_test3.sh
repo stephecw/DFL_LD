@@ -1,8 +1,8 @@
 #!/bin/bash
-#SBATCH --time=02:00:00          # Temps d'exécution (1 heure)
+#SBATCH --time=04:00:00          # Temps d'exécution (1 heure)
 #SBATCH --account=def-qcappart   # Remplacez par votre compte
 #SBATCH --mem=4G                 # Mémoire requise (4 Go)
-#SBATCH --cpus-per-task=1        # Nombre de CPU
+#SBATCH --cpus-per-task=4        # Nombre de CPU
 #SBATCH --gres=gpu:1             # Si vous avez besoin d'un GPU
 #SBATCH --job-name=job_test3    # Nom du job
 #SBATCH --output=output3.log     # Fichier de sortie
@@ -14,7 +14,9 @@ module load python/3.10
 module load scipy-stack
 source ~/env_projet/bin/activate
 
-python -m knapsack.run_experiments --keep 1 --diff IMLE --method SG --ep 1000000 --tl 600 --step_mu 1 --n_iter_mu 10
+python -m knapsack.run_experiments --keep 2 --diff IMLE --method SG --ep 1000000 --tl 10800 --step_mu 1 --n_iter_mu 5
+
+# python -m knapsack.run_experiments --keep 1 --diff IMLE --method SG --ep 1000000 --tl 600 --step_mu 1 --n_iter_mu 10
 
 # for TIME_LIMIT in 60 300 1800; do
 #   echo "Running with time_limit=$TIME_LIMIT for n=30"

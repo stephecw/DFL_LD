@@ -64,7 +64,7 @@ dropout = 0.2
 schedulerType = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg = {'mode':'min',
             'factor':0.5,
-            'patience':40,
+            'patience':5,
             'min_lr':1e-6}
 diff_method_name = args.diff
 diff_method_arg = {}
@@ -164,7 +164,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
         best_relat_regret = train_LD(model, diff_method, eval_solver,
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=5,
+                                    epochs, time_limit, eval_freq=2,
                                     run=run, verbose=verbose)
     elif jobtype == "cla":
         # Differentiation method for backpropagation when training 
@@ -177,7 +177,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             
         best_relat_regret = train_classic(model, diff_method, eval_solver, 
                                             train_loader, eval_loader, optimizer, scheduler, 
-                                            epochs, time_limit, eval_freq=5,
+                                            epochs, time_limit, eval_freq=2,
                                             run=run, verbose=verbose)
 
     elif jobtype == "SG":
@@ -202,7 +202,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
         best_relat_regret = train_SG(model, diff_method, eval_solver, 
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=5,
+                                    epochs, time_limit, eval_freq=2,
                                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                                     mu_global0=mu_global0,
                                     run=run, verbose=verbose)
@@ -220,7 +220,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             if verbose:
                 print(f"Saving the model to knapsack/models/{diff_method_name}_LD_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
             torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_LD_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth')
-        elif jobtype == "classic":
+        elif jobtype == "cla":
             if verbose:
                 print(f"Saving the model to knapsack/models/{diff_method_name}_classic_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth", flush=True)
             torch.save(model.state_dict(), f'knapsack/models/{diff_method_name}_classic_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth')
@@ -312,4 +312,4 @@ run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,
         diff_method_name=diff_method_name, diff_method_arg=diff_method_arg,
-        test_model=True, num_data_test=5,verbose=True, wandbarg=None, save_model=False)
+        test_model=True, num_data_test=num_data_test, verbose=True, wandbarg=wandbarg, save_model=False)

@@ -12610,6 +12610,7 @@ Eval Epoch 6301 | Mean relative regret: 0.1664
 Epoch 6302 | loss: 0.0024
 Eval Epoch 6302 | Mean relative regret: 0.1664
 Epoch 6303 | loss: 0.0023
+Eval Epoch 6303 | Mean relative regret: 0.1664
 Epoch 6304 | loss: 0.0024
 Eval Epoch 6304 | Mean relative regret: 0.1664
 Epoch 6305 | loss: 0.0023
@@ -16926,4 +16927,3 @@ Epoch 8460 | loss: 0.0024
 Eval Epoch 8460 | Mean relative regret: 0.1665
 Epoch 8461 | loss: 0.0024
 Eval Epoch 8461 | Mean relative regret: 0.1665
-Eval Epoch 6303 | Mean relative regret: 0.1664

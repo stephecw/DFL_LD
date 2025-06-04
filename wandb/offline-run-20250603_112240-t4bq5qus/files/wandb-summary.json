@@ -1,0 +1,1 @@
+{"train_time": 658.7592084407806, "grad_norm": 20.387016579361617, "lr": 0.001, "_timestamp": 1748964853.8423848, "epoch": 4, "train_loss": 15.46640944480896, "epoch_duration": 129.44507479667664, "_runtime": 692.58164104, "_step": 5, "total_duration": 658.766074180603, "best_epoch": 0, "best_relat_regret": Infinity}
