@@ -129,16 +129,16 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         #wandb.login(key="")  # Replace with your API key
         run = wandb.init(mode="offline", **wandbarg)
     
-    input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_item}_{num_data_train}.txt"
-    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt"
+    input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}.txt"
+    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}.txt"
     if verbose:
         print(f"Reading existing file : {input_train_txt}")
     if not os.path.isfile(input_train_txt):
         raise FileNotFoundError(f"Can't find '{input_train_txt}'.")
     
-    ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=False)
+    ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=True)
     gd, nf, ni, nd = ds.get_sizes()
-    if gd != global_dim or nf != num_feat or ni != num_item or nd != num_data_train:
+    if gd != global_dim or nf != num_feat or ni != num_items or nd != num_data_train:
         raise ValueError("The dataset dimensions do not match the expected values.")
     
     capacities = ds.get_capacities(tensor=False)  # numpy array (global_dim,)
@@ -159,7 +159,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         import time
         begin_time = time.time()
     
-    optimizer_mu = OptimizationBatchModel(solvers, device)
+    optimizer_mu = OptimizationBatchModel(solvers)
     c_tensor = torch.tensor(c_train, dtype=torch.int32)
     optimizer_mu.optim_mu(
         c_batch=c_tensor,
@@ -193,8 +193,8 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
             f.write(line)
 
     # Extraire la première composante X[:,0,:] et aplatir μ
-    X_principal = X_batch[:, 0, :].cpu().numpy()                    # (num_data_train, num_item)
-    mu_flat     = mu_batch.view(num_data_train, -1).cpu().numpy()
+    X_principal = X_batch[:, 0, :]                # (num_data_train, num_item)
+    mu_flat     = np.reshape(mu_batch, (num_data_train, -1))  # (num_data_train, (global_dim-keep)*num_item)
     
     if verbose:
         print(f"Writing on file with keep={keep} : {output_train_txt}", flush=True)
