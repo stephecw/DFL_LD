@@ -8,7 +8,7 @@ import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, c, x_star_array, X, mu):
+def write_dataset_file(fname, num_feat, num_item, num_data, deg, cov, gamma, Z, c, x_star_array, X, mu):
     """Écrit le dataset généré dans un fichier dans le format suivant :
     num_data, num_feat, num_item, gamma
     [cov]
@@ -31,7 +31,7 @@ def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, c, x_
     """
     with open(fname, 'w') as f:
         # En-tête
-        f.write(f"{num_data},{num_feat},{num_item},{gamma}\n")
+        f.write(f"{num_data},{num_feat},{num_item},{deg},{gamma}\n")
         for i in range(num_item):
             f.write(",".join(str(cov[i][j]) for j in range(num_item)) + "\n")
         for i in range(num_data):
@@ -43,7 +43,7 @@ def write_dataset_file(fname, num_feat, num_item, num_data, cov, gamma, Z, c, x_
             line += ",".join(str(mu[i][j]) for j in range(num_item)) + f"\n"
             f.write(line)
 
-def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_iter, principal_lin = True, verbose=False):
+def gen_datafile(num_data_train, num_data_val, num_data_test, num_feat, num_item, deg, gam, num_iter, principal_lin = True, verbose=False):
     """Génère un dataset (train et test) de problèmes de portfolio combinatoires, 
     comprenant la solution optimale et la borne LD optimale.
     Enregistre ces datasets dans des fichiers textes.
@@ -58,14 +58,15 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
         principal_lin (bool, optional): True pour conserver la contrainte linéaire, False pour conserver la contrainte quadratique. True par défaut
         verbose (bool, optional): Affiche l'avancement de la génération. Defaults to False.
     """
-    total_data = num_data_train + num_data_test
+    total_data = num_data_train + num_data_val + num_data_test 
 
     if verbose:
         print(f"➡ Génération de {total_data} instances ({num_data_train} train, {num_data_test} test)")
         print(f"➡ Dimensions : {num_item} items, {num_feat} features")
+        print(f"➡ Degré du polynôme : {deg}")
 
     # Données aléatoires
-    cov, Z, c = data.portfolio.genData(total_data, num_feat, num_item, deg=4, noise_level=1, seed=135)
+    cov, Z, c = data.portfolio.genData(total_data, num_feat, num_item, deg=deg, noise_level=1, seed=135)
     gamma = gam  # risk_level = gamma * mean(cov[i])
     cov2 = 1e5*cov  # Covariance pour la contrainte quadratique
     
@@ -98,23 +99,27 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     else :
         solvers = [quad_solver, lin_solver]
     optimizer = OptimizationBatchModel(solvers, device)
-    optimizer.optim_mu(c_batch=c_tensor,verbose=verbose, max_iter=num_iter)
+    optimizer.optim_mu(c_batch=c_tensor[0:num_data_train],verbose=verbose, max_iter=num_iter)
 
     X_tensor = optimizer.get_X()
     mu_tensor = optimizer.get_mu()
 
     X = X_tensor[:, 0, :].cpu().numpy().astype(float)
-    mu = mu_tensor.view(total_data, -1).cpu().numpy()
+    mu = mu_tensor.view(num_data_train, -1).cpu().numpy()
 
     if verbose:
-        print(f" Optimisation done (device: {torch.cuda.get_device_name()})")
+        print(f" Optimisation done (device: {device})")
 
     # Découpage
-    Z_train, Z_test = Z[:num_data_train], Z[num_data_train:]
-    r_train, r_test = c[:num_data_train], c[num_data_train:]
-    x_star_train, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:]
-    X_train, X_test = X[:num_data_train], X[num_data_train:]
-    mu_train, mu_test = mu[:num_data_train], mu[num_data_train:]
+    Z_train, Z_val, Z_test = Z[:num_data_train], Z[num_data_train:num_data_train + num_data_val], Z[num_data_train + num_data_val:]
+    c_train, c_val, c_test = c[:num_data_train], c[num_data_train:num_data_train + num_data_val], c[num_data_train + num_data_val:]
+    x_star_train, x_star_val, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:num_data_train + num_data_val], x_star_array[num_data_train + num_data_val:]
+    X_train = X
+    mu_train = mu
+    X_val = np.zeros((num_data_val, num_item), dtype=float)
+    mu_val = np.zeros((num_data_val, num_item), dtype=float)
+    X_test = np.zeros((num_data_test, num_item), dtype=float)
+    mu_test = np.zeros((num_data_test, num_item), dtype=float)
     
     # print(f"x : {x_star_train[0]}")
     # print(f"X : {X_train[0]}")
@@ -129,13 +134,17 @@ def gen_datafile(num_data_train, num_data_test, num_feat, num_item, gam, num_ite
     # Sauvegarde
     gamma_str = str(gamma).replace('.', '-')
     fold = "/lin" if principal_lin else "/quad"
-    write_dataset_file(f"portfolio/datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
-                       num_feat, num_item, num_data_train,
-                       cov, gamma, Z_train, r_train, x_star_train, X_train, mu_train)
+    write_dataset_file(f"portfolio/datasets/train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
+                       num_feat, num_item, num_data_train, deg,
+                       cov, gamma, Z_train, c_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"portfolio/datasets{fold}/eval_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt",
-                       num_feat, num_item, num_data_test,
-                       cov, gamma, Z_test, r_test, x_star_test, X_test, mu_test)
+    write_dataset_file(f"portfolio/datasets/validation_{num_item}_{num_data_val}_{num_feat}_{deg}_{gamma_str}.txt",
+                       num_feat, num_item, num_data_val, deg,
+                       cov, gamma, Z_val, c_val, x_star_val, X_val, mu_val)
+    
+    write_dataset_file(f"portfolio/datasets/test_{num_item}_{num_data_test}_{num_feat}_{deg}_{gamma_str}.txt",
+                       num_feat, num_item, num_data_test, deg,
+                       cov, gamma, Z_test, c_test, x_star_test, X_test, mu_test)
     
 if __name__ == "__main__":
 
@@ -143,22 +152,26 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script de génération de dataset avec des dimensions spécifiées.")
     parser.add_argument('--n', type=int, default=50, help='Nombre d\'item.')
     parser.add_argument('--gamma', type=float, default=2.25, help='Gamma.')
-    parser.add_argument('--n_train', type=int, default=500, help='Nombre de données d\'entrainement')
-    parser.add_argument('--n_eval', type=int, default=100, help='Nombre de données d\'eval')
-    parser.add_argument('--n_feat', type=int, default=200, help='Nombre de features')
+    parser.add_argument('--n_train', type=int, default=100, help='Nombre de données d\'entrainement')
+    parser.add_argument('--n_validation', type=int, default=25, help='Nombre de données de validation')
+    parser.add_argument('--n_test', type=int, default=10000, help='Nombre de données de test')
+    parser.add_argument('--n_feat', type=int, default=5, help='Nombre de features')
     parser.add_argument('--lin', type=int, default=0, help='1 pour prendre la contrainte linéraire pour le sous-prob principal, 0 pour la contrainte quadratique')
     parser.add_argument('--n_iter', type=int, default=300, help='Nombre d\'itérations pour l\'optimisation de \mu. (0 pour ne pas l\'exécuter)')
+    parser.add_argument('--deg', type=int, default=1, help='Degré du polynôme pour la génération des données')
 
 
     # Paramètres du dataset
     args = parser.parse_args()
     num_data_train = args.n_train
-    num_data_test = args.n_eval
+    num_data_test = args.n_test
+    num_data_val = args.n_validation
     num_feat = args.n_feat
     num_iter = args.n_iter
     num_item = args.n
     gamma = args.gamma
+    deg = args.deg
     principal_lin = False if args.lin == 0 else True
-    gen_datafile(num_data_train, num_data_test, num_feat, num_item, gamma, num_iter, principal_lin = principal_lin, verbose=True)
+    gen_datafile(num_data_train, num_data_val,num_data_test, num_feat, num_item, deg, gamma, num_iter, principal_lin = principal_lin, verbose=True)
     
     

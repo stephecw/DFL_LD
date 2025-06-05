@@ -54,7 +54,7 @@ class ImportDataset:
         with open(fname, 'r') as f:
             lines = f.readlines()
             # Lecture des tailles
-            self.num_data, self.num_feat, self.num_item, self.gamma = map(float, lines[0].split(","))
+            self.num_data, self.num_feat, self.num_item, self.deg, self.gamma = map(float, lines[0].split(","))
 
             self.num_data = int(self.num_data)
             self.num_feat = int(self.num_feat)
@@ -132,4 +132,9 @@ class ImportDataset:
         Retourne le vecteur mu du problème de portfolio.
         """
         return self.mu_tensor
+    def get_deg(self):
+        """
+        Retourne le degré du polynôme utilisé pour générer les données.
+        """
+        return self.deg
 

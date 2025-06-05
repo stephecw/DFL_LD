@@ -16,6 +16,7 @@ import argparse
 # Define command line arguments
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
 parser.add_argument('--n', type=int, default=30, help='Number of items.')
+parser.add_argument('--deg', type=int, default=1, help='Degré du polynôme pour la génération des features.')
 parser.add_argument('--ep_cla', type=int, default=0, help='Number of epochs for classic training. (0 to skip)')
 parser.add_argument('--ep_ld', type=int, default=0, help='Number of epochs for LD training. (0 to skip)')
 parser.add_argument('--ep_sg', type=int, default=0, help='Number of epochs for SG training. (0 to skip)')
@@ -35,7 +36,7 @@ parser.add_argument('--time_limit', type=int, default=300, help='Time limit for 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Training on:", device)
 
-def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, principal_lin,
+def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, deg,principal_lin,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None,
@@ -73,25 +74,25 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     gamma_str = str(gamma).replace('.', '-')
     fold = "/lin" if principal_lin else "/quad"
     if verbose:
-        print(f"Loading {fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
+        print(f"Loading train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt")
     try:
-        train_set = ImportDataset(f"portfolio/datasets{fold}/train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt")
+        train_set = ImportDataset(f"portfolio/datasets/train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
 
     if verbose:
-        print(f"Loading {fold}/eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt")
+        print(f"Loading validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt")
     try:
-        eval_set = ImportDataset(f"portfolio/datasets{fold}/eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt")
+        eval_set = ImportDataset(f"portfolio/datasets/validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
     
     if verbose:
-        print(f"Loading {fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        print(f"Loading test_{num_item}_{num_data_test}_{num_feat}_{deg}_{gamma_str}.txt")
     try:
-        test_set = ImportDataset(f"portfolio/datasets{fold}/test_{num_item}_{num_data_test}_{num_feat}_{gamma_str}.txt")
+        test_set = ImportDataset(f"portfolio/datasets/test_{num_item}_{num_data_test}_{num_feat}_{deg}_{gamma_str}.txt")
     except FileNotFoundError:
         print(f"File not found.")
         return
@@ -233,20 +234,20 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     if save_model:
         if jobtype == "LD":
             if verbose:
-                print(f"Saving the model to portfolio/models/{diff_method_name}_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
+                print(f"Saving the model to portfolio/models/{diff_method_name}_LD_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_LD_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
         elif jobtype == "classic":
             if verbose:
-                print(f"Saving the model to portfolio/models/{diff_method_name}_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
+                print(f"Saving the model to portfolio/models/{diff_method_name}_classic_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_classic_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
         elif jobtype == "SG":
             if verbose:
-                print(f"Saving the model to portfolio/models/{diff_method_name}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
+                print(f"Saving the model to portfolio/models/{diff_method_name}_SG_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_SG_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
         elif jobtype == "MSE":
             if verbose:
-                print(f"Saving the model to portfolio/models/MSE_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/MSE_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.pth')
+                print(f"Saving the model to portfolio/models/MSE_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
+            torch.save(model.state_dict(), f'portfolio/models/MSE_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
 
 
     # End execution
@@ -255,13 +256,14 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
-eval_freq = 100
+
 
 # Problem dimensions
-num_feat = 200
-num_data_train = 500  # Training dataset size
-num_data_eval = 100   # eval dataset size
-num_data_test = 200
+num_feat = 5
+num_data_train = 100  # Training dataset size
+num_data_eval = 25   # eval dataset size
+num_data_test = 10000
+deg = args.deg  # Degree of the polynomial for feature generation
 gamma = 2.25
 gamma_str = str(gamma).replace('.', '-')
 num_item = args.n
@@ -272,24 +274,25 @@ epochs_classic = args.ep_cla
 time_limit_classic = args.time_limit
 batch_size_classic = 32
 lr_classic = 0.002
-model_shape_classic = [num_feat, 100, num_item]
-dropout_classic = 0.2
+model_shape_classic = [num_feat, num_item]
+dropout_classic = 0.0
 schedulerType_classic = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_classic = {'patience': 100,
                      'factor': 0.5,
                      'min_lr':1e-6
                      }
-diff_method_classic = args.method  # "StepLR", "SPOPlus"
+diff_method_classic = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_classic = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 patience_classic = 10000000
+eval_freq_classic = 4
 
 # LD parameters
 epochs_LD = args.ep_ld
 time_limit_LD = args.time_limit
 batch_size_LD = 32
 lr_LD = 0.002
-model_shape_LD = [num_feat, 100, num_item]
-dropout_LD = 0.2
+model_shape_LD = [num_feat, num_item]
+dropout_LD = 0.0
 schedulerType_LD = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_LD = {'patience': 100,
                 'factor': 0.5,
@@ -299,14 +302,16 @@ diff_method_LD = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_LD = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 principal_lin = False if args.lin == 0 else True
 patience_LD = 10000000
+eval_freq_LD = 100 if diff_method_arg_LD == "Exact" else 4
+
 
 # SG parameters
 epochs_SG = args.ep_sg
 time_limit_SG = args.time_limit
 batch_size_SG = 32
 lr_SG = 0.002
-model_shape_SG = [num_feat, 100, num_item]
-dropout_SG = 0.2
+model_shape_SG = [num_feat, num_item]
+dropout_SG = 0.0
 schedulerType_SG = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_SG = {'patience': 100,
                 'factor': 0.5,
@@ -317,14 +322,15 @@ diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sig
 step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
 patience_SG = 10000000
+eval_freq_SG = 100 if diff_method_arg_SG == "Exact" else 4
 
 # MSE parameters
 epochs_MSE = args.ep_mse
 time_limit_MSE = args.time_limit
 batch_size_MSE = 32
 lr_MSE = 0.001
-model_shape_MSE = [num_feat, 100, num_item]
-dropout_MSE = 0.2
+model_shape_MSE = [num_feat, num_item]
+dropout_MSE = 0.0
 schedulerType_MSE = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg_MSE = {'patience': 400,
                 'factor': 0.5,
@@ -333,7 +339,7 @@ sched_arg_MSE = {'patience': 400,
 patience_MSE = 50000000
 diff_method_SG = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
-
+eval_freq_MSE = 100
 
 print(f"Training for {epochs_classic} epochs for classic model, {epochs_LD} epochs for LD model, {epochs_SG} for SG model with mu and {epochs_MSE} for MSE model on {num_item} items.")
 
@@ -346,14 +352,14 @@ if epochs_LD > 0:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
-            'name': f"{diff_method_LD}_LD_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'name': f"{diff_method_LD}_LD_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'job_type': f"{time_limit_LD}sec_LD",
             'config': {
                 "architecture": model_shape_LD,
                 "dropout": dropout_LD,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
-                "dataset_eval": f"eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt",
+                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
+                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
                 "batch_size": batch_size_LD,
                 "epochs": epochs_LD,
                 "time_limit": time_limit_LD,
@@ -364,11 +370,11 @@ if epochs_LD > 0:
                 "diff_method_arg": diff_method_arg_LD
             }
     }
-    run_train(model, "LD", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, principal_lin,
+    run_train(model, "LD", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
             batch_size=batch_size_LD, epochs=epochs_LD, lr=lr_LD,
             schedulerType=schedulerType_LD, sched_arg=sched_arg_LD,
             diff_method_name=diff_method_LD, diff_method_arg=diff_method_arg_LD,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD, eval_freq=eval_freq, patience=patience_LD)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD, eval_freq=eval_freq_LD, patience=patience_LD)
 
 ## Classic ##
 if epochs_classic > 0:
@@ -377,14 +383,14 @@ if epochs_classic > 0:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
-            'name': f"{diff_method_classic}_classic_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'name': f"{diff_method_classic}_classic_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'job_type': f"{time_limit_classic}sec_classic",
             'config': {
                 "architecture": model_shape_classic,
                 "dropout": dropout_classic,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
-                "dataset_eval": f"eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt",
+                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
+                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
                 "batch_size": batch_size_classic,
                 "epochs": epochs_classic,
                 "time_limit": time_limit_classic,
@@ -395,11 +401,11 @@ if epochs_classic > 0:
                 "diff_method_arg": diff_method_arg_classic
             }
     }
-    run_train(model, "classic", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, principal_lin,
+    run_train(model, "classic", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
             batch_size=batch_size_classic, epochs=epochs_classic, lr=lr_classic,
             schedulerType=schedulerType_classic, sched_arg=sched_arg_classic,
             diff_method_name=diff_method_classic, diff_method_arg=diff_method_arg_classic,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic, eval_freq=eval_freq, patience=patience_classic)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic, eval_freq=eval_freq_classic, patience=patience_classic)
 
 ## SG ##
 if epochs_SG > 0:
@@ -408,14 +414,14 @@ if epochs_SG > 0:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
-            'name': f"{diff_method_SG}_SG_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'name': f"{diff_method_SG}_SG_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
+            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'job_type': f"{time_limit_SG}sec_SG",
             'config': {
                 "architecture": model_shape_SG,
                 "dropout": dropout_SG,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
-                "dataset_eval": f"eval_{num_item}_{num_data_eval}_{num_feat}_{gamma_str}.txt",
+                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
+                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
                 "batch_size": batch_size_SG,
                 "epochs": epochs_SG,
                 "time_limit": time_limit_SG,
@@ -429,12 +435,12 @@ if epochs_SG > 0:
             }
 
     }
-    run_train(model, "SG", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, principal_lin,
+    run_train(model, "SG", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
             batch_size=batch_size_SG, epochs=epochs_SG, lr=lr_SG,
             schedulerType=schedulerType_SG, sched_arg=sched_arg_SG,
             diff_method_name=diff_method_SG, diff_method_arg=diff_method_arg_SG,
             step_mu=step_mu, num_iter_mu=num_iter_mu,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG, eval_freq = eval_freq, patience=patience_SG)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG, eval_freq = eval_freq_SG, patience=patience_SG)
 
 if epochs_MSE > 0:
     model = CustomMLP(model_shape_MSE, dropout=dropout_MSE).to(device)
@@ -442,14 +448,14 @@ if epochs_MSE > 0:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
-            'name': f"MSE_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
-            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{gamma_str}",
+            'name': f"MSE_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
+            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'job_type': f"{time_limit_MSE}sec_MSE",
             'config': {
                 "architecture": model_shape_MSE,
                 "dropout": dropout_MSE,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
-                "dataset_eval": f"eval_{num_item}_{num_data_train}_{num_feat}_{gamma_str}.txt",
+                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
+                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
                 "batch_size": batch_size_MSE,
                 "epochs": epochs_MSE,
                 "time_limit": time_limit_MSE,
@@ -458,7 +464,7 @@ if epochs_MSE > 0:
                 "sched_arg": sched_arg_MSE,
             }
     }
-    run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, principal_lin,
+    run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, deg, principal_lin,
             batch_size=batch_size_MSE, epochs=epochs_MSE, lr=lr_MSE,
             schedulerType=schedulerType_MSE, sched_arg=sched_arg_MSE,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=100, patience=patience_MSE)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=eval_freq_MSE, patience=patience_MSE)

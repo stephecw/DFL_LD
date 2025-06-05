@@ -3,7 +3,7 @@
 #SBATCH --account=def-qcappart   # Remplacez par votre compte
 #SBATCH --mem=4G                 # Mémoire requise (4 Go)
 #SBATCH --cpus-per-task=4        # Nombre de CPU
-#SBATCH --gres=gpu:1             # Si vous avez besoin d'un GPU
+# #SBATCH --gres=gpu:1             # Si vous avez besoin d'un GPU
 #SBATCH --job-name=job_test4    # Nom du job
 #SBATCH --output=output4.log     # Fichier de sortie
 #SBATCH --error=error4.log
@@ -14,7 +14,11 @@ module load python/3.10
 module load scipy-stack
 source ~/env_projet/bin/activate
 
-python -m knapsack.run_experiments --keep 3 --diff IMLE --method SG --ep 1000000 --tl 10800 --step_mu 1 --n_iter_mu 5
+python -m portfolio.gen_data --n 100 --n_iter 1000 --deg 16
+
+python -m portfolio.gen_data --n 100 --n_iter 1000 --deg 16 --n_train 1000 --n_validation 250
+
+# python -m knapsack.run_experiments --keep 3 --diff IMLE --method SG --ep 1000000 --tl 10800 --step_mu 1 --n_iter_mu 5
 
 # python -m knapsack.gen_data  --n 50 --dim 10 --keep 3 --n_iter 200
 
