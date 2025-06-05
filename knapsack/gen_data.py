@@ -154,7 +154,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         )
     
     if verbose:
-        print(f" Optimisation of mu...")
+        print(f" Optimisation of mu...", flush=True)
     if wandbarg is not None:
         import time
         begin_time = time.time()
@@ -197,7 +197,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
     mu_flat     = mu_batch.view(num_data_train, -1).cpu().numpy()
     
     if verbose:
-        print(f"Writing on file with keep={keep} : {output_train_txt}")
+        print(f"Writing on file with keep={keep} : {output_train_txt}", flush=True)
     write_dataset_file(
         output_train_txt,
         global_dim=global_dim,
@@ -214,7 +214,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         mu=mu_flat
     )
     if verbose:
-        print("Dataset updated with X and mu variables.")
+        print("Dataset updated with X and mu variables.", flush=True)
 
 
 if __name__ == "__main__":
