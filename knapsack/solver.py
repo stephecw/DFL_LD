@@ -5,11 +5,11 @@ from pyepo.model.grb import knapsackModel
 import gurobipy as gp
 from joblib import Parallel, delayed
 
-class solver_X_1D_knapsack():
+class solver_X_1D_knapsack_GPU():
 
     def __init__(self, weights, capacity, device):
-        self.weights = torch.as_tensor(weights, dtype=torch.int32, device=device)
-        self.capacity = torch.as_tensor([capacity], dtype=torch.int32, device=device)
+        self.weights = weights
+        self.capacity = torch.tensor([capacity], dtype=torch.int32, device=device)
         self.num_items = weights.shape[0]
         self.device = device
     
@@ -96,6 +96,20 @@ def dp_knapsack_gpu_batch(capacity, weights, c, num_items, X, Ldp):
             X[idx_batch * num_items + i - 1] = 1
             w -= weights[i - 1]
 
+class solver_X_knapsack_CPU():
+
+    def __init__(self, weights, capacity):
+        self.model = knapsackModel(weights=weights, capacity=capacity)
+    
+    def __call__(self, c):
+        for i in range(c.shape[0]):
+            self.model.setObj(c[i])
+            x_i, _ = self.model.solve()
+            if i == 0:
+                X = x_i
+            else:
+                X = np.vstack((X, x_i))
+        return torch.tensor(X, dtype=torch.int32)
 
 class solver_X_MD_knapsack():
     """
