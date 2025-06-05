@@ -255,6 +255,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     std_relat_test = np.std(regrets_test)
 
     test_row = {
+        'time limit':        time_limit,
         'dim':               dim,
         'keep':              keep,
         'num_feat':          num_feat,
