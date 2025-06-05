@@ -63,6 +63,8 @@ class solver_X_knapsack():
         """
         # on passe en numpy pour joblib
         c_np = c_batch
-        self.solver.setObj(c_np)
-        sols , _ = self.solver.solve()
-        return sols
+        X = np.zeros((c_np.shape[0], c_np.shape[1]), dtype=int)
+        for i in range(c_np.shape[0]):
+            self.solver.setObj(c_np[i])
+            X[i], _ = self.solver.solve()
+        return X
