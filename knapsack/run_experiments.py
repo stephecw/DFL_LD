@@ -46,9 +46,10 @@ args = parser.parse_args()
 method = args.method
 # Problem dimensions
 num_feat = 200
-num_data_train = 500  # Training dataset size
-num_data_eval = 100   # eval dataset size
-num_data_test = 400  # Test dataset size
+
+num_data_train = 200  # Training dataset size
+num_data_eval = 200   # eval dataset size
+num_data_test = 1000  # Test dataset size
 
 dim = args.dim
 num_item = args.n
@@ -58,7 +59,7 @@ epochs = args.ep if args.ep > 0 else int(1e10)
 tl = args.tl if args.tl > 0 else int(1e10)
 batch_size = 32
 lr = args.lr
-model_shape = [num_feat, 100, num_item]
+model_shape = [num_feat, num_item]
 dropout = 0.2
 
 schedulerType = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
@@ -79,12 +80,13 @@ step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
 
 
-def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval,
+
+def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None,
               step_mu=None, num_iter_mu=None,
-              test_model=False, num_data_test=200, verbose=False, wandbarg=None, time_limit=None, save_model=True):
+              test_model=False, verbose=False, wandbarg=None, time_limit=None, save_model=True):
     """
     Main function to load dataset and train the model.
     model: nn.Module: Model to train.
@@ -111,7 +113,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     run = None
     if wandbarg is not None:
         import wandb
-        #wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9")  # Replace with your API key
+        #wandb.login(key="")  # Replace with your API key
         run = wandb.init(mode="offline", **wandbarg)
 
     # Load training dataset
@@ -124,10 +126,10 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -307,7 +309,7 @@ wandbarg = {
             "diff_method_arg": diff_method_arg
         }
 }
-run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval,
+run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
         batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl,
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,
