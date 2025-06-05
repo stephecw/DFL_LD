@@ -1,7 +1,4 @@
 .DS_Store
 .DS_Store
 wandb/
-*/output/
-__pycache__
-*.csv
-*.txt
+job_test/
