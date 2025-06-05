@@ -192,6 +192,10 @@ class BatchSolverExact:
         c_batch : (B, n) torch.Tensor
         -> renvoie sol_batch : (B, n) torch.Tensor
         """
+        if not isinstance(c_batch, torch.Tensor):
+            c_batch = torch.tensor(c_batch, dtype=torch.float32, device=self.device)
+        else:
+            c_batch = c_batch
         eps = 1e-8
         A = c_batch @ self.cov_inv 
         B = self.gamma * self.cov_mean / ((c_batch*A).sum(dim=1)+ eps)
