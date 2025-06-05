@@ -63,9 +63,7 @@ class Solveur_quad(optModel):
             #raise RuntimeError("Gurobi n’a pas trouvé d’optimum.")
         sol_np = self.qp_w.X.copy()
         obj_val = self.qp_model.ObjVal
-        sol_t = torch.tensor(sol_np, dtype=torch.float32,
-                                        device=self.c.device)
-        return sol_t, obj_val 
+        return sol_np, obj_val 
 
     
 class gb_portfolio_solver(optModel):
@@ -139,6 +137,30 @@ class BatchSolverLin:
             sol_i, _ = self.solver.solve()      # sol_i: Tensor(n,)
             sols.append(sol_i)
         return torch.stack(sols, dim=0)         # (B, n)
+    
+# On déclare un solveur global par processus
+_GLOBAL_SOLVER = None
+
+def init_solver(n_stocks, cov, gamma, maximize):
+    """
+    Fonction d'initialisation appelée une fois dans chaque process de Joblib.
+    Elle crée un unique Solveur_quad et le stocke dans la variable globale.
+    """
+    global _GLOBAL_SOLVER
+    # Cov doit être en numpy (au besoin, déjà préparé dans BatchSolverQuad)
+    _GLOBAL_SOLVER = Solveur_quad(n_stocks, cov, gamma, maximize=maximize)
+
+def solve_one(c_i_np):
+    """
+    Cette fonction sera appelée par chaque process pour résoudre un sous-problème.
+    Elle utilise le solveur initialisé dans init_solver (variable globale).
+    """
+    global _GLOBAL_SOLVER
+    # On fixe l'objectif avec le vecteur c_i_np
+    _GLOBAL_SOLVER.setObj(torch.from_numpy(c_i_np))
+    sol_torch, _ = _GLOBAL_SOLVER.solve()
+    return sol_torch.cpu().numpy()
+
 
 class BatchSolverQuad:
     """Wrapper qui lance chaque sous‑problème quadratique dans un process séparé."""
@@ -151,25 +173,24 @@ class BatchSolverQuad:
         self.device = device
         self.n_jobs = n_jobs
 
-    def _solve_one(self, c_i_np):
-        # Reconstruit un solveur Gurobi à l'intérieur du process
-        solver = Solveur_quad(self.n_stocks, self.cov, self.gamma, maximize=self.maximize)
-        solver.setObj(torch.from_numpy(c_i_np))
-        sol_torch, _ = solver.solve()
-        return sol_torch.cpu().numpy()
-
-    def __call__(self, c_batch: torch.Tensor) -> torch.Tensor:
+    def __call__(self, c_batch):
         """
         c_batch : (B, n) torch.Tensor
         -> renvoie sol_batch : (B, n) torch.Tensor
         """
         # on passe en numpy pour joblib
-        c_np = c_batch.detach().cpu().numpy()
-        sols = Parallel(n_jobs=self.n_jobs, backend="loky")(
-            delayed(self._solve_one)(c_np[i]) for i in range(c_np.shape[0])
+        c_np = c_batch
+        sols = Parallel(
+            n_jobs=self.n_jobs,
+            backend="loky",
+            initializer=init_solver,
+            initargs=(self.n_stocks, self.cov, self.gamma, self.maximize)
+        )(
+            delayed(solve_one)(c_np[i]) for i in range(c_np.shape[0])
         )
         # retour en torch.Tensor sur l'appareil souhaité
-        return torch.tensor(sols, dtype=c_batch.dtype, device=self.device)
+        sol_np = np.stack(sols, axis = 0)
+        return sol_np
 
 class BatchSolverExact:
     """
