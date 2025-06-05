@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=02:00:00          # Temps d'exécution
+#SBATCH --time=04:00:00          # Temps d'exécution
 #SBATCH --account=def-qcappart   # Remplacez par votre compte
 #SBATCH --mem=32G                 # Mémoire requise (4 Go)
 #SBATCH --cpus-per-task=8        # Nombre de CPU
