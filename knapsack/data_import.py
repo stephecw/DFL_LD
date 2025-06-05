@@ -52,6 +52,7 @@ class ImportDataset:
             self.capacities = np.array(self.capacities)
             self.weights = np.array(self.weights)
             
+            self.obj = []
             self.Z = []
             self.c = []
             self.x = []
@@ -59,12 +60,14 @@ class ImportDataset:
             self.mu = []
             for i in range(self.num_data):
                 line = lines[self.global_dim+1+i].split(",")
-                self.Z.append(list(map(float, line[:self.num_feat])))
-                self.c.append(list(map(int, line[self.num_feat:self.num_feat+self.num_item])))
-                self.x.append(list(map(int, line[self.num_feat+self.num_item:self.num_feat+self.num_item+self.num_item])))
+                self.obj.append(float(line[0])) 
+                self.Z.append(list(map(float, line[1:1+self.num_feat])))
+                self.c.append(list(map(int, line[1+self.num_feat:1+self.num_feat+self.num_item])))
+                self.x.append(list(map(int, line[1+self.num_feat+self.num_item:1+self.num_feat+self.num_item+self.num_item])))
                 if not test:
-                    self.X.append(list(map(int, line[self.num_feat+self.num_item+self.num_item:self.num_feat+self.num_item+self.num_item+self.num_item])))
-                    self.mu.append(list(map(float, line[self.num_feat+self.num_item+self.num_item+self.num_item:])))
+                    self.X.append(list(map(int, line[1+self.num_feat+self.num_item+self.num_item:1+self.num_feat+self.num_item+self.num_item+self.num_item])))
+                    self.mu.append(list(map(float, line[1+self.num_feat+self.num_item+self.num_item+self.num_item:])))
+            self.obj = np.array(self.obj)
             self.Z = np.array(self.Z)
             self.c = np.array(self.c)
             self.x = np.array(self.x)
@@ -78,6 +81,15 @@ class ImportDataset:
     def get_z_stats(self):
         """Retourne (mean, std) utilisés pour la normalisation."""
         return self.z_mean, self.z_std
+
+    def get_obj(self, tensor=False):
+        """
+        Retourne les valeurs de l'objectif.
+        tensor : bool : Si True, retourne un tenseur PyTorch.
+        """
+        if tensor:
+            return torch.tensor(self.obj, dtype=torch.float32)
+        return self.obj
 
     def get_sizes(self):
         """
