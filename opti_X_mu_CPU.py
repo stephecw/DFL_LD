@@ -54,10 +54,10 @@ class OptimizationBatchModel:
             self.mu = self.mu - lr * m_hat / (np.sqrt(v_hat) + eps)
             
             if verbose:
-                print(f"    Iteration {t}/{max_iter} : {np.max(np.abs(lr * m_hat / (np.sqrt(v_hat) + eps)))}")
+                print(f"    Iteration {t}/{max_iter} : {np.max(np.abs(lr * m_hat / (np.sqrt(v_hat) + eps)))}", flush=True)
             
             if np.max(np.abs(lr * m_hat / (np.sqrt(v_hat) + eps))) < convergence:
-                print(f"Convergence reached")
+                print(f"Convergence reached", flush=True)
                 break
 
     def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
