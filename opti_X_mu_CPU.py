@@ -15,8 +15,8 @@ class OptimizationBatchModel:
         self.num_pb = len(solvers)
 
     def update_val(self):
-        Parallel(n_jobs=-1, backend="loky")(
-            delayed(self._solve_one)(i) for i in range(self.num_pb)
+        Parallel(n_jobs=-1, backend="threading")(
+            delayed(self.solve_X)(i) for i in range(self.num_pb)
         )
         self.vals = np.sum((self.c + self.mu.sum(axis=1)) * self.X[:,0], axis=1) - np.sum(self.mu*self.X[:, 1:], axis=(1,2))
 
@@ -30,10 +30,10 @@ class OptimizationBatchModel:
         """
         Calculate the gradient ∇B(μ) = X1 - Xi for the entire batch.
         """
-        Parallel(n_jobs=-1, backend="loky")(
-            delayed(self._solve_one)(i) for i in range(self.num_pb)
+        Parallel(n_jobs=-1, backend="threading")(
+            delayed(self.solve_X)(i) for i in range(self.num_pb)
         )
-        return self.X[:, 0].unsqueeze(1) - self.X[:, 1:]
+        return np.expand_dims(self.X[:, 0], axis=1) - self.X[:, 1:]
 
     def adam_optimizer(self, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=3000, convergence=1e-4, verbose=False):
         """
@@ -79,8 +79,8 @@ class OptimizationBatchModel:
         return torch.tensor(self.X[:, 0], dtype=torch.int32, device=device) if tensor else self.X[:, 0]
 
     def get_X(self, tensor=True, device=torch.device("cpu")):
-        Parallel(n_jobs=-1, backend="loky")(
-            delayed(self._solve_one)(i) for i in range(self.num_pb)
+        Parallel(n_jobs=-1, backend="threading")(
+            delayed(self.solve_X)(i) for i in range(self.num_pb)
         )
         return torch.tensor(self.X, dtype=torch.int32, device=device) if tensor else self.X
 

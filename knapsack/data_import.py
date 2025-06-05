@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, TensorDataset
 class ImportDataset:
     def __init__(self, fname, model=None, z_stats=None, test=False):
         self.test = test
-        self.read_file(fname, test)
+        self.read_file(fname)
 
         Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
 
@@ -77,7 +77,7 @@ class ImportDataset:
             self.x = np.array(self.x)
             if self.test:
                 self.X = np.zeros((self.num_data, self.num_item))
-                self.mu = np.zeros((self.num_data, self.global_dim-self.keep, self.num_item))
+                self.mu = np.zeros((self.num_data, self.global_dim, self.num_item))
             else: 
                 self.X = np.array(self.X)
                 self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim-self.keep, self.num_item)
@@ -104,7 +104,7 @@ class ImportDataset:
         num_item : int : Nombre d'items.
         num_data : int : Nombre de données.
         """
-        if self.test:
+        if not self.test:
             return self.global_dim, self.keep, self.num_feat, self.num_item, self.num_data
         return self.global_dim, self.num_feat, self.num_item, self.num_data
     
