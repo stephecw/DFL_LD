@@ -72,18 +72,18 @@ class OptimizationBatchModel:
             self.mu = mu_init.clone().cpu().numpy() if isinstance(mu_init, torch.Tensor) else mu_init.copy()
         self.adam_optimizer(verbose=verbose, **adam_args)
 
-    def get_mu(self, device=torch.device("cpu")):
-        return torch.tensor(self.mu, dtype=torch.float32, device=device)
+    def get_mu(self, tensor=True, device=torch.device("cpu")):
+        return torch.tensor(self.mu, dtype=torch.float32, device=device) if tensor else self.mu
 
-    def get_X0(self, device=torch.device("cpu")):
+    def get_X0(self, tensor=True, device=torch.device("cpu")):
         self.X[0] = self.solvers[0](self.c + self.mu.sum(dim=1))
-        return torch.tensor(self.X[:, 0], dtype=torch.int32, device=device)
+        return torch.tensor(self.X[:, 0], dtype=torch.int32, device=device) if tensor else self.X[:, 0]
 
-    def get_X(self, device=torch.device("cpu")):
+    def get_X(self, tensor=True, device=torch.device("cpu")):
         Parallel(n_jobs=-1, backend="loky")(
             delayed(self._solve_one)(i) for i in range(self.num_pb)
         )
-        return torch.tensor(self.X, dtype=torch.int32, device=device)
+        return torch.tensor(self.X, dtype=torch.int32, device=device) if tensor else self.X
 
     def get_value(self):
         self.update_val()
