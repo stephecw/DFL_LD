@@ -2,6 +2,7 @@ import numpy as np
 import torch
 from joblib import Parallel, delayed
 
+
 class OptimizationBatchModel:
     def __init__(self, solvers):
         """
@@ -14,7 +15,9 @@ class OptimizationBatchModel:
         self.num_pb = len(solvers)
 
     def update_val(self):
-        self.solve_X()
+        Parallel(n_jobs=-1, backend="loky")(
+            delayed(self._solve_one)(i) for i in range(self.num_pb)
+        )
         self.vals = np.sum((self.c + self.mu.sum(axis=1)) * self.X[:,0], axis=1) - np.sum(self.mu*self.X[:, 1:], axis=(1,2))
 
     def solve_X(self, idx_pb):
@@ -56,7 +59,6 @@ class OptimizationBatchModel:
             if np.max(np.abs(lr * m_hat / (np.sqrt(v_hat) + eps))) < convergence:
                 print(f"Convergence reached")
                 break
-        self.update_val()
 
     def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
         self.c = c_batch.clone().cpu().numpy() if isinstance(c_batch, torch.Tensor) else c_batch.copy()  # [B, n]
@@ -67,19 +69,22 @@ class OptimizationBatchModel:
         if mu_init is None:
             self.mu = np.ones((batch_size, self.num_pb - 1, num_items), dtype=float)
         else:
-            self.mu = mu_init.cpu().numpy() if isinstance(mu_init, torch.Tensor) else mu_init.copy()
+            self.mu = mu_init.clone().cpu().numpy() if isinstance(mu_init, torch.Tensor) else mu_init.copy()
         self.adam_optimizer(verbose=verbose, **adam_args)
 
-    def get_mu(self, device=None):
-        return torch.tensor(self.mu, dtype=torch.float32, device=device) if device else torch.tensor(self.mu, dtype=torch.float32)
+    def get_mu(self, device=torch.device("cpu")):
+        return torch.tensor(self.mu, dtype=torch.float32, device=device)
 
-    def get_X0(self, device=None):
+    def get_X0(self, device=torch.device("cpu")):
         self.X[0] = self.solvers[0](self.c + self.mu.sum(dim=1))
-        return torch.tensor(self.X[:, 0], dtype=torch.int32, device=device) if device else torch.tensor(self.X[:, 0], dtype=torch.int32)
+        return torch.tensor(self.X[:, 0], dtype=torch.int32, device=device)
 
-    def get_X(self):
-        self.solve_X()
-        return self.X
+    def get_X(self, device=torch.device("cpu")):
+        Parallel(n_jobs=-1, backend="loky")(
+            delayed(self._solve_one)(i) for i in range(self.num_pb)
+        )
+        return torch.tensor(self.X, dtype=torch.int32, device=device)
 
     def get_value(self):
+        self.update_val()
         return self.vals

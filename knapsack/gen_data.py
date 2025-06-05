@@ -4,7 +4,7 @@ import torch
 import pyepo
 from pyepo.model.grb import knapsackModel
 from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
+from knapsack.solver import solver_X_knapsack
 from knapsack.data_import import ImportDataset
 import os
 
@@ -147,18 +147,10 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
     c_train       = ds.c           # (num_data_train, num_item)
     x_star_train  = ds.x           # (num_data_train, num_item)
 
-    solvers = []
-    if keep == 1:
-        solvers.append(
-            solver_X_1D_knapsack(weights[0], capacities[0], device)
-        )
-    else:
-        solvers.append(
-            solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)
-        )
+    solvers = [solver_X_knapsack(weights[:keep], capacities[:keep])]
     for i in range(keep, global_dim):
         solvers.append(
-            solver_X_1D_knapsack(weights[i], capacities[i], device)
+            solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
         )
     
     if verbose:
