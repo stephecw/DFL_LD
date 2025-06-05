@@ -9,8 +9,8 @@ from knapsack.data_import import ImportDataset
 from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus
-from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
+from opti_X_mu_CPU import OptimizationBatchModel
+from knapsack.solver import solver_X_knapsack
 
 import argparse
 import os, csv
@@ -20,9 +20,9 @@ import os, csv
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
-parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
 
 parser.add_argument('--dim', type=int, default=5, help='Number of constraints.')
+parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
 parser.add_argument('--n', type=int, default=30, help='Number of items.')
 parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
 
@@ -79,7 +79,7 @@ step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
 
 
-def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
+def run_train(model, jobtype, global_dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None,
@@ -89,7 +89,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     Main function to load dataset and train the model.
     model: nn.Module: Model to train.
     LD: bool: If True, use Lagrangian decomposition.
-    dim: int: Number of dimensions.
+    global_dim: int: Number of dimensions.
     num_feat: int: Number of features.
     num_item: int: Number of items.
     num_data_train: int: Number of training data points.
@@ -116,18 +116,18 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
     # Load training dataset
     if verbose:
-        print(f"Loading train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
+        print(f"Loading train_{global_dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
     try:
-        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt")
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{global_dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{global_dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -137,8 +137,8 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     eval_loader = eval_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Problem parameters
-    weights = train_set.get_weights(tensor=True)
-    capacities = train_set.get_capacities(tensor=True)
+    weights = train_set.get_weights(tensor=False)
+    capacities = train_set.get_capacities(tensor=False)
 
     # Model, optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr)
@@ -187,15 +187,14 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         elif diff_method_name == "SPOPlus":
             diff_method = SPOPlus(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         # Optimizer for mu
-        solvers = []
-        if keep == 1:
-            solvers = [solver_X_1D_knapsack(weights[0], capacities[0], device)]
-        else:
-            solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
-        solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep, dim)]
+        solvers = [solver_X_knapsack(weights[:keep], capacities[:keep])]
+        for i in range(keep, global_dim):
+            solvers.append(
+                solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
+            )
         optimizer_mu = OptimizationBatchModel(solvers, device)
         
-        mu_global0 = torch.ones(len(train_loader.dataset), dim - keep, num_item, device=device, dtype=torch.float32)
+        mu_global0 = torch.ones(len(train_loader.dataset), global_dim - keep, num_item, device=device, dtype=torch.float32)
 
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...", flush=True)
@@ -215,21 +214,21 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
                                         run=run, verbose=verbose)
 
     with open("knapsack/hp_results_best.txt", mode = "a") as file:
-            line = f"{jobtype};{diff_method_name};{diff_method_arg};{dim};{keep};{num_feat};{num_item};{num_data_train};{lr};"
+            line = f"{jobtype};{diff_method_name};{diff_method_arg};{global_dim};{keep};{num_feat};{num_item};{num_data_train};{lr};"
             line += f"{step_mu};{num_iter_mu};{schedulerType};{sched_arg};{best_relat_regret}\n"
             file.write(line)
     
     if test_model:
         if verbose:
-            print(f"Loading test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", flush=True)
+            print(f"Loading test_{global_dim}_{num_feat}_{num_item}_{num_data_test}.txt", flush=True)
         try:
-            test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
+            test_set = ImportDataset(f"knapsack/datasets/test_{global_dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
         except FileNotFoundError:
             print(f"File not found.", flush=True)
         test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
         with open("knapsack/test_results_best.txt", mode = "a") as file:
             rel_regret = test(model, test_loader, eval_solver, device)
-            line = f"{dim};{keep};{num_feat};{num_item};{num_data_train};{jobtype};{step_mu};{num_iter_mu};{diff_method_name};{lr};"
+            line = f"{global_dim};{keep};{num_feat};{num_item};{num_data_train};{jobtype};{step_mu};{num_iter_mu};{diff_method_name};{lr};"
             line += ";".join(str(rel_regret[j]) for j in range(num_data_test - 1)) + f";{rel_regret[-1]}\n"
             file.write(line)
     
@@ -240,7 +239,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             file += f"_{diff_method_name}"
             for v in diff_method_arg.values():
                 file += "_"+str(v).replace(".", "-")
-        file += f"_{dim}_{keep}_{num_feat}_{num_item}_{lr}_{num_data_train}_{num_data_eval}"
+        file += f"_{global_dim}_{keep}_{num_feat}_{num_item}_{lr}_{num_data_train}_{num_data_eval}"
         if jobtype == "SG":
             file += f"_{step_mu}_{num_iter_mu}"
         file += f"_{schedulerType}"

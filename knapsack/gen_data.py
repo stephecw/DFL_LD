@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import pyepo
 from pyepo.model.grb import knapsackModel
-from opti_X_mu import OptimizationBatchModel
+from opti_X_mu_CPU import OptimizationBatchModel
 from knapsack.solver import solver_X_knapsack
 from knapsack.data_import import ImportDataset
 import os
@@ -178,8 +178,8 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         wandb.finish()
 
     # 5. Récupérer X et μ calculés
-    X_batch  = optimizer_mu.get_X()   # shape (num_data_train, global_dim, num_item)
-    mu_batch = optimizer_mu.get_mu()  # shape (num_data_train, global_dim-new_keep, num_item)
+    X_batch  = optimizer_mu.get_X(tensor=False)   # shape (num_data_train, global_dim, num_item)
+    mu_batch = optimizer_mu.get_mu(tensor=False)  # shape (num_data_train, global_dim-new_keep, num_item)
     vals = optimizer_mu.get_value().cpu().numpy() # shape (num_data_train)
 
     if monitor:

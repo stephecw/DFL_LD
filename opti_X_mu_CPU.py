@@ -64,8 +64,7 @@ class OptimizationBatchModel:
         self.c = c_batch.clone().cpu().numpy() if isinstance(c_batch, torch.Tensor) else c_batch.copy()  # [B, n]
         batch_size, num_items = self.c.shape
         self.X = np.zeros((batch_size, self.num_pb, num_items), dtype=int)
-        self.vals = torch.zeros(batch_size, dtype=float)
-        
+        self.vals = np.zeros(batch_size, dtype=float)
         if mu_init is None:
             self.mu = np.ones((batch_size, self.num_pb - 1, num_items), dtype=float)
         else:
@@ -85,6 +84,6 @@ class OptimizationBatchModel:
         )
         return torch.tensor(self.X, dtype=torch.int32, device=device) if tensor else self.X
 
-    def get_value(self):
+    def get_value(self, tensor=True, device=torch.device("cpu")):
         self.update_val()
-        return self.vals
+        return torch.tensor(self.vals, dtype=torch.float32, device=device) if tensor else self.vals
