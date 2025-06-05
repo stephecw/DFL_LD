@@ -93,7 +93,7 @@ def dp_knapsack_gpu_batch(capacity, weights, c, num_items, X, Ldp):
             w -= weights[i - 1]
 
 
-class solver_X_MD_knapsack():
+class solver_X_knapsack():
     """
     Solver for the knapsack problem with multiple dimensions.
 
@@ -104,13 +104,8 @@ class solver_X_MD_knapsack():
         self.num_items = weights.shape[0]
         self.device = device
         self.n_jobs = n_jobs
+        self.solver = knapsackModel(weights=self.weights, capacity=self.capacities)
 
-    
-    def _solve_one(self, c_i_np):
-        solver = knapsackModel(weights=self.weights, capacity=self.capacities)
-        solver.setObj(c_i_np)
-        x_i, _ = solver.solve()
-        return x_i
 
     def __call__(self, c_batch):
         """
@@ -118,10 +113,7 @@ class solver_X_MD_knapsack():
         -> renvoie sol_batch : (B, n) torch.Tensor
         """
         # on passe en numpy pour joblib
-        c_np = c_batch.detach().cpu().numpy()
-        sols = Parallel(n_jobs=self.n_jobs, backend="loky")(
-            delayed(self._solve_one)(c_np[i]) for i in range(c_np.shape[0])
-        )
-        sols_np = np.stack(sols, axis=0)
-        # retour en torch.Tensor sur l'appareil souhaité
-        return torch.from_numpy(sols_np).to(device=self.device, dtype=c_batch.dtype)
+        c_np = c_batch
+        self.solver.setObj(c_np)
+        sols , _ = self.solver.solve()
+        return sols
