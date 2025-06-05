@@ -284,7 +284,7 @@ sched_arg_classic = {'patience': 100,
 diff_method_classic = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_classic = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 patience_classic = 10000000
-eval_freq_classic = 4
+eval_freq_classic = 10
 
 # LD parameters
 epochs_LD = args.ep_ld
@@ -302,7 +302,7 @@ diff_method_LD = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_LD = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 principal_lin = False if args.lin == 0 else True
 patience_LD = 10000000
-eval_freq_LD = 100 if diff_method_arg_LD == "Exact" else 4
+eval_freq_LD = 100 if diff_method_arg_LD == "Exact" else 10
 
 
 # SG parameters
@@ -322,7 +322,7 @@ diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sig
 step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
 patience_SG = 10000000
-eval_freq_SG = 100 if diff_method_arg_SG == "Exact" else 4
+eval_freq_SG = 100 if diff_method_arg_SG == "Exact" else 10
 
 # MSE parameters
 epochs_MSE = args.ep_mse

@@ -9,7 +9,9 @@ class I_MLE():
     Class for diff_method 
     """
     def __init__(self, solver, device, **args_imle):
-        self.imle = pyepo_func_pert.implicitMLE(solver, **args_imle)
+        is_cpu = (device.type == "cpu")
+        proc = 0 if is_cpu else 1
+        self.imle = pyepo_func_pert.implicitMLE(solver, processes = proc, **args_imle)
         self.device = device
     
     def __call__(self, c_hat, c, x):
@@ -22,7 +24,9 @@ class SPOPlus():
     Class for diff_method 
     """
     def __init__(self, solver, device, **args_spo):
-        self.spo = pyepo_func_surr.SPOPlus(solver, **args_spo)
+        is_cpu = (device.type == "cpu")
+        proc = 0 if is_cpu else 1
+        self.spo = pyepo_func_surr.SPOPlus(solver, processes = proc, **args_spo)
         self.device = device
     
     def __call__(self, c_hat, c, x):
