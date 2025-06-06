@@ -14,7 +14,6 @@ for file in os.listdir("./"):
         lis.append(np.sort(np.array(list(map(float,lines[0].split(";"))))))
 
 print(files)
-print(len(lis))
 # Calcul de la FRE
 n = len(lis[0])
 y = np.arange(1, n+1)

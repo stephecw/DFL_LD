@@ -12,7 +12,7 @@ import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, capacities, weights, obj, Z, c, x_star_array, X=None, mu=None):
+def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, capacities, weights, obj, Z, c, x_star_array, keep=None, X=None, mu=None):
     with open(fname, 'w') as f:
         # Constraints (unique for the whole dataset)
         if X is not None:
@@ -141,6 +141,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
     if gd != global_dim or nf != num_feat or ni != num_items or nd != num_data_train:
         raise ValueError("The dataset dimensions do not match the expected values.")
     
+    obj = ds.get_obj(tensor=False)  # numpy array (num_data_train)
     capacities = ds.get_capacities(tensor=False)  # numpy array (global_dim,)
     weights    = ds.get_weights(tensor=False)     # numpy array (global_dim, num_item)
     Z_train       = ds.Z           # (num_data_train, num_feat)
@@ -203,11 +204,12 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         global_dim=global_dim,
         keep=keep,
         num_feat=num_feat,
-        num_item=num_item,
+        num_item=num_items,
         num_data=num_data_train,
         capacities=capacities,
         weights=weights,
         Z=Z_train,
+        obj=obj,
         c=c_train,
         x_star_array=x_star_train,
         X=X_principal,
