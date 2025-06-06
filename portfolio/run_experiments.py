@@ -8,7 +8,7 @@ from portfolio.data_import import ImportDataset
 from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus, Exact, SPOPlus2
-from opti_X_mu import OptimizationBatchModel
+from opti_X_mu_CPU import OptimizationBatchModel
 from portfolio.my_solver import BatchSolverLin, BatchSolverQuad, Solveur_lin, Solveur_quad, gb_portfolio_solver, BatchSolverExact
 
 import argparse
@@ -175,7 +175,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             solvers = [lin_solver, quad_solver] if diff_method_name != "Exact" else [lin_solver, exact_quad_solver]
         else :
             solvers = [quad_solver, lin_solver] if diff_method_name != "Exact" else [exact_quad_solver, lin_solver]
-        optimizer_mu = OptimizationBatchModel(solvers, device)
+        optimizer_mu = OptimizationBatchModel(solvers)
 
         mu_global0 = torch.ones(len(train_loader.dataset), 1, num_item, device=device, dtype=torch.float32)
 

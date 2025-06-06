@@ -75,7 +75,7 @@ class OptimizationBatchModel:
         return torch.tensor(self.mu, dtype=torch.float32, device=device) if tensor else self.mu
 
     def get_X0(self, tensor=True, device=torch.device("cpu")):
-        self.X[0] = self.solvers[0](self.c + self.mu.sum(dim=1))
+        self.X[0] = self.solvers[0](self.c + self.mu.sum(axis=1))
         return torch.tensor(self.X[:, 0], dtype=torch.int32, device=device) if tensor else self.X[:, 0]
 
     def get_X(self, tensor=True, device=torch.device("cpu")):
