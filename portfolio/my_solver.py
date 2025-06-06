@@ -3,6 +3,7 @@ import numpy as np
 import gurobipy as gp
 from gurobipy import GRB
 from pyepo.model.opt import optModel
+from pyepo.model.grb import optGrbModel
 
 class Solveur_lin(optModel):
     def __init__(self, num_item, maximize = True):
@@ -29,42 +30,36 @@ class Solveur_lin(optModel):
         sol[best_idx] = 1
         return sol, torch.dot(self.c, sol)
     
-class Solveur_quad(optModel):
-    def __init__(self,  n_stocks, cov, gamma, maximize=True):
+
+class Solveur_quad(optGrbModel):
+    def __init__(self, n_stocks, cov, gamma):
         self.n_stocks = n_stocks
-        self.cov = cov
-        self.gamma =  gamma
-        self.maximize = maximize
-
-        self.qp_model = gp.Model("qp")
-        self.qp_model.setParam('OutputFlag', 0)
-
-        self.qp_w = self.qp_model.addMVar(shape= n_stocks, lb=0.0, vtype=GRB.CONTINUOUS, name="w")
-
-        self.qp_model.addConstr(self.qp_w @ self.cov @ self.qp_w <= self.gamma*np.mean(self.cov) , "2")
-
+        self.cov      = cov
+        self.gamma    = gamma
         super().__init__()
-
     def _getModel(self):
-        return self.qp_model, self.qp_w
-    
-    def setObj(self, r):
-        self.c = r
-        c_np   = self.c.detach().cpu().numpy()
-        sense  = GRB.MAXIMIZE if self.maximize else GRB.MINIMIZE
-        self.qp_model.setObjective(0, sense)
-        self.qp_model.setObjective(c_np @ self.qp_w, sense)
-    
-    def solve(self):
-        self.qp_model.optimize()
-        if self.qp_model.status != GRB.OPTIMAL:
-            print("solution pas optimale | statut : ", self.qp_model.status, "\n")
-            #print(self.c.detach().cpu().numpy())
-            #raise RuntimeError("Gurobi n’a pas trouvé d’optimum.")
-        sol_np = self.qp_w.X.copy()
-        obj_val = self.qp_model.ObjVal
-        return sol_np, obj_val 
-
+        m = gp.Model("qp_portfolio")
+        m.setParam("OutputFlag", 0)
+        m.modelSense = GRB.MAXIMIZE
+        # addVars returns a tupledict indexed by 0..n_stocks-1
+        w = m.addVars(
+            range(self.n_stocks),
+            lb=0.0,
+            vtype=GRB.CONTINUOUS,
+            name="w"
+        )
+        # build quadratic expression for w' * cov * w
+        qexpr = gp.QuadExpr()
+        for i in range(self.n_stocks):
+            for j in range(self.n_stocks):
+                coeff = self.cov[i, j]
+                if coeff != 0:
+                    qexpr.add(w[i] * coeff * w[j])
+        m.addQConstr(
+            qexpr <= self.gamma * np.mean(self.cov),
+            name="risk"
+        )
+        return m, w
     
 class gb_portfolio_solver(optModel):
     '''
@@ -138,33 +133,41 @@ class BatchSolverLin:
             sols.append(sol_i)
         return torch.stack(sols, dim=0)         # (B, n)
     
+from functools import partial
+
 # On déclare un solveur global par processus
 _GLOBAL_SOLVER = None
 
 def init_solver(n_stocks, cov, gamma, maximize):
     """
-    Fonction d'initialisation appelée une fois dans chaque process de Joblib.
-    Elle crée un unique Solveur_quad et le stocke dans la variable globale.
+    (Cette fonction n'est plus passée à Parallel,
+    mais on la conserve pour ne pas changer le nom.)
     """
     global _GLOBAL_SOLVER
-    # Cov doit être en numpy (au besoin, déjà préparé dans BatchSolverQuad)
     _GLOBAL_SOLVER = Solveur_quad(n_stocks, cov, gamma, maximize=maximize)
 
-def solve_one(c_i_np):
+def solve_one(c_i_np, n_stocks, cov, gamma, maximize):
     """
-    Cette fonction sera appelée par chaque process pour résoudre un sous-problème.
-    Elle utilise le solveur initialisé dans init_solver (variable globale).
+    Cette fonction est exécutée dans chaque process (ou dans le même process si n_jobs=1).
+    Elle instancie le solveur une seule fois (lazy init) dans _GLOBAL_SOLVER
+    puis réutilise ce même solveur pour chaque appel ultérieur dans ce process.
     """
     global _GLOBAL_SOLVER
-    # On fixe l'objectif avec le vecteur c_i_np
+    if _GLOBAL_SOLVER is None:
+        _GLOBAL_SOLVER = Solveur_quad(n_stocks, cov, gamma, maximize=maximize)
+
     _GLOBAL_SOLVER.setObj(torch.from_numpy(c_i_np))
-    sol_torch, _ = _GLOBAL_SOLVER.solve()
-    return sol_torch.cpu().numpy()
+    sol, _ = _GLOBAL_SOLVER.solve()
+    return sol
 
 
 class BatchSolverQuad:
-    """Wrapper qui lance chaque sous‑problème quadratique dans un process séparé."""
+    """Wrapper qui lance chaque sous-problème quadratique dans un process séparé."""
     def __init__(self, n_stocks, cov, gamma, maximize=True, device="cpu", n_jobs=-1):
+        # Réinitialisation du solveur global au moment de la création de l'instance
+        global _GLOBAL_SOLVER
+        _GLOBAL_SOLVER = None
+
         self.n_stocks = n_stocks
         # on stocke en numpy (pickle-friendly) si nécessaire
         self.cov = cov.detach().cpu().numpy() if torch.is_tensor(cov) else cov.copy()
@@ -175,21 +178,33 @@ class BatchSolverQuad:
 
     def __call__(self, c_batch):
         """
-        c_batch : (B, n) torch.Tensor
-        -> renvoie sol_batch : (B, n) torch.Tensor
+        c_batch : (B, n) numpy.ndarray
+        -> renvoie sol_np : (B, n) numpy.ndarray
         """
-        # on passe en numpy pour joblib
+        # c_batch est déjà un numpy.ndarray, on l'utilise directement
         c_np = c_batch
+        B = c_np.shape[0]
+
+        # On crée une version « partielle » de solve_one,
+        # qui lie n_stocks, cov, gamma, maximize
+        bound_solve_one = partial(
+            solve_one,
+            n_stocks=self.n_stocks,
+            cov=self.cov,
+            gamma=self.gamma,
+            maximize=self.maximize
+        )
+
+        # On lance Parallel sans initializer, en passant à bound_solve_one uniquement c_i_np
         sols = Parallel(
             n_jobs=self.n_jobs,
-            backend="loky",
-            initializer=init_solver,
-            initargs=(self.n_stocks, self.cov, self.gamma, self.maximize)
+            backend="loky"
         )(
-            delayed(solve_one)(c_np[i]) for i in range(c_np.shape[0])
+            delayed(bound_solve_one)(c_np[i]) for i in range(B)
         )
-        # retour en torch.Tensor sur l'appareil souhaité
-        sol_np = np.stack(sols, axis = 0)
+
+        # On reconstruit le tableau numpy des solutions
+        sol_np = np.stack(sols, axis=0)  # forme (B, n)
         return sol_np
 
 class BatchSolverExact:

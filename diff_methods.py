@@ -30,6 +30,20 @@ class SPOPlus():
         self.device = device
     
     def __call__(self, c_hat, c, x):
+        loss = self.spo(c_hat, c, x.float(), (c*x).sum(dim=1)).to(self.device)
+        return loss
+
+class SPOPlus2():
+    """
+    Class for diff_method 
+    """
+    def __init__(self, solver, device, **args_spo):
+        is_cpu = (device.type == "cpu")
+        proc = 0 if is_cpu else 1
+        self.spo = pyepo_func_surr.SPOPlus(solver, processes = proc, **args_spo)
+        self.device = device
+    
+    def __call__(self, c_hat, c, x):
         loss = self.spo(-c_hat, -c, x.float(), -(c*x).sum(dim=1)).to(self.device)
         return loss
     

@@ -7,7 +7,7 @@ from pyepo.model.grb import portfolioModel
 from portfolio.data_import import ImportDataset
 from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
-from diff_methods import I_MLE, SPOPlus, Exact
+from diff_methods import I_MLE, SPOPlus, Exact, SPOPlus2
 from opti_X_mu import OptimizationBatchModel
 from portfolio.my_solver import BatchSolverLin, BatchSolverQuad, Solveur_lin, Solveur_quad, gb_portfolio_solver, BatchSolverExact
 
@@ -122,10 +122,10 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     if jobtype == "LD":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
-            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=True)
+            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
             diff_method = I_MLE(solver, device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=False)
+            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
             diff_method = SPOPlus(solver, device, **diff_method_arg)
         elif diff_method_name == "Exact":
             solver = BatchSolverExact(num_item, cov, gamma, device)
@@ -143,7 +143,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
             diff_method = I_MLE(solver, device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            solver = gb_portfolio_solver(n_stocks = cov.shape[0], cov = cov, gamma = gamma, maximize=False)
+            solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
             diff_method = SPOPlus(solver, device, **diff_method_arg)
         elif diff_method_name == "Exact":
             solver = BatchSolverExact(num_item, cov, gamma, device)
@@ -159,10 +159,10 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
     elif jobtype == "SG":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
-            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=True)
+            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
             diff_method = I_MLE(solver, device, **diff_method_arg)
         elif diff_method_name == "SPOPlus":
-            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma, maximize=False)
+            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
             diff_method = SPOPlus(solver, device, **diff_method_arg)
         elif diff_method_name == "Exact":
             solver = BatchSolverExact(num_item, cov, gamma, device)
