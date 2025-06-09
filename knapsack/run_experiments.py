@@ -9,8 +9,8 @@ from knapsack.data_import import ImportDataset
 from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus
-from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
+from opti_X_mu_CPU import OptimizationBatchModel
+from knapsack.solver import solver_X_knapsack
 
 import argparse
 import os, csv
@@ -126,10 +126,10 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -190,12 +190,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             diff_method = SPOPlus(knapsackModel(weights[:keep], capacities[:keep]), device, **diff_method_arg)
         # Optimizer for mu
         solvers = []
-        if keep == 1:
-            solvers = [solver_X_1D_knapsack(weights[0], capacities[0], device)]
-        else:
-            solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
-        solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep, dim)]
-        optimizer_mu = OptimizationBatchModel(solvers, device)
+        solvers = [solver_X_knapsack(weights[:keep], capacities[:keep])]
+        solvers += [solver_X_knapsack(np.expand_dims(weights[i], axis=0), np.expand_dims(capacities[i], axis=0)) for i in range(keep, dim)]
+        optimizer_mu = OptimizationBatchModel(solvers)
         
         mu_global0 = torch.ones(len(train_loader.dataset), dim - keep, num_item, device=device, dtype=torch.float32)
 
@@ -204,7 +201,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
         best_relat_regret = train_SG(model, diff_method, eval_solver, 
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=1,
+                                    epochs, time_limit, eval_freq=5,
                                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                                     mu_global0=mu_global0,
                                     run=run, verbose=verbose)
@@ -315,4 +312,4 @@ run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,
         diff_method_name=diff_method_name, diff_method_arg=diff_method_arg,
-        test_model=True, num_data_test=num_data_test, verbose=True, wandbarg=wandbarg, save_model=False)
+        test_model=True, verbose=True, wandbarg=wandbarg, save_model=False)
