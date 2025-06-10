@@ -1,4 +1,5 @@
 
+from re import M
 import numpy as np
 import torch
 import pyepo
@@ -26,22 +27,22 @@ def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, capaciti
         if X is not None:
             for i in range(num_data):
                 line = str(obj[i]) + ","
-                line += ",".join(str(Z[i][j]) for j in range(num_feat)) + ","
-                line += ",".join(str(int(c[i][j])) for j in range(num_item)) + ","
-                line += ",".join(str(int(x_star_array[i][j])) for j in range(num_item)) + ","
-                line += ",".join(str(int(X[i][j])) for j in range(num_item)) + ","
-                line += ",".join(str(mu[i][j].item()) for j in range(num_item*(global_dim-keep) - 1)) + f",{mu[i][-1]}\n"
+                line += ",".join(str(z) for z in Z[i]) + ","
+                line += ",".join(str(int(c)) for c in c[i]) + ","
+                line += ",".join(str(int(x)) for x in x_star_array[i]) + ","
+                line += ",".join(str(int(X)) for X in X[i]) + ","
+                line += ",".join(str(mu) for mu in mu[i][:-1]) + f",{mu[i][-1]}\n"
                 f.write(line)
         else:
             for i in range(num_data):
                 line = str(obj[i]) + ","
-                line += ",".join(str(Z[i][j]) for j in range(num_feat)) + ","
-                line += ",".join(str(int(c[i][j])) for j in range(num_item)) + ","
-                line += ",".join(str(int(x_star_array[i][j])) for j in range(num_item-1)) + f",{int(x_star_array[i][-1])}\n"
+                line += ",".join(str(z) for z in Z[i]) + ","
+                line += ",".join(str(int(c)) for c in c[i]) + ","
+                line += ",".join(str(int(x)) for x in x_star_array[i][:-1]) + f",{int(x_star_array[i][-1])}\n"
                 f.write(line)
 
 def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_items, global_dim, 
-                  deg=4, noise_width=0.5, verbose=False):
+                  deg=4, noise_width=0.5, verbose=False, wandbarg=None):
     """
     Generate a base dataset for the knapsack problem.
     Shape (num_data, num_feat) for Z, (num_data, num_items) for c and x_star_array.
@@ -59,7 +60,11 @@ def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_it
         noise_width (float): Width of the noise for data generation.
         convergence (float): Convergence criterion for the optimization.
     """
-    
+    if wandbarg is not None:
+        import wandb
+        #wandb.login(key="")  # Replace with your API key
+        run = wandb.init(mode="offline", **wandbarg)
+        
     total_data = num_data_train + num_data_test + num_data_eval
     if verbose:
         print(f"➡ Generation of {total_data} instances ({num_data_train} train, {num_data_eval} eval, {num_data_test} test)")
@@ -76,14 +81,26 @@ def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_it
         print(" Exact solving x*...")
     x_star_list = []
     obj_list = []
+    if wandbarg is not None:
+        import time
+        begin_time = time.time()
     for i in range(total_data):
         model = knapsackModel(weights=weights, capacity=capacities)
         model.setObj(c[i])
         x_star, obj = model.solve()
         obj_list.append(obj)
         x_star_list.append(x_star)
+        if i == num_data_train - 1 and wandbarg is not None:
+            end_time = time.time()
+            wandb.log({
+                "time": end_time - begin_time,
+                "num_data_train": num_data_train,
+                "num_items": num_items,
+                "global_dim": global_dim,
+            })
     x_star_array = np.array(x_star_list)
     obj_array = np.array(obj_list)
+    
     if verbose:
         print(" Exact solving done.")
 
@@ -103,10 +120,10 @@ def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_it
     write_dataset_file(f"knapsack/datasets/test_{global_dim}_{num_feat}_{num_items}_{num_data_test}.txt",
                        global_dim ,num_feat, num_items, num_data_test,
                        capacities, weights, obj_test, Z_test, c_test, x_star_test)
-
-
-def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1, 
-             num_iter=10000, convergence=1e-8, 
+    return end_time - begin_time
+        
+def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, keep=0, 
+             num_iter=10000, convergence=1e-8, timelimit=None,
              monitor=False, verbose=False, wandbarg=None):
     """
     Add the X and mu variables to the dataset.
@@ -148,14 +165,16 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
     c_train       = ds.c           # (num_data_train, num_item)
     x_star_train  = ds.x           # (num_data_train, num_item)
 
-    solvers = [solver_X_knapsack(weights[:keep], capacities[:keep])]
-    for i in range(keep, global_dim):
-        solvers.append(
-            solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
-        )
+    solvers = [solver_X_knapsack(np.expand_dims(weights[keep],axis=0), np.expand_dims(capacities[keep],axis=0))]
+    for i in range(global_dim):
+        if i != keep:
+            solvers.append(
+                solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
+            )
     
     if verbose:
         print(f" Optimisation of mu...", flush=True)
+        
     if wandbarg is not None:
         import time
         begin_time = time.time()
@@ -166,7 +185,8 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         c_batch=c_tensor,
         verbose=verbose,
         max_iter=num_iter,
-        convergence=convergence
+        convergence=convergence,
+        timelimit=timelimit
     )
     if wandbarg is not None:
         end_time = time.time()
@@ -198,7 +218,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
     mu_flat     = np.reshape(mu_batch, (num_data_train, -1))  # (num_data_train, (global_dim-keep)*num_item)
     
     if verbose:
-        print(f"Writing on file with keep={keep} : {output_train_txt}", flush=True)
+        print(f"Writing on file {output_train_txt}", flush=True)
     write_dataset_file(
         output_train_txt,
         global_dim=global_dim,
@@ -218,10 +238,133 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
     if verbose:
         print("Dataset updated with X and mu variables.", flush=True)
 
+def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim, 
+             num_iter=10000, convergence=1e-8, timelimit=None,
+             monitor=False, verbose=False, wandbarg=None):
+    """
+    Add the X and mu variables to the dataset.
+    Need the base dataset to be generated beforehand.
+    Args:
+        num_data_train (int): Number of training data points.
+        num_feat (int): Number of features.
+        num_items (int): Number of items in the knapsack.
+        global_dim (int): Number of constraints.
+        keep (int): Number of constraints to keep in the main subproblem.
+        deg (int): Degree of the polynomial for data generation.
+        num_iter (int): Number of iterations for the optimization of mu.
+        noise_width (float): Width of the noise for data generation.
+        convergence (float): Convergence criterion for the optimization.
+        monitor (bool): Whether to monitor the optimization process.
+        verbose (bool): Whether to print verbose output.
+    """
+    if wandbarg is not None:
+        import wandb
+        #wandb.login(key="")  # Replace with your API key
+        run = wandb.init(mode="offline", **wandbarg)
+    
+    input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}.txt"
+    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}.txt"
+    if verbose:
+        print(f"Reading existing file : {input_train_txt}")
+    if not os.path.isfile(input_train_txt):
+        raise FileNotFoundError(f"Can't find '{input_train_txt}'.")
+    
+    ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=True)
+    gd, nf, ni, nd = ds.get_sizes()
+    if gd != global_dim or nf != num_feat or ni != num_items or nd != num_data_train:
+        raise ValueError("The dataset dimensions do not match the expected values.")
+    
+    obj = ds.get_obj(tensor=False)  # numpy array (num_data_train)
+    capacities = ds.get_capacities(tensor=False)  # numpy array (global_dim,)
+    weights    = ds.get_weights(tensor=False)     # numpy array (global_dim, num_item)
+    Z_train       = ds.Z           # (num_data_train, num_feat)
+    c_train       = ds.c           # (num_data_train, num_item)
+    x_star_train  = ds.x           # (num_data_train, num_item)
+
+    X_full = []
+    mu_full = []
+    vals_full = []
+
+    if wandbarg is not None:
+        import time
+        begin_time = time.time()
+        
+    solvers = []
+    for i in range(global_dim):
+        solvers.append(
+            solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
+        )
+    optimizer_mu = OptimizationBatchModel(solvers)
+    
+    for i in range(global_dim):
+        if verbose:
+            print(f" Optimisation of mu keeping constraint {i}", flush=True)    
+        optimizer_mu.optim_mu(
+            c_batch=c_train,
+            main_solver=i,  # On garde la contrainte i comme principale
+            verbose=verbose,
+            max_iter=num_iter,
+            convergence=convergence,
+            timelimit=timelimit//global_dim if timelimit is not None else None
+        )
+        
+        # 5. Récupérer X et μ calculés
+        X_batch  = optimizer_mu.get_X(tensor=False)   # shape (num_data_train, global_dim, num_item)
+        X_full.append(X_batch[:, 0, :])  # On garde seulement la première composante X[:,0,:]
+        mu_batch = optimizer_mu.get_mu(tensor=False)  # shape (num_data_train, global_dim-new_keep, num_item)
+        mu_full.append(np.reshape(mu_batch, (num_data_train, -1)))  # On garde toutes les composantes de mu
+        vals = optimizer_mu.get_value().cpu().numpy() # shape (num_data_train)
+        vals_full.append(vals)  # On garde les valeurs de l'optimisation
+        
+                
+    if wandbarg is not None:
+        end_time = time.time()
+        wandb.log({
+            "time": end_time - begin_time,
+            "num_iter": num_iter,
+            "convergence": convergence,
+            "num_data_train": num_data_train,
+        })
+        wandb.finish()
+        
+    if monitor:
+        obj_array = ds.get_obj(tensor=False)  # (num_data_train)
+        with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{num_iter}.txt", mode="a") as f:
+            for i, vals in enumerate(vals_full):
+                line = f"{i};"
+                rapport = (vals - obj_array)/torch.tensor(obj_array)
+                for i in range(rapport.shape[0]):
+                    line += f"{rapport[i]};"
+                line += f"{rapport[-1]}\n"
+                f.write(line)
+
+    X_full = np.hstack(X_full)               # (num_data_train, num_item)
+    mu_full = np.hstack(mu_full)  # (num_data_train, (global_dim-keep)*num_item)
+    
+    if verbose:
+        print(f"Writing on file {output_train_txt}", flush=True)
+    write_dataset_file(
+        output_train_txt,
+        global_dim=global_dim,
+        keep=-1,
+        num_feat=num_feat,
+        num_item=num_items,
+        num_data=num_data_train,
+        capacities=capacities,
+        weights=weights,
+        Z=Z_train,
+        obj=obj,
+        c=c_train,
+        x_star_array=x_star_train,
+        X=X_full,
+        mu=mu_full
+    )
+    if verbose:
+        print("Dataset updated with X and mu variables.", flush=True)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Script for generating a dataset with specified dimensions.")
-    parser.add_argument('--keep', type=int, default=0, help='Number of constraints to keep in the main subproblem (0 to generate the base dataset).')
+    parser.add_argument('--keep', type=int, default=-1, help='Which constraint to keep in the main subproblem (-1 to generate multiple decomposition).')
     parser.add_argument('--n_iter', type=int, default=10000, help='Number of iterations for the optimization of mu.')
     parser.add_argument('--conv', type=float, default=1e-4, help='Convergence stopping.')
     parser.add_argument('--monitor', type=bool, default=True, help='Whether to monitor the optimization process.')
@@ -252,24 +395,40 @@ if __name__ == "__main__":
     monitor = args.monitor
     verbose = args.verbose
     
-    if keep == 0:
-        # Generate the base dataset
-        for n in num_item:
-            for gd in global_dim:
-                gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, deg, noise_width, verbose)
-    else:
-        # Add X and mu to the existing dataset
-        for n in num_item:
-            for gd in global_dim:
-                wandbarg = {
-                'entity': "hugoper-polytechnique-montr-al",
-                'project': "DFL_LD",
-                'dir': "./",
-                'name': f"opti_X_mu_{n}_{gd}_{keep}_{num_feat}_{num_data_train}_{num_iter}",
-                'group': f"knapsack",
-                'job_type': f"opti_X_mu",
-                'config': {
-                    "convergence": convergence
-                }
-                }
-                add_X_mu(num_data_train, num_feat, n, gd, keep, num_iter, convergence, monitor, verbose, wandbarg)
+    for n in num_item:
+        for gd in global_dim:
+            # Generate the base dataset
+            if verbose:
+                print(f"Generating base dataset with {n} items, {gd} constraints, {deg} degree, noise width {noise_width}, {num_feat} features, {num_data_train} train, {num_data_eval} eval, {num_data_test} test, and {num_iter} iterations.")
+            wandbarg = {
+                        'entity': "hugoper-polytechnique-montr-al",
+                        'project': "DFL_LD",
+                        'dir': "./",
+                        'name': f"base_data_{n}_{gd}_{deg}_{noise_width}_{num_feat}_{num_data_train}_{num_data_eval}_{num_data_test}_{num_iter}",
+                        'group': f"knapsack",
+                        'job_type': f"base_data",
+                        'config': {
+                            "convergence": convergence
+                                    }
+                        }
+            tl = gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, deg, noise_width, verbose, wandbarg)
+
+            # Add X and mu variables to the dataset
+            if verbose:
+                print(f"Adding X and mu variables to the dataset with {n} items, {gd} constraints, {num_feat} features, {num_data_train} train, {num_iter} iterations, convergence {convergence}, keep {keep}.")
+            keep_str = f"{keep}" if keep != -1 else "multiple"
+            wandbarg = {
+                        'entity': "hugoper-polytechnique-montr-al",
+                        'project': "DFL_LD",
+                        'dir': "./",
+                        'name': f"opti_X_mu_{n}_{gd}_{keep_str}_{num_feat}_{num_data_train}_{num_iter}",
+                        'group': f"knapsack",
+                        'job_type': f"opti_X_mu",
+                        'config': {
+                            "convergence": convergence
+                                    }
+                        }
+            if keep == -1:
+                add_X_mu_multiple(num_data_train, num_feat, n, gd, num_iter, convergence, tl, monitor, verbose, wandbarg)
+            else:
+                add_X_mu_single(num_data_train, num_feat, n, gd, keep, num_iter, convergence, tl, monitor, verbose, wandbarg)
