@@ -425,7 +425,14 @@ if __name__ == "__main__":
                         'group': f"knapsack",
                         'job_type': f"opti_X_mu",
                         'config': {
-                            "convergence": convergence
+                            "convergence": convergence,
+                            "timelimit": tl,
+                            "keep": keep,
+                            "num_iter": num_iter,
+                            "num_data_train": num_data_train,
+                            "num_feat": num_feat,
+                            "num_items": n,
+                            "global_dim": gd,
                                     }
                         }
             if keep == -1:
