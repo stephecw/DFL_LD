@@ -2,3 +2,5 @@
 .DS_Store
 wandb/
 job_test/
+run_mac.py
+opti_hyper_port.py

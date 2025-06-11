@@ -43,9 +43,9 @@ class ImportDataset:
         with open(fname, 'r') as f:
             lines = f.readlines()
             if not self.test:
-                self.global_dim, self.keep ,self.num_feat, self.num_item, self.num_data = map(int, lines[0].split(","))
+                self.global_dim, self.keep ,self.num_feat, self.num_item, self.num_data, self.deg = map(int, lines[0].split(","))
             else:
-                self.global_dim, self.num_feat, self.num_item, self.num_data = map(int, lines[0].split(","))
+                self.global_dim, self.num_feat, self.num_item, self.num_data,self.deg = map(int, lines[0].split(","))
                 
             self.capacities = []
             self.weights = []
@@ -140,3 +140,9 @@ class ImportDataset:
         """
         dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=shuffle)
         return dataloader
+    
+    def get_deg(self):
+        """
+        Retourne le degré du polynôme utilisé pour générer les données.
+        """
+        return self.deg

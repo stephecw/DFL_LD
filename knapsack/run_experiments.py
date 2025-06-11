@@ -1,3 +1,7 @@
+from ast import arg
+import re
+from statistics import median
+import time
 import torch
 from torch import optim
 import numpy as np
@@ -9,8 +13,8 @@ from knapsack.data_import import ImportDataset
 from train import train_MSE, train_classic, train_LD, train_SG, test
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus
-from opti_X_mu import OptimizationBatchModel
-from knapsack.solver import solver_X_1D_knapsack, solver_X_MD_knapsack
+from opti_X_mu_CPU import OptimizationBatchModel
+from knapsack.solver import solver_X_knapsack
 
 import argparse
 import os, csv
@@ -21,6 +25,7 @@ parser = argparse.ArgumentParser(description="Training script with specified dim
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
 parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
+parser.add_argument('--deg', type=int, default=8, help='Degree of the polynomial features. (default: 8)')
 
 parser.add_argument('--dim', type=int, default=10, help='Number of constraints.')
 parser.add_argument('--n', type=int, default=50, help='Number of items.')
@@ -28,14 +33,18 @@ parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
 
 parser.add_argument('--ep', type=int, default=1, help='Number of epochs. (0 to use time limit)')
 parser.add_argument('--tl', type=int, default=0, help='Time limit. (0 for doing all epochs)')
+parser.add_argument('--report', type=int, nargs='+', default=[0], help='Report times in seconds.')
 
 parser.add_argument('--step_mu', type=int, default=0, help='Number of epochs between mu updates. (0 to skip)')
 parser.add_argument('--n_iter_mu', type=int, default=0, help='Number of iterations for mu optimization. (0 to skip)')
+parser.add_argument('--muloss', type=int, default=1, help='If 1, use mu_sum in the loss function. Default is 1.')
 
 parser.add_argument("--lambd", type=float, default=10, help="Interpolation parameter for IMLE")
 parser.add_argument("--sigma", type=float, default=1., help="Noise parameter for IMLE")
 parser.add_argument("--n_samples", type=int, default=1, help="Number of samples for IMLE")
 parser.add_argument("--kappa", type=int, default=5, help="Parameter kappa for IMLE noise distribution")
+
+parser.add_argument('--out_file', type=str, default='knapsack/results.csv', help='Output file for results.')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Training on:", device)
@@ -50,13 +59,16 @@ num_feat = 12
 num_data_train = 200  # Training dataset size
 num_data_eval = 100   # eval dataset size
 num_data_test = 1000  # Test dataset size
+deg = args.deg
 
 dim = args.dim
 num_item = args.n
 keep = args.keep
+muloss = True if args.muloss == 1 else False
 
 epochs = args.ep if args.ep > 0 else int(1e10)
 tl = args.tl if args.tl > 0 else int(1e10)
+report_times = args.report
 batch_size = 32
 lr = args.lr
 model_shape = [num_feat, num_item]
@@ -81,12 +93,12 @@ num_iter_mu = args.n_iter_mu
 
 
 
-def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
+def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
-              diff_method_name=None, diff_method_arg=None,
+              diff_method_name=None, diff_method_arg=None, muloss=True,
               step_mu=None, num_iter_mu=None,
-              test_model=False, verbose=False, wandbarg=None, time_limit=None, save_model=True):
+              test_model=False, verbose=False, wandbarg=None, time_limit=None, report_times =[0], save_model=True):
     """
     Main function to load dataset and train the model.
     model: nn.Module: Model to train.
@@ -118,25 +130,34 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
     # Load training dataset
     if verbose:
-        print(f"Loading train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
+        print(f"Loading train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}_{deg}.txt", flush=True)
     try:
-        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}_{deg}.txt")
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
 
     if verbose:
-        print(f"Loading eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
+        print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}_{deg}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{keep}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}_{deg}.txt", test=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
+    
+    if verbose:
+        print(f"Loading knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}_{deg}.txt")
+    try:
+        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}_{deg}.txt", test=True)
+    except FileNotFoundError:
+        print(f"File not found.")
+
 
     # Create dataloaders
     train_loader = train_set.get_dataloader(batch_size=batch_size, shuffle=True)
     eval_loader = eval_set.get_dataloader(batch_size=batch_size, shuffle=False)
+    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Problem parameters
     weights = train_set.get_weights(tensor=True)
@@ -164,10 +185,10 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         if verbose:
             print("Training the model with LD bound as loss...", flush=True)
 
-        best_relat_regret = train_LD(model, diff_method, eval_solver,
-                                    train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=1,
-                                    run=run, verbose=verbose)
+        results_eval,results = train_LD(model, diff_method, eval_solver,
+                                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                                    epochs, time_limit, eval_freq=1, report_times=report_times,
+                                    run=run, verbose=verbose, muloss=muloss)
     elif jobtype == "cla":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
@@ -176,10 +197,12 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             diff_method = SPOPlus(knapsackModel(weights, capacities), device, **diff_method_arg)
         if verbose:
             print("Training the model with regret as loss...", flush=True)
+
+        eval_freq_cla = 100 if diff_method_name == "SPOPlus" else 1
             
-        best_relat_regret = train_classic(model, diff_method, eval_solver, 
-                                            train_loader, eval_loader, optimizer, scheduler, 
-                                            epochs, time_limit, eval_freq=1,
+        results_eval,results = train_classic(model, diff_method, eval_solver, 
+                                            train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                                            epochs, time_limit, eval_freq=eval_freq_cla, report_times=report_times,
                                             run=run, verbose=verbose)
 
     elif jobtype == "SG":
@@ -191,29 +214,31 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         # Optimizer for mu
         solvers = []
         if keep == 1:
-            solvers = [solver_X_1D_knapsack(weights[0], capacities[0], device)]
+            solvers = [solver_X_knapsack(np.expand_dims(weights[0],axis=0), np.expand_dims(capacities[0],axis=0))]
         else:
-            solvers = [solver_X_MD_knapsack(weights[:keep], capacities[:keep], device)]
-        solvers += [solver_X_1D_knapsack(weights[i], capacities[i], device) for i in range(keep, dim)]
-        optimizer_mu = OptimizationBatchModel(solvers, device)
+            solvers = [solver_X_knapsack(weights[:keep], capacities[:keep])]
+        solvers += [solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0)) for i in range(keep, dim)]
+        optimizer_mu = OptimizationBatchModel(solvers)
         
         mu_global0 = torch.ones(len(train_loader.dataset), dim - keep, num_item, device=device, dtype=torch.float32)
 
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...", flush=True)
+        
+        eval_freq_SG = 10 if diff_method_name == "SPOPlus" else 2
 
-        best_relat_regret = train_SG(model, diff_method, eval_solver, 
-                                    train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=1,
+        results_eval,results = train_SG(model, diff_method, eval_solver, 
+                                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                                    epochs, time_limit, eval_freq=eval_freq_SG, report_times=report_times,
                                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                                     mu_global0=mu_global0,
-                                    run=run, verbose=verbose)
+                                    run=run, verbose=verbose, muloss=muloss)
     elif jobtype == "MSE":
         if verbose:
             print("Training the model with MSE as loss", flush=True)
-        best_relat_regret = train_MSE(model, eval_solver, 
-                                        train_loader, eval_loader, optimizer, scheduler,
-                                        epochs, time_limit, eval_freq=100,
+        results_eval,results = train_MSE(model, eval_solver, 
+                                        train_loader, eval_loader, test_loader, optimizer, scheduler,
+                                        epochs, time_limit, eval_freq=2000, report_times=report_times,
                                         run=run, verbose=verbose)
 
     # Save model
@@ -239,20 +264,45 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     # Évaluer d’abord sur le set d’éval avec le modèle au meilleur epoch
     regrets_eval = test(model, eval_loader, eval_solver, device, run=None)
     mean_relat_eval = np.mean(regrets_eval)
+    median_relat_eval = np.median(regrets_eval)
     std_relat_eval = np.std(regrets_eval)
 
-    if verbose:
-        print(f"Loading knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
-    try:
-        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
-    except FileNotFoundError:
-        print(f"File not found.")
-
-    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
     # Test the model on the test set
     regrets_test = test(model, test_loader, eval_solver, device, run)
     mean_relat_test = np.mean(regrets_test)
+    median_relat_test = np.median(regrets_test)
     std_relat_test = np.std(regrets_test)
+
+    csv_path = args.out_file
+
+    for i, report_time in enumerate(report_times):
+        if report_time < time_limit:
+            row = {
+                'time limit':        report_time,
+                'dim':               dim,
+                'keep':              keep,
+                'num_feat':          num_feat,
+                'num_item':          num_item,
+                'num_data_train':    num_data_train,
+                'jobtype':           jobtype,
+                'step_mu':           step_mu if 'step_mu' in locals() else '',
+                'num_iter_mu':       num_iter_mu if 'num_iter_mu' in locals() else '',
+                'method':            diff_method_name or 'MSE',
+                'lr':                lr,
+                'mean_relat_eval': results_eval[i].mean().item(),
+                'median_relat_eval': results_eval[i].median().item(),
+                'std_relat_eval':  results_eval[i].std().item(),
+                'mean_relat_test': results[i].mean().item(),
+                'median_relat_test': results[i].median().item(),
+                'std_relat_test':  results[i].std().item(),
+            }
+            write_header = not os.path.exists(csv_path)
+            with open(csv_path, 'a', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=list(row.keys()))
+                if write_header:
+                    writer.writeheader()
+                writer.writerow(row)
+
 
     test_row = {
         'time limit':        time_limit,
@@ -267,12 +317,13 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         'method':            diff_method_name or 'MSE',
         'lr':                lr,
         'mean_relat_eval': float(mean_relat_eval),
+        'median_relat_eval': float(median_relat_eval),
         'std_relat_eval':  float(std_relat_eval),
         'mean_relat_test':   float(mean_relat_test),
+        'median_relat_test': float(median_relat_test),
         'std_relat_test':    float(std_relat_test)
     }
 
-    csv_path = "knapsack/results_deg4.csv"
     write_header = not os.path.exists(csv_path)
 
     with open(csv_path, 'a', newline='') as f:
@@ -310,9 +361,9 @@ wandbarg = {
             "diff_method_arg": diff_method_arg
         }
 }
-run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
-        batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl,
+run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
+        batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl, report_times=report_times,
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,
-        diff_method_name=diff_method_name, diff_method_arg=diff_method_arg,
-        test_model=True, num_data_test=num_data_test, verbose=True, wandbarg=wandbarg, save_model=False)
+        diff_method_name=diff_method_name, diff_method_arg=diff_method_arg, muloss=muloss,
+        test_model=True, verbose=True, wandbarg=wandbarg, save_model=False)

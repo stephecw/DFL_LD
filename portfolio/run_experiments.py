@@ -1,3 +1,7 @@
+from operator import mul
+import re
+from statistics import median
+import time
 import torch
 from torch import optim
 import numpy as np
@@ -31,6 +35,8 @@ parser.add_argument('--sigma', type=float, default=0.1, help='Sigma for IMLE. On
 parser.add_argument('--out_file', type=str, default='portfolio/results.csv',
                     help='Chemin du fichier CSV où stocker les résultats.')
 parser.add_argument('--time_limit', type=int, default=300, help='Time limit for training in seconds. Default is 300 seconds.')
+parser.add_argument('--report', type=int, nargs='+', default=[0], help='List of times to report results.')
+parser.add_argument('--muloss', type=int, default=1, help='If 1, use mu_sum in the loss function. Default is 1.')
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -39,9 +45,9 @@ print("→ Training on:", device)
 def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, deg,principal_lin,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
-              diff_method_name=None, diff_method_arg=None,
+              diff_method_name=None, diff_method_arg=None, muloss=True,
               step_mu=5, num_iter_mu=15,
-              verbose=False, wandbarg=None, time_limit=None, eval_freq = 1, save_model=True, patience=50):
+              verbose=False, wandbarg=None, time_limit=None, report_times = [0], eval_freq = 1, save_model=True, patience=50):
     """
     Main function to load dataset and train the model.
     model: nn.Module: Model to train.
@@ -133,10 +139,10 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         if verbose:
             print("Training the model with LD bound as loss...")
 
-        train_LD(model, diff_method, eval_solver,
-                    train_loader, eval_loader, optimizer, scheduler, 
-                    epochs, time_limit, eval_freq=eval_freq,
-                    run=run, verbose=verbose, patience=patience)
+        results_eval, results = train_LD(model, diff_method, eval_solver,
+                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                    epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
+                    run=run, verbose=verbose, patience=patience, muloss=muloss)
     elif jobtype == "classic":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
@@ -151,9 +157,9 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         if verbose:
             print("Training the model with regret as loss...")
             
-        train_classic(model, diff_method, eval_solver, 
+        results_eval, results = train_classic(model, diff_method, eval_solver, test_loader,
                         train_loader, eval_loader, optimizer, scheduler, 
-                        epochs, time_limit, eval_freq=eval_freq,
+                        epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
                         run=run, verbose=verbose, patience=patience)
 
     elif jobtype == "SG":
@@ -182,29 +188,59 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...")
 
-        train_SG(model, diff_method, eval_solver, 
-                    train_loader, eval_loader, optimizer, scheduler, 
-                    epochs, time_limit, eval_freq=eval_freq,
+        results_eval, results = train_SG(model, diff_method, eval_solver, 
+                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                    epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                     mu_global0=mu_global0,
-                    run=run, verbose=verbose, patience=patience)
+                    run=run, verbose=verbose, patience=patience, muloss=muloss)
     elif jobtype == "MSE":
         if verbose:
             print("Training the model with MSE as loss")
-        train_MSE(model, eval_solver, 
-                    train_loader, eval_loader, optimizer, scheduler,
-                    epochs, time_limit, eval_freq=eval_freq,
+        results_eval, results = train_MSE(model, eval_solver, 
+                    train_loader, eval_loader, test_loader, optimizer, scheduler,
+                    epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
                     run=run, verbose=verbose, patience=patience)
         
     # Évaluer d’abord sur le set d’éval avec le modèle au meilleur epoch
     regrets_eval = test(model, eval_loader, eval_solver, device, run=None)
     mean_relat_eval = np.mean(regrets_eval)
+    median_relat_eval = np.median(regrets_eval)
     std_relat_eval = np.std(regrets_eval)
 
     # Test the model on the test set
     regrets_test = test(model, test_loader, eval_solver, device, run)
     mean_relat_test = np.mean(regrets_test)
+    median_relat_test = np.median(regrets_test)
     std_relat_test = np.std(regrets_test)
+
+    for i, report_time in enumerate(report_times):
+        if report_time < time_limit:
+            row = {
+                'n': num_item,
+                'jobtype': jobtype,
+                'time limit': report_time,
+                'method': diff_method_name or 'MSE',
+                'n_samples': diff_method_arg.get('n_samples', '') if diff_method_arg else '',
+                'lambda_imle': diff_method_arg.get('lambd', '') if diff_method_arg else '',
+                'sigma': diff_method_arg.get('sigma', '') if diff_method_arg else '',
+                'step_mu': step_mu if 'step_mu' in locals() else '',
+                'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
+                'mean_relat_eval': results_eval[i].mean().item(),
+                'median_relat_eval': results_eval[i].median().item(),
+                'std_relat_eval': results_eval[i].std().item(),
+                'mean_relat_test': results[i].mean().item(),
+                'median_relat_test': results[i].median().item(),
+                'std_relat_test': results[i].std().item()
+            }
+            # Écrire en mode « append » avec en‑têtes créés si le fichier n’existe pas
+            write_header = not os.path.exists(args.out_file)
+            with open(args.out_file, 'a', newline='') as f:
+                writer = csv.DictWriter(f, fieldnames=row.keys())
+                if write_header:
+                    writer.writeheader()
+                writer.writerow(row)
+    
 
     
     row = {
@@ -218,8 +254,10 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         'step_mu': step_mu if 'step_mu' in locals() else '',
         'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
         'mean_relat_eval': mean_relat_eval,
+        'median_relat_eval': median_relat_eval,
         'std_relat_eval': std_relat_eval,
         'mean_relat_test': mean_relat_test,
+        'median_relat_test': median_relat_test,
         'std_relat_test': std_relat_test
     }
     # Écrire en mode « append » avec en‑têtes créés si le fichier n’existe pas
@@ -256,7 +294,8 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
-
+report_times = args.report
+muloss = True if args.muloss == 1 else False
 
 # Problem dimensions
 num_feat = 5
@@ -301,8 +340,8 @@ sched_arg_LD = {'patience': 100,
 diff_method_LD = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_LD = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 principal_lin = False if args.lin == 0 else True
-patience_LD = 10000000
-eval_freq_LD = 100 if diff_method_arg_LD == "Exact" else 10
+patience_LD = 80 if diff_method_LD != "Exact" else 1000
+eval_freq_LD = 100 if diff_method_LD == "Exact" else 10
 
 
 # SG parameters
@@ -321,8 +360,8 @@ diff_method_SG = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 step_mu = args.step_mu
 num_iter_mu = args.n_iter_mu
-patience_SG = 10000000
-eval_freq_SG = 100 if diff_method_arg_SG == "Exact" else 10
+patience_SG = 80 if diff_method_SG != "Exact" else 1000
+eval_freq_SG = 100 if diff_method_SG == "Exact" else 10
 
 # MSE parameters
 epochs_MSE = args.ep_mse
@@ -336,7 +375,7 @@ sched_arg_MSE = {'patience': 400,
                 'factor': 0.5,
                 'min_lr':1e-6
                 }
-patience_MSE = 50000000
+patience_MSE = 3000
 diff_method_SG = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 eval_freq_MSE = 100
@@ -373,8 +412,8 @@ if epochs_LD > 0:
     run_train(model, "LD", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
             batch_size=batch_size_LD, epochs=epochs_LD, lr=lr_LD,
             schedulerType=schedulerType_LD, sched_arg=sched_arg_LD,
-            diff_method_name=diff_method_LD, diff_method_arg=diff_method_arg_LD,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD, eval_freq=eval_freq_LD, patience=patience_LD)
+            diff_method_name=diff_method_LD, diff_method_arg=diff_method_arg_LD, muloss=muloss,
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD, report_times=report_times, eval_freq=eval_freq_LD, patience=patience_LD)
 
 ## Classic ##
 if epochs_classic > 0:
@@ -405,7 +444,7 @@ if epochs_classic > 0:
             batch_size=batch_size_classic, epochs=epochs_classic, lr=lr_classic,
             schedulerType=schedulerType_classic, sched_arg=sched_arg_classic,
             diff_method_name=diff_method_classic, diff_method_arg=diff_method_arg_classic,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic, eval_freq=eval_freq_classic, patience=patience_classic)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic, report_times=report_times, eval_freq=eval_freq_classic, patience=patience_classic)
 
 ## SG ##
 if epochs_SG > 0:
@@ -438,9 +477,9 @@ if epochs_SG > 0:
     run_train(model, "SG", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
             batch_size=batch_size_SG, epochs=epochs_SG, lr=lr_SG,
             schedulerType=schedulerType_SG, sched_arg=sched_arg_SG,
-            diff_method_name=diff_method_SG, diff_method_arg=diff_method_arg_SG,
+            diff_method_name=diff_method_SG, diff_method_arg=diff_method_arg_SG, muloss=muloss,
             step_mu=step_mu, num_iter_mu=num_iter_mu,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG, eval_freq = eval_freq_SG, patience=patience_SG)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG, report_times=report_times, eval_freq = eval_freq_SG, patience=patience_SG)
 
 if epochs_MSE > 0:
     model = CustomMLP(model_shape_MSE, dropout=dropout_MSE).to(device)
@@ -467,4 +506,4 @@ if epochs_MSE > 0:
     run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, deg, principal_lin,
             batch_size=batch_size_MSE, epochs=epochs_MSE, lr=lr_MSE,
             schedulerType=schedulerType_MSE, sched_arg=sched_arg_MSE,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, eval_freq=eval_freq_MSE, patience=patience_MSE)
+            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, report_times=report_times, eval_freq=eval_freq_MSE, patience=patience_MSE)

@@ -9,7 +9,7 @@ class I_MLE():
     """
     def __init__(self, solver, device, **args_imle):
         is_cpu = (device.type == "cpu")
-        proc = 0 if is_cpu else 1
+        proc = 1 if is_cpu else 1
         self.imle = pyepo_func_pert.implicitMLE(solver, processes = proc, **args_imle)
         self.device = device
     
@@ -24,7 +24,7 @@ class SPOPlus():
     """
     def __init__(self, solver, device, **args_spo):
         is_cpu = (device.type == "cpu")
-        proc = 0 if is_cpu else 1
+        proc = 1 if is_cpu else 1
         self.spo = pyepo_func_surr.SPOPlus(solver, processes = proc, **args_spo)
         self.device = device
     
@@ -38,7 +38,7 @@ class SPOPlus2():
     """
     def __init__(self, solver, device, **args_spo):
         is_cpu = (device.type == "cpu")
-        proc = 0 if is_cpu else 1
+        proc = 1 if is_cpu else 1
         self.spo = pyepo_func_surr.SPOPlus(solver, processes = proc, **args_spo)
         self.device = device
     
