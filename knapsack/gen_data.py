@@ -12,13 +12,13 @@ import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, capacities, weights, obj, Z, c, x_star_array, keep=None, X=None, mu=None):
+def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, deg,capacities, weights, obj, Z, c, x_star_array, keep=None, X=None, mu=None):
     with open(fname, 'w') as f:
         # Constraints (unique for the whole dataset)
         if X is not None:
-            f.write(f"{global_dim},{keep},{num_feat},{num_item},{num_data}\n")
+            f.write(f"{global_dim},{keep},{num_feat},{num_item},{num_data},{deg}\n")
         else :
-            f.write(f"{global_dim},{num_feat},{num_item},{num_data}\n")
+            f.write(f"{global_dim},{num_feat},{num_item},{num_data},{deg}\n")
         for i in range(global_dim):
             line = str(int(capacities[i])) + "," + ",".join(str(int(w)) for w in weights[i][:-1]) + f",{int(weights[i][-1])}\n"
             f.write(line)
@@ -92,20 +92,20 @@ def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_it
     x_star_train, x_star_eval, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:num_data_train+num_data_eval], x_star_array[num_data_train+num_data_eval:]
     obj_train, obj_eval, obj_test = obj_array[:num_data_train], obj_array[num_data_train:num_data_train+num_data_eval], obj_array[num_data_train+num_data_eval:]
     
-    write_dataset_file(f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}.txt",
-                       global_dim, num_feat, num_items, num_data_train,
+    write_dataset_file(f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt",
+                       global_dim, num_feat, num_items, num_data_train,deg,
                        capacities, weights, obj_train, Z_train, c_train, x_star_train)
 
-    write_dataset_file(f"knapsack/datasets/eval_{global_dim}_{num_feat}_{num_items}_{num_data_eval}.txt",
-                       global_dim, num_feat, num_items, num_data_eval,
+    write_dataset_file(f"knapsack/datasets/eval_{global_dim}_{num_feat}_{num_items}_{num_data_eval}_{deg}.txt",
+                       global_dim, num_feat, num_items, num_data_eval,deg,
                        capacities, weights, obj_eval, Z_eval, c_eval, x_star_eval)
     
-    write_dataset_file(f"knapsack/datasets/test_{global_dim}_{num_feat}_{num_items}_{num_data_test}.txt",
-                       global_dim ,num_feat, num_items, num_data_test,
+    write_dataset_file(f"knapsack/datasets/test_{global_dim}_{num_feat}_{num_items}_{num_data_test}_{deg}.txt",
+                       global_dim ,num_feat, num_items, num_data_test,deg,
                        capacities, weights, obj_test, Z_test, c_test, x_star_test)
 
 
-def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1, 
+def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1, 
              num_iter=10000, convergence=1e-8, 
              monitor=False, verbose=False, wandbarg=None):
     """
@@ -129,8 +129,8 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         #wandb.login(key="")  # Replace with your API key
         run = wandb.init(mode="offline", **wandbarg)
     
-    input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}.txt"
-    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}.txt"
+    input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt"
+    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt"
     if verbose:
         print(f"Reading existing file : {input_train_txt}")
     if not os.path.isfile(input_train_txt):
@@ -185,7 +185,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
 
     if monitor:
         obj_array = ds.get_obj(tensor=False)  # (num_data_train)
-        with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{keep}_{num_iter}.txt", mode="w") as f:
+        with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{keep}_{num_iter}_{deg}.txt", mode="w") as f:
             line = f""
             rapport = (vals - obj_array)/torch.tensor(obj_array)
             for i in range(rapport.shape[0]):
@@ -206,6 +206,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, keep=1,
         num_feat=num_feat,
         num_item=num_items,
         num_data=num_data_train,
+        deg=deg,
         capacities=capacities,
         weights=weights,
         Z=Z_train,
@@ -228,7 +229,7 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', type=bool, default=True, help='Whether to print verbose output.')
     
     parser.add_argument('--n', type=int, nargs='+', default=[100], help='Number of items.')
-    parser.add_argument('--dim', type=int, nargs='+', default=[5], help='Number of constraints.')
+    parser.add_argument('--dim', type=int, nargs='+', default=[10], help='Number of constraints.')
     parser.add_argument('--n_train', type=int, default=200, help='Number of training data points')
     parser.add_argument('--n_eval', type=int, default=100, help='Number of evaluation data points')
     parser.add_argument('--n_test', type=int, default=1000, help='Number of test data points')
@@ -272,4 +273,4 @@ if __name__ == "__main__":
                     "convergence": convergence
                 }
                 }
-                add_X_mu(num_data_train, num_feat, n, gd, keep, num_iter, convergence, monitor, verbose, wandbarg)
+                add_X_mu(num_data_train, num_feat, n, gd, deg, keep, num_iter, convergence, monitor, verbose, wandbarg)
