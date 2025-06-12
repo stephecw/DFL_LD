@@ -13,18 +13,22 @@ from opti_X_mu_CPU import OptimizationBatchModel
 from knapsack.solver import solver_X_knapsack
 
 import argparse
-import os, csv
 
 
 # Define command line arguments
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
+parser.add_argument('--id', type=int, default=0, help='ID of the experiment. Used to differentiate runs.')
+
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
 parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
+parser.add_argument('--loss', type=int, default=0, help='Loss function to use (0 for LD, 1 for classic regret).')
+
 
 parser.add_argument('--dim', type=int, default=10, help='Number of constraints.')
 parser.add_argument('--n', type=int, default=50, help='Number of items.')
 parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
+parser.add_argument('--patience', type=int, default=5, help='Number of epochs with no improvement after which learning rate will be reduced.')
 
 parser.add_argument('--ep', type=int, default=1, help='Number of epochs. (0 to use time limit)')
 parser.add_argument('--tl', type=int, default=0, help='Time limit. (0 for doing all epochs)')
@@ -43,6 +47,7 @@ print("→ Training on:", device)
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
+id = args.id
 method = args.method
 # Problem dimensions
 num_feat = 12
@@ -54,10 +59,11 @@ num_data_test = 1000  # Test dataset size
 dim = args.dim
 num_item = args.n
 keep = args.keep
+loss = args.loss
 
 epochs = args.ep if args.ep > 0 else int(1e10)
 tl = args.tl if args.tl > 0 else int(1e10)
-batch_size = 32
+batch_size = 200
 lr = args.lr
 model_shape = [num_feat, num_item]
 dropout = 0.2
@@ -65,7 +71,7 @@ dropout = 0.2
 schedulerType = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
 sched_arg = {'mode':'min',
             'factor':0.5,
-            'patience':5,
+            'patience':args.patience,
             'min_lr':1e-6}
 diff_method_name = args.diff
 diff_method_arg = {}
@@ -81,7 +87,7 @@ num_iter_mu = args.n_iter_mu
 
 
 
-def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
+def run_train(id, model, jobtype, dim, keep, loss, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None,
@@ -118,9 +124,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
     # Load training dataset
     if verbose:
-        print(f"Loading train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
+        print(f"Loading train_{dim}_{keep-1}_{num_feat}_{num_item}_{num_data_train}.txt", flush=True)
     try:
-        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.txt")
+        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep-1}_{num_feat}_{num_item}_{num_data_train}.txt")
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -129,7 +135,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", flush=True)
 
     try:
-        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", test=True)
+        eval_set = ImportDataset(f"knapsack/datasets/eval_{dim}_{num_feat}_{num_item}_{num_data_eval}.txt", base=True)
     except FileNotFoundError:
         print(f"File not found.", flush=True)
         return
@@ -164,9 +170,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         if verbose:
             print("Training the model with LD bound as loss...", flush=True)
 
-        best_relat_regret = train_LD(model, diff_method, eval_solver,
+        best_relat_regret, best_epoch, epoch = train_LD(model, diff_method, eval_solver,
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=1,
+                                    epochs, time_limit, eval_freq=int(1e8),
                                     run=run, verbose=verbose)
     elif jobtype == "cla":
         # Differentiation method for backpropagation when training 
@@ -177,9 +183,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         if verbose:
             print("Training the model with regret as loss...", flush=True)
             
-        best_relat_regret = train_classic(model, diff_method, eval_solver, 
+        best_relat_regret, best_epoch, epoch = train_classic(model, diff_method, eval_solver, 
                                             train_loader, eval_loader, optimizer, scheduler, 
-                                            epochs, time_limit, eval_freq=1,
+                                            epochs, time_limit, eval_freq=int(1e8),
                                             run=run, verbose=verbose)
 
     elif jobtype == "SG":
@@ -199,18 +205,18 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...", flush=True)
 
-        best_relat_regret = train_SG(model, diff_method, eval_solver, 
+        best_relat_regret, best_epoch, epoch = train_SG(model, loss, diff_method, eval_solver, 
                                     train_loader, eval_loader, optimizer, scheduler, 
-                                    epochs, time_limit, eval_freq=5,
+                                    epochs, time_limit, eval_freq=int(1e8),
                                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                                     mu_global0=mu_global0,
                                     run=run, verbose=verbose)
     elif jobtype == "MSE":
         if verbose:
             print("Training the model with MSE as loss", flush=True)
-        best_relat_regret = train_MSE(model, eval_solver, 
+        best_relat_regret, best_epoch, epoch = train_MSE(model, eval_solver, 
                                         train_loader, eval_loader, optimizer, scheduler,
-                                        epochs, time_limit, eval_freq=100,
+                                        epochs, time_limit, eval_freq=int(1e8),
                                         run=run, verbose=verbose)
 
     # Save model
@@ -241,7 +247,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     if verbose:
         print(f"Loading knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt")
     try:
-        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", test=True)
+        test_set = ImportDataset(f"knapsack/datasets/test_{dim}_{num_feat}_{num_item}_{num_data_test}.txt", base=True)
     except FileNotFoundError:
         print(f"File not found.")
 
@@ -251,47 +257,27 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
     mean_relat_test = np.mean(regrets_test)
     std_relat_test = np.std(regrets_test)
 
-    test_row = {
-        'time limit':        time_limit,
-        'dim':               dim,
-        'keep':              keep,
-        'num_feat':          num_feat,
-        'num_item':          num_item,
-        'num_data_train':    num_data_train,
-        'jobtype':           jobtype,
-        'step_mu':           step_mu if 'step_mu' in locals() else '',
-        'num_iter_mu':       num_iter_mu if 'num_iter_mu' in locals() else '',
-        'method':            diff_method_name or 'MSE',
-        'lr':                lr,
-        'mean_relat_eval': float(mean_relat_eval),
-        'std_relat_eval':  float(std_relat_eval),
-        'mean_relat_test':   float(mean_relat_test),
-        'std_relat_test':    float(std_relat_test)
-    }
-
-    csv_path = "knapsack/results_deg4.csv"
-    write_header = not os.path.exists(csv_path)
-
-    with open(csv_path, 'a', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=list(test_row.keys()))
-        if write_header:
-            writer.writeheader()
-        writer.writerow(test_row)
+    with open("knapsack/results_deg8_4.txt", 'a') as f:
+        line = f"{id};{time_limit};{dim};{num_feat};{num_item};{num_data_train};{jobtype};{step_mu};{num_iter_mu};{diff_method_name};{loss};{lr};{best_relat_regret};{best_epoch};{epoch};{args.patience};{mean_relat_test};{std_relat_test};"
+        line += ";".join(str(regrets_test[j]) for j in range(num_data_test - 1)) + f";{regrets_test[-1]}\n"
+        f.write(line)
     
     # End execution
     if run is not None:
         run.finish()
-
+        
+    print(best_relat_regret, best_epoch, epoch, flush=True)
+    
 
 print(f"Training using {method} with {diff_method_name} for {epochs} epochs ({tl} seconds max) on {dim} constraints and {num_item} items.", flush=True)
 model = CustomMLP(model_shape, dropout=dropout).to(device)
 wandbarg = {
         'entity': "hugoper-polytechnique-montr-al",
         'project': "DFL_LD",
-        'dir': "./",
+        'dir': "./knapsack/",
         'name': f"knapsack_{diff_method_name}_{method}_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}",
-        'group': f"knapsack_{dim}_{num_feat}_{num_item}_{num_data_train}",
-        'job_type': f"{diff_method_name}_{method}",
+        'group': f"meeting_06_16",
+        'job_type': f"{diff_method_name}_{method}_{tl}",
         'config': {
             "architecture": model_shape,
             "dropout": dropout,
@@ -304,12 +290,23 @@ wandbarg = {
             "schedulerType": schedulerType,
             "sched_arg": sched_arg,
             "diff_method": diff_method_name,
-            "diff_method_arg": diff_method_arg
+            "diff_method_arg": diff_method_arg,
+            "step_mu": step_mu,
+            "num_iter_mu": num_iter_mu,
+            "num_feat": num_feat,
+            "num_item": num_item,
+            "num_data_train": num_data_train,
+            "num_data_eval": num_data_eval,
+            "num_data_test": num_data_test,
+            "dim": dim,
+            "loss": loss,
+            "keep": keep,
+            "id": id,
         }
 }
-run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
+run_train(id, model, method, dim, keep, loss, num_feat, num_item, num_data_train, num_data_eval, num_data_test,
         batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl,
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,
         diff_method_name=diff_method_name, diff_method_arg=diff_method_arg,
-        test_model=True, verbose=True, wandbarg=wandbarg, save_model=False)
+        test_model=True, verbose=True, wandbarg=None, save_model=False)

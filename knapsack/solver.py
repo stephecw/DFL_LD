@@ -68,3 +68,20 @@ class solver_X_knapsack():
             self.solver.setObj(c_np[i])
             X[i], _ = self.solver.solve()
         return X
+
+class solver_X_knapsack_one():
+    """
+    Solver for the knapsack problem with multiple dimensions.
+    """
+    def __init__(self, weights, capacities):
+        self.solver = knapsackModel(weights=weights, capacity=capacities)
+
+    def __call__(self,c):
+        """
+        c_batch : (B, n) torch.Tensor
+        -> renvoie sol_batch : (B, n) torch.Tensor
+        """
+        # on passe en numpy pour joblib
+        self.solver.setObj(c)
+        X, _ = self.solver.solve()
+        return X

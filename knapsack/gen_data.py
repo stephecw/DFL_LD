@@ -4,10 +4,12 @@ import numpy as np
 import torch
 import pyepo
 from pyepo.model.grb import knapsackModel
-from opti_X_mu_CPU import OptimizationBatchModel
-from knapsack.solver import solver_X_knapsack
+from opti_X_mu_CPU import OptimizationBatchModel, OptimizationSingleModel
+from knapsack.solver import solver_X_knapsack, solver_X_knapsack_one
 from knapsack.data_import import ImportDataset
 import os
+
+from joblib import Parallel, delayed
 
 import argparse
 
@@ -98,6 +100,7 @@ def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_it
                 "num_items": num_items,
                 "global_dim": global_dim,
             })
+            wandb.finish()
     x_star_array = np.array(x_star_list)
     obj_array = np.array(obj_list)
     
@@ -153,7 +156,7 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, keep=0,
     if not os.path.isfile(input_train_txt):
         raise FileNotFoundError(f"Can't find '{input_train_txt}'.")
     
-    ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=True)
+    ds = ImportDataset(input_train_txt, model=None, z_stats=None, base=True)
     gd, nf, ni, nd = ds.get_sizes()
     if gd != global_dim or nf != num_feat or ni != num_items or nd != num_data_train:
         raise ValueError("The dataset dimensions do not match the expected values.")
@@ -165,11 +168,11 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, keep=0,
     c_train       = ds.c           # (num_data_train, num_item)
     x_star_train  = ds.x           # (num_data_train, num_item)
 
-    solvers = [solver_X_knapsack(np.expand_dims(weights[keep],axis=0), np.expand_dims(capacities[keep],axis=0))]
+    solvers = [solver_X_knapsack_one(np.expand_dims(weights[keep],axis=0), np.expand_dims(capacities[keep],axis=0))]
     for i in range(global_dim):
         if i != keep:
             solvers.append(
-                solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
+                solver_X_knapsack_one(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
             )
     
     if verbose:
@@ -178,7 +181,22 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, keep=0,
     if wandbarg is not None:
         import time
         begin_time = time.time()
+        
+    def solver_one(c):
+        optimizer_mu = OptimizationSingleModel(solvers)
+        optimizer_mu.optim_mu(
+        c_batch=c,
+        verbose=True,
+        max_iter=10000000,
+        timelimit=200
+        )
+        return optimizer_mu.get_mu(tensor=False)
     
+    out = Parallel(n_jobs=-1, backend="loky")(
+            delayed(solver_one)(c_train[i]) for i in range(num_data_train)
+            )
+    
+    """
     optimizer_mu = OptimizationBatchModel(solvers)
     c_tensor = torch.tensor(c_train, dtype=torch.int32)
     optimizer_mu.optim_mu(
@@ -197,12 +215,15 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, keep=0,
             "num_data_train": num_data_train,
         })
         wandb.finish()
-
+    
+    
+    
     # 5. Récupérer X et μ calculés
     X_batch  = optimizer_mu.get_X(tensor=False)   # shape (num_data_train, global_dim, num_item)
     mu_batch = optimizer_mu.get_mu(tensor=False)  # shape (num_data_train, global_dim-new_keep, num_item)
     vals = optimizer_mu.get_value().cpu().numpy() # shape (num_data_train)
-
+    """
+    
     if monitor:
         obj_array = ds.get_obj(tensor=False)  # (num_data_train)
         with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{keep}_{num_iter}.txt", mode="w") as f:
@@ -269,7 +290,7 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
     if not os.path.isfile(input_train_txt):
         raise FileNotFoundError(f"Can't find '{input_train_txt}'.")
     
-    ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=True)
+    ds = ImportDataset(input_train_txt, model=None, z_stats=None, base=True)
     gd, nf, ni, nd = ds.get_sizes()
     if gd != global_dim or nf != num_feat or ni != num_items or nd != num_data_train:
         raise ValueError("The dataset dimensions do not match the expected values.")
@@ -403,7 +424,7 @@ if __name__ == "__main__":
             wandbarg = {
                         'entity': "hugoper-polytechnique-montr-al",
                         'project': "DFL_LD",
-                        'dir': "./",
+                        'dir': "./knapsack/",
                         'name': f"base_data_{n}_{gd}_{deg}_{noise_width}_{num_feat}_{num_data_train}_{num_data_eval}_{num_data_test}_{num_iter}",
                         'group': f"knapsack",
                         'job_type': f"base_data",
@@ -412,15 +433,15 @@ if __name__ == "__main__":
                                     }
                         }
             tl = gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, n, gd, deg, noise_width, verbose, wandbarg)
-
+            print(tl, flush=True)
             # Add X and mu variables to the dataset
             if verbose:
-                print(f"Adding X and mu variables to the dataset with {n} items, {gd} constraints, {num_feat} features, {num_data_train} train, {num_iter} iterations, convergence {convergence}, keep {keep}.")
+                print(f"Adding X and mu variables to the dataset with {n} items, {gd} constraints, {num_feat} features, {num_data_train} train, {num_iter} iterations, convergence {convergence}, keep {keep}.", flush=True)
             keep_str = f"{keep}" if keep != -1 else "multiple"
             wandbarg = {
                         'entity': "hugoper-polytechnique-montr-al",
                         'project': "DFL_LD",
-                        'dir': "./",
+                        'dir': "./knapsack/",
                         'name': f"opti_X_mu_{n}_{gd}_{keep_str}_{num_feat}_{num_data_train}_{num_iter}",
                         'group': f"knapsack",
                         'job_type': f"opti_X_mu",
@@ -438,4 +459,4 @@ if __name__ == "__main__":
             if keep == -1:
                 add_X_mu_multiple(num_data_train, num_feat, n, gd, num_iter, convergence, tl, monitor, verbose, wandbarg)
             else:
-                add_X_mu_single(num_data_train, num_feat, n, gd, keep, num_iter, convergence, tl, monitor, verbose, wandbarg)
+                add_X_mu_single(num_data_train, num_feat, n, gd, keep, num_iter, convergence, tl*10, monitor, verbose, wandbarg)

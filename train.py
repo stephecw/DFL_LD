@@ -53,6 +53,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
         train_time = 0
 
     for epoch in range(epochs):
+        previous_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
         if monitoring:
             epoch_start_time = time.time()
         ## Training step ##
@@ -88,6 +89,10 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
             train_time += epoch_duration
+            if train_time > time_limit:
+                print("Time limit reached, stopping training. Cancelling last epoch.", flush=True)
+                model.load_state_dict(previous_model_state)
+                break
         if run is not None:
             total_grad_norm = total_grad_norm ** 0.5
             current_lr = get_learning_rate(optimizer)
@@ -96,6 +101,8 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
                     "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
         if verbose:
             print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
+            
+        
 
         ## evaluation step (if needed)##
         if epoch % eval_freq == eval_freq-1:
@@ -141,12 +148,42 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
                     if epochs_no_improvement >= patience:
                         print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
+    
+    with torch.no_grad():
+        model.eval()
+        all_regrets = []
 
-        # Check time limit
-        if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.")
-                break
+        for z, c, x, _, _ in dataloader_eval:
+            z = z.to(device)
+            c_hat = model(z)  # [batch, n]
+
+            # prepare the inputs for the helper
+            c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+            x_true_cpu = x.float().cpu().numpy()              # shape [B,n], torch Tensor
+            c_true_cpu = c.float().cpu().numpy() 
+
+            for i in range(z.size(0)):
+                eval_solver.setObj(c_hat_np[i]) 
+                x_hat, _ = eval_solver.solve()
+                num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                rel_regret = num / den
+                all_regrets.append(rel_regret)
+
+        mean_relat_regret = float(np.mean(all_regrets))
+        std_relat_regret  = float(np.std(all_regrets))
+        if run is not None:
+            # Log results in wandb
+            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
+                    "Std relative regret": std_relat_regret, "train_time": train_time})
+        if verbose:
+            print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
+        
+        # Early stopping
+        if mean_relat_regret < best_relat_regret - min_delta:
+            best_relat_regret = mean_relat_regret
+            best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            best_epoch = epoch
 
     if best_model_state is not None:
         device = next(model.parameters()).device
@@ -159,7 +196,7 @@ def train_MSE(model, eval_solver, dataloader_train, dataloader_eval, optimizer, 
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
-    return best_relat_regret
+    return best_relat_regret, best_epoch, epoch
 
 def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
@@ -197,6 +234,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
         train_time = 0
 
     for epoch in range(epochs):
+        previous_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
         if monitoring:
             epoch_start_time = time.time()
 
@@ -227,6 +265,10 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
             train_time += epoch_duration
+            if train_time > time_limit:
+                print("Time limit reached, stopping training. Cancelling last epoch.", flush=True)
+                model.load_state_dict(previous_model_state)
+                break
         if run is not None:
             total_grad_norm = total_grad_norm ** 0.5
             current_lr = get_learning_rate(optimizer)
@@ -279,17 +321,46 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
                     if epochs_no_improvement >= patience:
                         print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
+    with torch.no_grad():
+        model.eval()
+        all_regrets = []
 
-        # Check time limit
-        if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.", flush=True)
-                break
+        for z, c, x, _, _ in dataloader_eval:
+            z = z.to(device)
+            c_hat = model(z)  # [batch, n]
+
+            # prepare the inputs for the helper
+            c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+            x_true_cpu = x.float().cpu().numpy()              # shape [B,n], torch Tensor
+            c_true_cpu = c.float().cpu().numpy() 
+
+            for i in range(z.size(0)):
+                eval_solver.setObj(c_hat_np[i]) 
+                x_hat, _ = eval_solver.solve()
+                num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                rel_regret = num / den
+                all_regrets.append(rel_regret)
+
+        mean_relat_regret = float(np.mean(all_regrets))
+        std_relat_regret  = float(np.std(all_regrets))
+        if run is not None:
+            # Log results in wandb
+            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
+                    "Std relative regret": std_relat_regret, "train_time": train_time})
+        if verbose:
+            print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
+        
+        # Early stopping
+        if mean_relat_regret < best_relat_regret - min_delta:
+            best_relat_regret = mean_relat_regret
+            best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            best_epoch = epoch
 
     if best_model_state is not None:
         device = next(model.parameters()).device
         model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
-        
+
     if run is not None:
         total_duration = time.time() - start_time
         run.log({
@@ -297,7 +368,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
-    return best_relat_regret
+    return best_relat_regret, best_epoch, epoch
 
 def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
@@ -335,6 +406,7 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         train_time = 0
 
     for epoch in range(epochs):
+        previous_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
         if monitoring:
             epoch_start_time = time.time()
 
@@ -365,6 +437,10 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
             train_time += epoch_duration
+            if train_time > time_limit:
+                print("Time limit reached, stopping training. Cancelling last epoch.", flush=True)
+                model.load_state_dict(previous_model_state)
+                break
         if run is not None:
             total_grad_norm = total_grad_norm ** 0.5
             current_lr = get_learning_rate(optimizer)
@@ -375,7 +451,7 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             print(f"Epoch {epoch} | loss: {mean_loss:.4f} | train time : {train_time}", flush=True)
 
         ## evaling step (if needed)##
-        if epoch % eval_freq == eval_freq-1:
+        if epoch+1 % eval_freq == 0:
             with torch.no_grad():
                 model.eval()
                 all_regrets = []
@@ -417,12 +493,42 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                     if epochs_no_improvement >= patience:
                         print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
+    
+    with torch.no_grad():
+        model.eval()
+        all_regrets = []
 
-        # Check time limit
-        if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.", flush=True)
-                break
+        for z, c, x, _, _ in dataloader_eval:
+            z = z.to(device)
+            c_hat = model(z)  # [batch, n]
+
+            # prepare the inputs for the helper
+            c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+            x_true_cpu = x.float().cpu().numpy()              # shape [B,n], torch Tensor
+            c_true_cpu = c.float().cpu().numpy() 
+
+            for i in range(z.size(0)):
+                eval_solver.setObj(c_hat_np[i]) 
+                x_hat, _ = eval_solver.solve()
+                num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                rel_regret = num / den
+                all_regrets.append(rel_regret)
+
+        mean_relat_regret = float(np.mean(all_regrets))
+        std_relat_regret  = float(np.std(all_regrets))
+        if run is not None:
+            # Log results in wandb
+            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
+                    "Std relative regret": std_relat_regret, "train_time": train_time})
+        if verbose:
+            print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
+        
+        # Early stopping
+        if mean_relat_regret < best_relat_regret - min_delta:
+            best_relat_regret = mean_relat_regret
+            best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            best_epoch = epoch
 
     if best_model_state is not None:
         device = next(model.parameters()).device
@@ -435,9 +541,9 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
-    return best_relat_regret
+    return best_relat_regret, best_epoch, epoch
 
-def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
+def train_SG(model, loss, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
           epochs, time_limit, eval_freq,
           step_mu, num_iter_mu, optimizer_mu,
           mu_global0,
@@ -447,6 +553,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 
     Args:
         model: ML model to train
+        loss: loss function to use
         diff_method: DFL technique used to compute loss gradient
         eval_solver: solver for the problem, used during eval
         run: wandb.run for logging results
@@ -483,6 +590,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
     mu_global = mu_global0
 
     for epoch in range(epochs):
+        previous_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
         if monitoring:
             epoch_start_time = time.time()
 
@@ -498,13 +606,13 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 
             # Update mu_global
             if epoch % step_mu == 0:
-                optimizer_mu.optim_mu(c_batch=c_hat.detach(),verbose=True, max_iter=num_iter_mu, mu_init=mu_tilde)
-                mu_tilde = optimizer_mu.get_mu().detach()
+                optimizer_mu.optim_mu(c_batch=c_hat.detach(), verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
+                mu_tilde = optimizer_mu.get_mu(tensor=True, device=torch.device("cpu"))
                 mu_global[idx] = mu_tilde
 
             # Forward and Backward pass
             mu_tilde_sum = mu_tilde.sum(dim=1) # Shape (batch_size, num_item)
-            mu_sum = mu.sum(dim=1) # Shape (batch_size, num_item)
+            mu_sum = mu.sum(dim=1) if loss == 0 else 0 # Shape (batch_size, num_item)
             loss = diff(c_hat + mu_tilde_sum, c + mu_sum, X1).to(device)
             optimizer.zero_grad()
             loss.backward()
@@ -525,6 +633,10 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             epoch_end_time = time.time()
             epoch_duration = epoch_end_time - epoch_start_time
             train_time += epoch_duration
+            if train_time > time_limit:
+                print("Time limit reached, stopping training. Cancelling last epoch.", flush=True)
+                model.load_state_dict(previous_model_state)
+                break
         if run is not None:
             total_grad_norm = total_grad_norm ** 0.5
             current_lr = get_learning_rate(optimizer)
@@ -566,9 +678,8 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
 
                 if run is not None:
                     # Log results in wandb
-                    run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
-                            "Std relative regret": std_relat_regret, "norm_diff_mu": mu_diff,
-                            "train_time": train_time})
+                    run.log({"epoch": epoch, "Eval mean relative regret": mean_relat_regret,
+                            "Eval std relative regret": std_relat_regret, "norm_diff_mu": mu_diff})
                 if verbose:
                     print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f} | norm_diff_mu: {mu_diff:.4f}", flush=True)
                 
@@ -584,12 +695,44 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                         print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
                         break
 
-        # Check time limit
-        if time_limit is not None:
-            if train_time > time_limit:
-                print("Time limit reached, stopping training.", flush=True)
-                break
-    
+    # Final evaluation after training
+    epoch -= 1
+    with torch.no_grad():
+        model.eval()
+        all_regrets = []
+
+        for z, c, x, _, _ in dataloader_eval:
+            z = z.to(device)
+            c_hat = model(z)  # [batch, n]
+
+            # prepare the inputs for the helper
+            c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+            x_true_cpu = x.float().cpu().numpy()              # shape [B,n], torch Tensor
+            c_true_cpu = c.float().cpu().numpy() 
+
+            for i in range(z.size(0)):
+                eval_solver.setObj(c_hat_np[i]) 
+                x_hat, _ = eval_solver.solve()
+                num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
+                den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
+                rel_regret = num / den
+                all_regrets.append(rel_regret)
+
+        mean_relat_regret = float(np.mean(all_regrets))
+        std_relat_regret  = float(np.std(all_regrets))
+        if run is not None:
+            # Log results in wandb
+            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
+                    "Std relative regret": std_relat_regret, "train_time": train_time})
+        if verbose:
+            print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
+        
+        # Early stopping
+        if mean_relat_regret < best_relat_regret - min_delta:
+            best_relat_regret = mean_relat_regret
+            best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            best_epoch = epoch
+
     if best_model_state is not None:
         device = next(model.parameters()).device
         model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
@@ -601,7 +744,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
-    return best_relat_regret
+    return best_relat_regret, best_epoch, epoch+1
 
 def test(model, test_loader, eval_solver, device, run=None):
     """

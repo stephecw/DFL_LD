@@ -86,11 +86,11 @@ class ImportDataset:
                     self.X = np.array(self.X).reshape(self.num_data, self.global_dim, self.num_item)
                     self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim, self.global_dim-1,self.num_item)
                 else:
-                    self.X = np.array(self.X).reshape(self.num_data, 1, self.num_item)
-                    self.mu = np.array(self.mu).reshape(self.num_data, 1, self.global_dim-1, self.num_item)
+                    self.X = np.array(self.X).reshape(self.num_data, self.num_item)
+                    self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim-1, self.num_item)
             else:
-                self.X = np.zeros((self.num_data, 1, 1, 1))
-                self.mu = np.zeros((self.num_data, 1, 1, 1))
+                self.X = np.zeros((self.num_data, 1, 1))
+                self.mu = np.zeros((self.num_data, 1, 1))
 
     def get_z_stats(self):
         """Retourne (mean, std) utilisés pour la normalisation."""

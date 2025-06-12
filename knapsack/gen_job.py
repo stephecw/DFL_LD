@@ -1,20 +1,14 @@
-l_methods = ["SG"] #["cla", "LD", "SG", "MSE"]
-timetable = {
-            '50,5':'02:00:00',
-            '50,10':'04:00:00',
-            '100,5':'04:00:00',
-            '100,10':'06:00:00',
-            '200,5':'06:00:00',
-            '200,10':'08:00:00'
-            }
-timetable_sec = {
-            '50,5':6000,
-            '50,10':13200,
-            '100,5':13200,
-            '100,10':20400,
-            '200,5':20400,
-            '200,10':27600
-            }
+l_methods = ["SG"]
+
+l_patience = {
+    "IMLE": {
+        "MSE": {'30': 300, '60': 700, '300': 3000, '600': 7000, '3600': 37000, '7200': 74000},
+        "cla": {'30': 2, '60': 2, '300': 3, '600': 5, '3600': 7, '7200': 15}
+    },
+    "SPOPlus": {
+        "cla": {'30': 5, '60': 10, '300': 30, '600': 40, '3600': 60, '7200': 80}
+    }
+}
 
 
 with open("hp_knapsack.txt") as f:
@@ -34,7 +28,7 @@ for line in lines:
         hp_dic[diff]['l_param'] = []
         continue
     elif line[0] == '*':
-        diff = 'MSE'
+        diff = 'SG'
         hp_dic[diff] = {}
         hp_dic[diff]['l_param'] = []
         continue
@@ -76,7 +70,7 @@ for p in hp_dic["l_param"]:
             new_job[p] = val
             jobs_prov.append(new_job)
     jobs = jobs_prov.copy()
-    
+
 jobs_prov = []
 for job in jobs:
     for method in l_methods:
@@ -87,44 +81,54 @@ for job in jobs:
         jobs_prov.append(new_job)
 jobs = jobs_prov.copy()
 
-for p in hp_dic['MSE']["l_param"]:
+for p in hp_dic['SG']["l_param"]:
     jobs_prov = []
     for job in jobs:
         if job['method'] == 'SG':
-            for val in hp_dic['MSE'][p]:
+            for val in hp_dic['SG'][p]:
                 new_job = job.copy()
                 new_job[p] = val
                 jobs_prov.append(new_job)
         else:
             jobs_prov.append(job)
     jobs = jobs_prov.copy()
+    
+jobs_prov = []
+for job in jobs:
+    jobs_prov.append(job)
+    if job['method'] == 'SG' and job['diff'] == 'IMLE':
+        new_job = job.copy()
+        new_job['loss'] = 1
+        jobs_prov.append(new_job)
+jobs = jobs_prov.copy()
+
         
 print(f"Generating {len(jobs)} job files...")
-    
+offset = 54
+
 for i, job in enumerate(jobs):
-    time = timetable[f'{job['n']},{job['dim']}']
-    time_sec = timetable_sec[f'{job['n']},{job['dim']}']
-    with open(f"jobfiles/jobfile{i}.sh", mode="w") as f:
+    seconds = job['tl']+1000
+    if job['method'] == 'MSE':
+        seconds += 1000
+    hours = seconds // 3600
+    minutes = (seconds % 3600) // 60
+    seconds = seconds % 60
+    if job['method'] == 'SG':
+        patience = job['step_mu'] * 5
+    else:
+        patience = l_patience[job['diff']][job['method']][str(job['tl'])]
+    with open(f"jobfiles/jobfile{i+offset}.sh", mode="w") as f:
         f.write("#!/bin/bash\n")
         f.write("#SBATCH --account=def-qcappart\n")
-        f.write("#SBATCH --mem=16G\n")
-        f.write("#SBATCH --cpus-per-task=1\n")
-        f.write("#SBATCH --gres=gpu:1\n")
-        f.write(f"#SBATCH --job-name=job_{i}\n")
-        f.write(f"#SBATCH --output=knapsack/output/output_{i}_sg.log\n")
-        f.write(f"#SBATCH --error=knapsack/output/error_{i}_sg.log\n")
-        f.write(f"#SBATCH --time={time}\n")
+        f.write(f"#SBATCH --mem={16 if job['tl']<=600 else 32}G\n")
+        f.write("#SBATCH --cpus-per-task=3\n")
+        f.write(f"#SBATCH --job-name=job_{i+offset}\n")
+        f.write(f"#SBATCH --output=knapsack/output/output_{i+offset}_sg.log\n")
+        f.write(f"#SBATCH --error=knapsack/output/error_{i+offset}_sg.log\n")
+        f.write(f"#SBATCH --time={hours:02}:{minutes:02}:{seconds:02}\n")
         f.write("module load cuda/12.2\n")
         f.write("module load python/3.10\n")
         f.write("source ../env_projet/bin/activate\n")
-        f.write(f"python -m knapsack.run_experiments --ep 100000000 --tl {time_sec}")
-        for i, (p, val) in enumerate(job.items()):
+        f.write(f"python -m knapsack.run_experiments --ep 100000000 --patience {patience} --id {i+offset}")
+        for _, (p, val) in enumerate(job.items()):
             f.write(f" --{p} {val}")
-        
-        
-        
-    
-
-
-    
-    
