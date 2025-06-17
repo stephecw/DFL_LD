@@ -46,7 +46,6 @@ print("→ Training on:", device)
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
 id = args.id
-seed = 
 
 method = args.method
 # Problem dimensions
