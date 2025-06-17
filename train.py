@@ -3,6 +3,7 @@ import torch
 import numpy as np
 import torch.nn as nn
 from joblib import Parallel, delayed
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def get_learning_rate(optimizer):
@@ -543,121 +544,120 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         })
     return best_relat_regret, best_epoch, epoch
 
-def train_SG(model, loss, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
-          epochs, time_limit, eval_freq,
-          step_mu, num_iter_mu, optimizer_mu,
-          mu_global0,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1):
+def train(model, diff_method, eval_solver, dataloader_train, dataloader_eval, optimizer, scheduler,
+          checkpoints, eval_freq,
+          decompositions ,step_mu, num_iter_mu, optimizer_mu,
+          approach=None, loss=0,
+          mu_global0 = None,
+          run=None, verbose=False, device = device):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
     Args:
         model: ML model to train
-        loss: loss function to use
-        diff_method: DFL technique used to compute loss gradient
-        eval_solver: solver for the problem, used during eval
-        run: wandb.run for logging results
+        diff_method: Differentiation technique used to compute loss gradient
+        eval_solver: solver for the problem, used during evaluation
         dataloader_train: DataLoader for training (z, c, x, X1*(c), mu(c))
         dataloader_eval: DataLoader for eval (z, c, x, X1*(c), mu(c))
         optimizer: PyTorch optimizer for training
         scheduler: PyTorch scheduler
         epochs: max number of training epochs
-        time_limit: timeout on training time
-        num_items: number of items
-        dim: number of constraints
-        eval_freq: frequency of evaling (in epochs)
+        checkpoints: list of time checkpoints to save the best model
+        eval_freq: frequency of evaling (in time)
+        decompositions: list of decomposition methods to use
         step_mu: frequency of updating mu (in epochs)
         num_iter_mu: number of sub-gradient descent steps when updating mu
         optimizer_mu: optimizer object to update mu
-        num_items: number of items
-        dim: number of constraints
-        run: wandb logfile
+        approach: 'LD' for Lagrangian Decomposition, 'SG' for Sub-gradient descent, None for classic DFL and MSE
+        loss: O for loss with penalty term, 1 for loss without penalty term
+        mu_global0: initial value of mu_global shape (len(decompositions), batch_size, dim-1, num_items)
+        run: wandb.run for logging results
         verbose: bool: If True, print training info
     """
 
-    monitoring = run is not None or time_limit is not None
+    # Check if monitoring is needed
+    if checkpoints is not None:
+        idx_checkpoint = 0  # Index for the current checkpoint
+        save = []
+    
+    # Initialize variables for best model tracking
     best_relat_regret = float("inf")
-    epochs_no_improvement = 0
     best_model_state = None
-    best_epoch = 0
+    best_epoch = -1
+    
     diff = diff_method
-    eval_solver = eval_solver
-
-    if monitoring:
-        start_time = time.time()
-        train_time = 0
-
     mu_global = mu_global0
-
-    for epoch in range(epochs):
-        previous_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
-        if monitoring:
-            epoch_start_time = time.time()
+    idx_decomposition = 0  # Index for the current decomposition method
+    
+    start_time = time.time()
+    train_time = 0
+    last_eval = 0.
+        
+    epoch = -1  # Initialize epoch counter
+    while(True):
+        epoch += 1 
+        previous_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}        
+        epoch_start_time = time.time()
 
         ## Training step ##
         model.train()
         total_loss = 0
-        total_grad_norm = 0.0
+        
+        # Randomly select a decomposition method
+        if epoch % step_mu == 0:
+            idx_decomposition = np.random.randint(0, len(decompositions))  
+            
         for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train):
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prediction ĉ
-            idx = (batch_idx * dataloader_train.batch_size + torch.arange(z.size(0), device=device))
-            mu_tilde = mu_global[idx] # select mu associated with the batch
+            mu_tilde_sum = 0
+            mu_sum = 0
+            x_ = x
+            if (approach == 'LD' or approach == 'SG'):
+                x_ = X1[idx_decomposition]  # Use X1 for LD and SG approaches
+                if loss == 0:
+                    mu_sum = mu.sum[idx_decomposition](dim=1)  # Shape (batch_size, num_item)
+            if approach == 'LD':
+                mu_tilde_sum = mu.sum[idx_decomposition](dim=1)  # Shape (batch_size, num_item)
+            elif approach == 'SG':
+                idx = (batch_idx * dataloader_train.batch_size + torch.arange(z.size(0), device=device))
+                if epoch % step_mu == 0:
+                    mu_tilde = mu_global[idx_decomposition][idx]
+                    optimizer_mu.optim_mu(c_batch=c_hat.detach(), verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
+                    mu_tilde = optimizer_mu.get_mu(tensor=True, device=device)
+                    mu_global[idx_decomposition][idx] = mu_tilde
+                mu_tilde_sum = mu_tilde.sum(dim=1)
 
-            # Update mu_global
-            if epoch % step_mu == 0:
-                optimizer_mu.optim_mu(c_batch=c_hat.detach(), verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
-                mu_tilde = optimizer_mu.get_mu(tensor=True, device=torch.device("cpu"))
-                mu_global[idx] = mu_tilde
-
-            # Forward and Backward pass
-            mu_tilde_sum = mu_tilde.sum(dim=1) # Shape (batch_size, num_item)
-            mu_sum = mu.sum(dim=1) if loss == 0 else 0 # Shape (batch_size, num_item)
-            loss = diff(c_hat + mu_tilde_sum, c + mu_sum, X1).to(device)
+            # Forward pass
+            loss = diff(c_hat + mu_tilde_sum, c + mu_sum, x_).to(device)
+            # Backward pass
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
             total_loss += loss.item()
-
-            for param in model.parameters():
-                if param.grad is not None:
-                    total_grad_norm += param.grad.norm().item() ** 2
+            
         mean_loss = total_loss / len(dataloader_train)
+        # Update the learning rate scheduler if applicable
         if scheduler is not None:
             if isinstance(scheduler, torch.optim.lr_scheduler.ReduceLROnPlateau):
                 scheduler.step(mean_loss)
             else:
                 scheduler.step()
 
-        if monitoring:
-            epoch_end_time = time.time()
-            epoch_duration = epoch_end_time - epoch_start_time
-            train_time += epoch_duration
-            if train_time > time_limit:
-                print("Time limit reached, stopping training. Cancelling last epoch.", flush=True)
-                model.load_state_dict(previous_model_state)
-                break
-        if run is not None:
-            total_grad_norm = total_grad_norm ** 0.5
-            current_lr = get_learning_rate(optimizer)
-            # Log results in wandb
-            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
-                    "train_time": train_time, "grad_norm": total_grad_norm, "lr": current_lr})
-        if verbose:
-            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
-
-        ## evaling step (if needed)##
-        if epoch % eval_freq == eval_freq-1:
+        epoch_end_time = time.time()
+        epoch_duration = epoch_end_time - epoch_start_time
+        train_time += epoch_duration
+        
+        if train_time > checkpoints[idx_checkpoint]:
+            print(f"Checkpoint {idx_checkpoint} reached, evaluating model so far.", flush=True)
+            model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
+            model.load_state_dict(previous_model_state)
             with torch.no_grad():
                 model.eval()
                 all_regrets = []
-
                 for z, c, x, _, _ in dataloader_eval:
                     z = z.to(device)
-                    c_hat = model(z)  # [batch, n]
-
-                    # prepare the inputs for the helper
-                    c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
+                    c_hat_np = model(z).detach().cpu().numpy()   # shape [B,n]
                     x_true_cpu = x.float().cpu().numpy()               # shape [B,n], torch Tensor
                     c_true_cpu = c.float().cpu().numpy()  
 
@@ -678,64 +678,26 @@ def train_SG(model, loss, diff_method, eval_solver, dataloader_train, dataloader
 
                 if run is not None:
                     # Log results in wandb
-                    run.log({"epoch": epoch, "Eval mean relative regret": mean_relat_regret,
+                    run.log({"epoch": epoch-1, "Eval mean relative regret": mean_relat_regret,
                             "Eval std relative regret": std_relat_regret, "norm_diff_mu": mu_diff})
-                if verbose:
-                    print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f} | norm_diff_mu: {mu_diff:.4f}", flush=True)
+            model.load_state_dict(model_state)
+        while train_time > checkpoints[idx_checkpoint]:
+            print(f"Checkpoint {idx_checkpoint} reached, saving model so far.", flush=True)
+            save.append((checkpoints[idx_checkpoint], epoch-1, mean_relat_regret, previous_model_state))
+            idx_checkpoint += 1
+            if idx_checkpoint >= len(checkpoints):
+                break
+        if idx_checkpoint >= len(checkpoints):
+            print("All checkpoints reached, stopping training.", flush=True)
+            break
                 
-                # Early stopping
-                if mean_relat_regret < best_relat_regret - min_delta:
-                    best_relat_regret = mean_relat_regret
-                    epochs_no_improvement = 0
-                    best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
-                    best_epoch = epoch
-                elif patience is not None:
-                    epochs_no_improvement += 1
-                    if epochs_no_improvement >= patience:
-                        print(f"Early stopping at epoch {epoch}. Best epoch: {best_epoch}", flush=True)
-                        break
-
-    # Final evaluation after training
-    epoch -= 1
-    with torch.no_grad():
-        model.eval()
-        all_regrets = []
-
-        for z, c, x, _, _ in dataloader_eval:
-            z = z.to(device)
-            c_hat = model(z)  # [batch, n]
-
-            # prepare the inputs for the helper
-            c_hat_np = c_hat.detach().cpu().numpy()   # shape [B,n]
-            x_true_cpu = x.float().cpu().numpy()              # shape [B,n], torch Tensor
-            c_true_cpu = c.float().cpu().numpy() 
-
-            for i in range(z.size(0)):
-                eval_solver.setObj(c_hat_np[i]) 
-                x_hat, _ = eval_solver.solve()
-                num = (c_true_cpu[i] * (x_true_cpu[i] - x_hat)).sum()
-                den = max((c_true_cpu[i] * x_true_cpu[i]).sum(), 1e-6)
-                rel_regret = num / den
-                all_regrets.append(rel_regret)
-
-        mean_relat_regret = float(np.mean(all_regrets))
-        std_relat_regret  = float(np.std(all_regrets))
         if run is not None:
+            current_lr = get_learning_rate(optimizer)
             # Log results in wandb
-            run.log({"epoch": epoch, "Mean relative regret": mean_relat_regret,
-                    "Std relative regret": std_relat_regret, "train_time": train_time})
+            run.log({"epoch": epoch, "train_loss": mean_loss, "epoch_duration": epoch_duration,
+                    "train_time": train_time, "lr": current_lr})
         if verbose:
-            print(f"Eval Epoch {epoch} | Mean relative regret: {mean_relat_regret:.4f}", flush=True)
-        
-        # Early stopping
-        if mean_relat_regret < best_relat_regret - min_delta:
-            best_relat_regret = mean_relat_regret
-            best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
-            best_epoch = epoch
-
-    if best_model_state is not None:
-        device = next(model.parameters()).device
-        model.load_state_dict({k: v.to(device) for k, v in best_model_state.items()})
+            print(f"Epoch {epoch} | loss: {mean_loss:.4f}", flush=True)
 
     if run is not None:
         total_duration = time.time() - start_time
@@ -744,7 +706,7 @@ def train_SG(model, loss, diff_method, eval_solver, dataloader_train, dataloader
             "best_epoch": best_epoch,
             "best_relat_regret": best_relat_regret
         })
-    return best_relat_regret, best_epoch, epoch+1
+    return save
 
 def test(model, test_loader, eval_solver, device, run=None):
     """

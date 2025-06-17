@@ -18,20 +18,19 @@ import argparse
 # Define command line arguments
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
 parser.add_argument('--id', type=int, default=0, help='ID of the experiment. Used to differentiate runs.')
+parser.add_argument('--seed', type=int, default=0, help='Random seed.')
 
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
-parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
-parser.add_argument('--loss', type=int, default=0, help='Loss function to use (0 for LD, 1 for classic regret).')
-
+parser.add_argument('--decomp', type=int, nargs="+", default=[0], help='List of decomposition to use.')
+parser.add_argument('--loss', type=int, default=0, help='Loss function to use (0 with penaty terms, 1 without).')
 
 parser.add_argument('--dim', type=int, default=10, help='Number of constraints.')
 parser.add_argument('--n', type=int, default=50, help='Number of items.')
 parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
 parser.add_argument('--patience', type=int, default=5, help='Number of epochs with no improvement after which learning rate will be reduced.')
 
-parser.add_argument('--ep', type=int, default=1, help='Number of epochs. (0 to use time limit)')
-parser.add_argument('--tl', type=int, default=0, help='Time limit. (0 for doing all epochs)')
+parser.add_argument('--checkpoints', type=int, nargs="+", default=[30, 60, 180, 300, 600, 1800, 3600, 7200], help='Checkpoint for saving')
 
 parser.add_argument('--step_mu', type=int, default=0, help='Number of epochs between mu updates. (0 to skip)')
 parser.add_argument('--n_iter_mu', type=int, default=0, help='Number of iterations for mu optimization. (0 to skip)')
@@ -44,10 +43,11 @@ parser.add_argument("--kappa", type=int, default=5, help="Parameter kappa for IM
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Training on:", device)
 
-
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
 id = args.id
+seed = 
+
 method = args.method
 # Problem dimensions
 num_feat = 12
@@ -58,11 +58,10 @@ num_data_test = 1000  # Test dataset size
 
 dim = args.dim
 num_item = args.n
-keep = args.keep
+decomposition = args.decomp
 loss = args.loss
 
-epochs = args.ep if args.ep > 0 else int(1e10)
-tl = args.tl if args.tl > 0 else int(1e10)
+checkpoints = args.checkpoints
 batch_size = 200
 lr = args.lr
 model_shape = [num_feat, num_item]

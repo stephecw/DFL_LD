@@ -1,3 +1,4 @@
+from sympy import N
 import torch
 from torch import optim
 import numpy as np
@@ -6,7 +7,7 @@ from pyepo.model.grb import knapsackModel
 from pyepo.func.utlis import sumGammaDistribution
 
 from knapsack.data_import import ImportDataset
-from train import train_MSE, train_classic, train_LD, train_SG, test
+from train import train
 from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus
 from opti_X_mu_CPU import OptimizationBatchModel
@@ -21,8 +22,8 @@ parser = argparse.ArgumentParser(description="Training script with specified dim
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
 
-parser.add_argument('--dim', type=int, default=5, help='Number of constraints.')
-parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
+parser.add_argument('--dim', type=int, default=10, help='Number of constraints.')
+parser.add_argument('--decomp', type=int, nargs="+", default=[-1], help='Decomposition used (-1 for all decompositions).')
 parser.add_argument('--n', type=int, default=30, help='Number of items.')
 parser.add_argument("--lr", type=float, default=0.001, help="Learning rate")
 

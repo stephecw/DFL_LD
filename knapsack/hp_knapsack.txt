@@ -1,5 +1,5 @@
 n,int:100
-dim,int:10
+dim,int:30
 lr,float:0.01,0.1,1
 tl,int:30,60,300,600,3600,7200
 

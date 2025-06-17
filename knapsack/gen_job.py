@@ -107,9 +107,7 @@ print(f"Generating {len(jobs)} job files...")
 offset = 54
 
 for i, job in enumerate(jobs):
-    seconds = job['tl']+1000
-    if job['method'] == 'MSE':
-        seconds += 1000
+    seconds = job['tl']+2500
     hours = seconds // 3600
     minutes = (seconds % 3600) // 60
     seconds = seconds % 60

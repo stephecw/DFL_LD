@@ -44,9 +44,9 @@ class ImportDataset:
         with open(fname, 'r') as f:
             lines = f.readlines()
             if self.base:
-                self.global_dim, self.num_feat, self.num_item, self.num_data = map(int, lines[0].split(","))
+                self.global_dim, self.num_feat, self.num_item, self.num_data, self.seed = map(int, lines[0].split(","))
             else:
-                self.global_dim, self.keep ,self.num_feat, self.num_item, self.num_data = map(int, lines[0].split(","))
+                self.global_dim, self.keep ,self.num_feat, self.num_item, self.num_data, self.seed = map(int, lines[0].split(","))
                                 
             self.capacities = []
             self.weights = []
@@ -104,6 +104,9 @@ class ImportDataset:
         if tensor:
             return torch.tensor(self.obj, dtype=torch.float32)
         return self.obj
+
+    def get_seed(self):
+        return self.seed
 
     def get_sizes(self):
         """
