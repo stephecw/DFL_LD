@@ -1,11 +1,12 @@
+from ctypes import pointer
 import pyepo.data.dataset as dataset
 import numpy as np
 import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 class ImportDataset:
-    def __init__(self, fname, model=None, z_stats=None, test=False):
-        self.test = test
+    def __init__(self, fname, model=None, z_stats=None, base=False):
+        self.base = base
         self.read_file(fname)
 
         Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
@@ -46,7 +47,7 @@ class ImportDataset:
                 self.global_dim, self.keep , self.main, self.num_feat, self.num_item, self.num_data, self.deg = map(int, lines[0].split(","))
             else:
                 self.global_dim, self.num_feat, self.num_item, self.num_data,self.deg = map(int, lines[0].split(","))
-                
+              
             self.capacities = []
             self.weights = []
             for i in range(self.global_dim):
@@ -67,20 +68,29 @@ class ImportDataset:
                 self.obj.append(float(line[0])) 
                 self.Z.append(list(map(float, line[1:1+self.num_feat])))
                 self.c.append(list(map(int, line[1+self.num_feat:1+self.num_feat+self.num_item])))
-                self.x.append(list(map(int, line[1+self.num_feat+self.num_item:1+self.num_feat+self.num_item+self.num_item])))
-                if not self.test:
-                    self.X.append(list(map(int, line[1+self.num_feat+self.num_item+self.num_item:1+self.num_feat+self.num_item+self.num_item+self.num_item])))
-                    self.mu.append(list(map(float, line[1+self.num_feat+self.num_item+self.num_item+self.num_item:])))
+                self.x.append(list(map(int, line[1+self.num_feat+self.num_item:1+self.num_feat+2*self.num_item])))
+                if not self.base:
+                    ptr = 1 + self.num_feat + 2*self.num_item
+                    if self.keep == -1:
+                        self.X.append(list(map(int, line[ptr:ptr+self.num_item*self.global_dim])))
+                        self.mu.append(list(map(float, line[ptr+self.num_item*self.global_dim:])))
+                    else:
+                        self.X.append(list(map(int, line[ptr:ptr+self.num_item])))
+                        self.mu.append(list(map(float, line[ptr+self.num_item:])))
             self.obj = np.array(self.obj)
             self.Z = np.array(self.Z)
             self.c = np.array(self.c)
             self.x = np.array(self.x)
-            if self.test:
-                self.X = np.zeros((self.num_data, self.num_item))
-                self.mu = np.zeros((self.num_data, self.global_dim, self.num_item))
-            else: 
-                self.X = np.array(self.X)
-                self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim-self.keep, self.num_item)
+            if not self.base: 
+                if self.keep == -1:
+                    self.X = np.array(self.X).reshape(self.num_data, self.global_dim, self.num_item)
+                    self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim, self.global_dim-1,self.num_item)
+                else:
+                    self.X = np.array(self.X).reshape(self.num_data, 1, self.num_item)
+                    self.mu = np.array(self.mu).reshape(self.num_data, 1, self.global_dim-1, self.num_item)
+            else:
+                self.X = np.zeros((self.num_data, 1, 1, 1))
+                self.mu = np.zeros((self.num_data, 1, 1, 1))
 
     def get_z_stats(self):
         """Retourne (mean, std) utilisés pour la normalisation."""
@@ -104,7 +114,7 @@ class ImportDataset:
         num_item : int : Nombre d'items.
         num_data : int : Nombre de données.
         """
-        if not self.test:
+        if not self.base:
             return self.global_dim, self.keep, self.num_feat, self.num_item, self.num_data
         return self.global_dim, self.num_feat, self.num_item, self.num_data
     
