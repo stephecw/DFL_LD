@@ -4,7 +4,7 @@ from joblib import Parallel, delayed
 
 
 class OptimizationBatchModel:
-    def __init__(self, solvers):
+    def __init__(self, solvers, main=0):
         """
         Batch-compatible optimization model for Lagrangian decomposition.
 
@@ -13,16 +13,18 @@ class OptimizationBatchModel:
         """
         self.solvers = solvers
         self.num_pb = len(solvers)
+        self.main = main
 
     def update_val(self):
         Parallel(n_jobs=-1, backend="threading")(
             delayed(self.solve_X)(i) for i in range(self.num_pb)
         )
-        self.vals = np.sum((self.c + self.mu.sum(axis=1)) * self.X[:,0], axis=1) - np.sum(self.mu*self.X[:, 1:], axis=(1,2))
+        mask = np.arange(self.X.shape[1]) != self.main
+        self.vals = np.sum((self.c + self.mu.sum(axis=1)) * self.X[:,self.main], axis=1) - np.sum(self.mu*self.X[:, mask], axis=(1,2))
 
     def solve_X(self, idx_pb):
-        if idx_pb == 0:
-            self.X[:,0] = self.solvers[0](self.c + self.mu.sum(axis=1))
+        if idx_pb == self.main:
+            self.X[:,self.main] = self.solvers[self.main](self.c + self.mu.sum(axis=1))
         else:
             self.X[:,idx_pb] = self.solvers[idx_pb](-self.mu[:, idx_pb-1])
 
@@ -33,7 +35,8 @@ class OptimizationBatchModel:
         Parallel(n_jobs=-1, backend="threading")(
             delayed(self.solve_X)(i) for i in range(self.num_pb)
         )
-        return np.expand_dims(self.X[:, 0], axis=1) - self.X[:, 1:]
+        mask = np.arange(self.X.shape[1]) != self.main
+        return np.expand_dims(self.X[:, self.main], axis=1) - self.X[:, mask]
 
     def adam_optimizer(self, lr=0.01, beta1=0.9, beta2=0.999, eps=1e-8, max_iter=3000, convergence=1e-4, verbose=False):
         """
@@ -60,7 +63,9 @@ class OptimizationBatchModel:
                 print(f"Convergence reached", flush=True)
                 break
 
-    def optim_mu(self, c_batch, mu_init=None, verbose=False, **adam_args):
+    def optim_mu(self, c_batch, mu_init=None, main =None,verbose=False, **adam_args):
+        if main is not None:
+            self.main = main
         self.c = c_batch.clone().cpu().numpy() if isinstance(c_batch, torch.Tensor) else c_batch.copy()  # [B, n]
         batch_size, num_items = self.c.shape
         self.X = np.zeros((batch_size, self.num_pb, num_items), dtype=int)
@@ -75,7 +80,7 @@ class OptimizationBatchModel:
         return torch.tensor(self.mu, dtype=torch.float32, device=device) if tensor else self.mu
 
     def get_X0(self, tensor=True, device=torch.device("cpu")):
-        self.X[0] = self.solvers[0](self.c + self.mu.sum(axis=1))
+        self.X[self.main] = self.solvers[self.main](self.c + self.mu.sum(axis=1))
         return torch.tensor(self.X[:, 0], dtype=torch.int32, device=device) if tensor else self.X[:, 0]
 
     def get_X(self, tensor=True, device=torch.device("cpu")):
@@ -87,3 +92,6 @@ class OptimizationBatchModel:
     def get_value(self, tensor=True, device=torch.device("cpu")):
         self.update_val()
         return torch.tensor(self.vals, dtype=torch.float32, device=device) if tensor else self.vals
+    
+    def get_main(self, tensor=True, device=torch.device("cpu")):
+        return self.main

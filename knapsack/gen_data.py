@@ -1,4 +1,5 @@
 
+from ast import main
 import numpy as np
 import torch
 import pyepo
@@ -12,11 +13,11 @@ import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, deg,capacities, weights, obj, Z, c, x_star_array, keep=None, X=None, mu=None):
+def write_dataset_file(fname, global_dim, num_feat, num_item, num_data, deg,capacities, weights, obj, Z, c, x_star_array, keep=None, X=None, mu=None, main=None):
     with open(fname, 'w') as f:
         # Constraints (unique for the whole dataset)
         if X is not None:
-            f.write(f"{global_dim},{keep},{num_feat},{num_item},{num_data},{deg}\n")
+            f.write(f"{global_dim},{keep},{main},{num_feat},{num_item},{num_data},{deg}\n")
         else :
             f.write(f"{global_dim},{num_feat},{num_item},{num_data},{deg}\n")
         for i in range(global_dim):
@@ -105,7 +106,7 @@ def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_it
                        capacities, weights, obj_test, Z_test, c_test, x_star_test)
 
 
-def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1, 
+def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1, main=0,
              num_iter=10000, convergence=1e-8, 
              monitor=False, verbose=False, wandbarg=None):
     """
@@ -118,6 +119,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1,
         global_dim (int): Number of constraints.
         keep (int): Number of constraints to keep in the main subproblem.
         deg (int): Degree of the polynomial for data generation.
+        main (int): Index of the main subproblem (default is 0).
         num_iter (int): Number of iterations for the optimization of mu.
         noise_width (float): Width of the noise for data generation.
         convergence (float): Convergence criterion for the optimization.
@@ -130,7 +132,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1,
         run = wandb.init(mode="offline", **wandbarg)
     
     input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt"
-    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt"
+    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{main}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt"
     if verbose:
         print(f"Reading existing file : {input_train_txt}")
     if not os.path.isfile(input_train_txt):
@@ -160,7 +162,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1,
         import time
         begin_time = time.time()
     
-    optimizer_mu = OptimizationBatchModel(solvers)
+    optimizer_mu = OptimizationBatchModel(solvers,main)
     c_tensor = torch.tensor(c_train, dtype=torch.int32)
     optimizer_mu.optim_mu(
         c_batch=c_tensor,
@@ -185,7 +187,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1,
 
     if monitor:
         obj_array = ds.get_obj(tensor=False)  # (num_data_train)
-        with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{keep}_{num_iter}_{deg}.txt", mode="w") as f:
+        with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{keep}_{main}_{num_iter}_{deg}.txt", mode="w") as f:
             line = f""
             rapport = (vals - obj_array)/torch.tensor(obj_array)
             for i in range(rapport.shape[0]):
@@ -194,7 +196,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1,
             f.write(line)
 
     # Extraire la première composante X[:,0,:] et aplatir μ
-    X_principal = X_batch[:, 0, :]                # (num_data_train, num_item)
+    X_principal = X_batch[:, main, :]                # (num_data_train, num_item)
     mu_flat     = np.reshape(mu_batch, (num_data_train, -1))  # (num_data_train, (global_dim-keep)*num_item)
     
     if verbose:
@@ -203,6 +205,7 @@ def add_X_mu(num_data_train, num_feat, num_items, global_dim, deg,keep=1,
         output_train_txt,
         global_dim=global_dim,
         keep=keep,
+        main=main,
         num_feat=num_feat,
         num_item=num_items,
         num_data=num_data_train,
@@ -236,6 +239,7 @@ if __name__ == "__main__":
     parser.add_argument('--n_feat', type=int, default=12, help='Number of features')
     parser.add_argument('--noise', type=float, default=0.5, help='Convergence stopping.')
     parser.add_argument('--deg', type=int, default=4, help='')
+    parser.add_argument('--main', type=int, default=0, help='Index of the main subproblem (default is 0).')
 
     # Parameters
     args = parser.parse_args()
@@ -248,6 +252,7 @@ if __name__ == "__main__":
     global_dim = args.dim
     convergence = args.conv
     keep = args.keep
+    main = args.main
     noise_width = args.noise
     deg = args.deg
     monitor = args.monitor
@@ -266,11 +271,11 @@ if __name__ == "__main__":
                 'entity': "hugoper-polytechnique-montr-al",
                 'project': "DFL_LD",
                 'dir': "./",
-                'name': f"opti_X_mu_{n}_{gd}_{keep}_{num_feat}_{num_data_train}_{num_iter}",
+                'name': f"opti_X_mu_{n}_{gd}_{keep}_{main}_{num_feat}_{num_data_train}_{num_iter}",
                 'group': f"knapsack",
                 'job_type': f"opti_X_mu",
                 'config': {
                     "convergence": convergence
                 }
                 }
-                add_X_mu(num_data_train, num_feat, n, gd, deg, keep, num_iter, convergence, monitor, verbose, wandbarg)
+                add_X_mu(num_data_train, num_feat, n, gd, deg, keep, main, num_iter, convergence, monitor, verbose, wandbarg)

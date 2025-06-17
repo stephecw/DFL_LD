@@ -43,7 +43,7 @@ class ImportDataset:
         with open(fname, 'r') as f:
             lines = f.readlines()
             if not self.test:
-                self.global_dim, self.keep ,self.num_feat, self.num_item, self.num_data, self.deg = map(int, lines[0].split(","))
+                self.global_dim, self.keep , self.main, self.num_feat, self.num_item, self.num_data, self.deg = map(int, lines[0].split(","))
             else:
                 self.global_dim, self.num_feat, self.num_item, self.num_data,self.deg = map(int, lines[0].split(","))
                 
@@ -146,3 +146,11 @@ class ImportDataset:
         Retourne le degré du polynôme utilisé pour générer les données.
         """
         return self.deg
+    
+    def get_main(self):
+        """
+        Retourne l'indice du sous-problème principal.
+        """
+        if not self.test:
+            return self.main
+        return None

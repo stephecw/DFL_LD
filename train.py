@@ -334,7 +334,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
 
 def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval, dataloader_test, optimizer, scheduler,
           epochs, time_limit, eval_freq, report_times,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True, mains=[0]):
     """
     Training a DFL-model by minimizing LD loss.
 
@@ -353,6 +353,8 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         run: wandb logfile
         verbose: bool: If True, print training info
     """
+    assert len(mains)==len(dataloader_train), "mains must have the same length as the number of datasets"
+
     report_times = sorted(report_times)
     pending = {t:True for t in report_times}  # pending times to report
     num_test = len(dataloader_test.dataset)
@@ -373,6 +375,14 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         start_time = time.time()
         train_time = 0
 
+    mu_add = []
+    for i in range(1,len(mains)):
+        mu_add.append(dataloader_train[i].dataset.tensors[4].clone().to(device))
+    
+    X1_add = []
+    for i in range(1,len(mains)):
+        X1_add.append(dataloader_train[i].dataset.tensors[3].clone().to(device))
+
     for epoch in range(epochs):
         if monitoring:
             epoch_start_time = time.time()
@@ -381,12 +391,23 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         model.train()
         total_loss = 0
         total_grad_norm = 0.0
-        for z, c, x, X1, mu in dataloader_train:
+        for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train[0]):
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)
+
+            idx = (batch_idx * dataloader_train[0].batch_size + torch.arange(z.size(0), device=device))
+            mu_batch_add = [mu_add[i][idx] for i in range(len(mu_add))] # select mu associated with the batch
+            X1_batch_add = [X1_add[i][idx] for i in range(len(X1_add))]
+
             mu_sum = torch.sum(mu, dim=1) # Shape (batch_size, num_item)
             mu_sum2 = torch.sum(mu, dim=1) if muloss else 0
             loss = diff(c_hat + mu_sum, c + mu_sum2, X1).to(device)
+
+            for i in range(1,len(mains)):
+                mu_batch_add_sum = torch.sum(mu_batch_add[i-1], dim=1)
+                mu_batch_add_sum2 = torch.sum(mu_batch_add[i-1], dim=1) if muloss else 0
+                loss += diff(c_hat + mu_batch_add_sum, c + mu_batch_add_sum2, X1_batch_add[i-1]).to(device)
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -491,7 +512,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
           epochs, time_limit, eval_freq, report_times,
           step_mu, num_iter_mu, optimizer_mu,
           mu_global0,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True, mains=[0]):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
@@ -517,6 +538,8 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         run: wandb logfile
         verbose: bool: If True, print training info
     """
+    assert len(mains)==len(dataloader_train), "mains must have the same length as the number of datasets"
+
     report_times = sorted(report_times)
     pending = {t:True for t in report_times}  # pending times to report
     num_test = len(dataloader_test.dataset)
@@ -538,6 +561,15 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         train_time = 0
 
     mu_global = mu_global0
+    mu_global_add = [mu_global.clone() for i in range(len(mains)-1)]
+
+    mu_add = []
+    for i in range(1,len(mains)):
+        mu_add.append(dataloader_train[i].dataset.tensors[4].clone().to(device))
+    
+    X1_add = []
+    for i in range(1,len(mains)):
+        X1_add.append(dataloader_train[i].dataset.tensors[3].clone().to(device))
 
     for epoch in range(epochs):
         if monitoring:
@@ -547,22 +579,37 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         model.train()
         total_loss = 0
         total_grad_norm = 0.0
-        for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train):
+        for batch_idx, (z, c, x, X1, mu) in enumerate(dataloader_train[0]):
             z, c, x, X1, mu = [t.to(device) for t in (z, c, x, X1, mu)]
             c_hat = model(z)  # prediction ĉ
-            idx = (batch_idx * dataloader_train.batch_size + torch.arange(z.size(0), device=device))
+            idx = (batch_idx * dataloader_train[0].batch_size + torch.arange(z.size(0), device=device))
             mu_tilde = mu_global[idx] # select mu associated with the batch
+            mu_tilde_add = [mu_global_add[i][idx] for i in range(len(mu_global_add))] # select mu associated with the batch
+
+            mu_batch_add = [mu_add[i][idx] for i in range(len(mu_add))] # select mu associated with the batch
+            X1_batch_add = [X1_add[i][idx] for i in range(len(X1_add))] # select X1 associated with the batch
 
             # Update mu_global
             if epoch % step_mu == 0:
-                optimizer_mu.optim_mu(c_batch=c_hat.detach(),verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
+                optimizer_mu.optim_mu(c_batch=c_hat.detach(),main = mains[0],verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde)
                 mu_tilde = optimizer_mu.get_mu().detach()
                 mu_global[idx] = mu_tilde
+
+                for i in range(1,len(mains)):
+                    optimizer_mu.optim_mu(c_batch=c_hat.detach(),main = mains[i],verbose=False, max_iter=num_iter_mu, mu_init=mu_tilde_add[i-1])
+                    mu_tilde_add[i-1] = optimizer_mu.get_mu().detach()
+                    mu_global_add[i-1][idx] = mu_tilde_add[i-1]
 
             # Forward and Backward pass
             mu_tilde_sum = mu_tilde.sum(dim=1) # Shape (batch_size, num_item)
             mu_sum = mu.sum(dim=1) if muloss else 0 # Shape (batch_size, num_item)
             loss = diff(c_hat + mu_tilde_sum, c + mu_sum, X1).to(device)
+
+            for i in range(1,len(mains)):
+                mu_tilde_add_sum = mu_tilde_add[i-1].sum(dim=1)
+                mu_batch_add_sum = mu_batch_add[i-1].sum(dim=1) if muloss else 0
+                loss += diff(c_hat + mu_tilde_add_sum, c + mu_batch_add_sum, X1_batch_add[i-1]).to(device)
+
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
@@ -618,7 +665,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                 std_relat_regret  = float(np.std(all_regrets))
 
                 # Compute difference between optimal mu*(c) and adaptive mu
-                mu_data = dataloader_train.dataset.tensors[4].to(device)
+                mu_data = dataloader_train[0].dataset.tensors[4].to(device)
                 mu_diff = torch.norm(mu_data - mu_global, p='fro').item()
 
                 if run is not None:
