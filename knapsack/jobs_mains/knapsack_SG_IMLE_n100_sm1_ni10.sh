@@ -3,9 +3,9 @@
 #SBATCH --account=def-qcappart
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
-#SBATCH --job-name=knapsack_SG_IMLE_n100_sm20_ni20
-#SBATCH --output=logs/knapsack_SG_IMLE_n100_sm20_ni20.out
-#SBATCH --error=logs/knapsack_SG_IMLE_n100_sm20_ni20.err
+#SBATCH --job-name=knapsack_SG_IMLE_n100_sm1_ni10_mains0
+#SBATCH --output=logs/knapsack_SG_IMLE_n100_sm1_ni10_mains0.out
+#SBATCH --error=logs/knapsack_SG_IMLE_n100_sm1_ni10_mains0.err
 
 module load StdEnv/2023 python/3.10 scipy-stack
 source ~/env_projet/bin/activate
@@ -16,9 +16,9 @@ python -m knapsack.run_experiments \
   --n 100 \
   --ep 1000000 \
   --tl 3600 \
-  --step_mu 20 \
-  --n_iter_mu 20 \
+  --step_mu 1 \
+  --n_iter_mu 10 \
   --report 60 600 1800 3600 \
-  --out_file knapsack/results_deg8_mains1.csv \
-  --mains 1 \
+  --out_file knapsack/results_deg8_mains0_1.csv \
+  --mains 0 1 \
 

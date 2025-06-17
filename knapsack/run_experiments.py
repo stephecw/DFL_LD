@@ -25,6 +25,7 @@ parser = argparse.ArgumentParser(description="Training script with specified dim
 parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL model to evaluate ('SPOPlus', 'IMLE')")
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
 parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
+parser.add_argument('--mains', type=int, nargs ='+', default=[0], help='List of the decompositions uses for the loss. (default: [0])')
 parser.add_argument('--deg', type=int, default=8, help='Degree of the polynomial features. (default: 8)')
 
 parser.add_argument('--dim', type=int, default=10, help='Number of constraints.')
@@ -64,6 +65,7 @@ deg = args.deg
 dim = args.dim
 num_item = args.n
 keep = args.keep
+mains = args.mains
 muloss = True if args.muloss == 1 else False
 
 epochs = args.ep if args.ep > 0 else int(1e10)
@@ -93,7 +95,7 @@ num_iter_mu = args.n_iter_mu
 
 
 
-def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
+def run_train(model, jobtype, dim, keep, mains,num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None, muloss=True,
@@ -129,13 +131,15 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         run = wandb.init(mode="offline", **wandbarg)
 
     # Load training dataset
-    if verbose:
-        print(f"Loading train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}_{deg}.txt", flush=True)
-    try:
-        train_set = ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}_{deg}.txt")
-    except FileNotFoundError:
-        print(f"File not found.", flush=True)
-        return
+    train_sets = []
+    for main in mains:
+        if verbose:
+            print(f"Loading train_{dim}_{keep}_{main}_{num_feat}_{num_item}_{num_data_train}_{deg}.txt", flush=True)
+        try:
+            train_sets.append(ImportDataset(f"knapsack/datasets/train_{dim}_{keep}_{main}_{num_feat}_{num_item}_{num_data_train}_{deg}.txt"))
+        except FileNotFoundError:
+            print(f"File not found.", flush=True)
+            return
 
     if verbose:
         print(f"Loading eval_{dim}_{num_feat}_{num_item}_{num_data_eval}_{deg}.txt", flush=True)
@@ -155,13 +159,13 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
 
 
     # Create dataloaders
-    train_loader = train_set.get_dataloader(batch_size=batch_size, shuffle=True)
+    train_loaders = [train_sets[i].get_dataloader(batch_size=batch_size, shuffle=True) for i in range(len(train_sets))]
     eval_loader = eval_set.get_dataloader(batch_size=batch_size, shuffle=False)
     test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
 
     # Problem parameters
-    weights = train_set.get_weights(tensor=True)
-    capacities = train_set.get_capacities(tensor=True)
+    weights = train_sets[0].get_weights(tensor=True)
+    capacities = train_sets[0].get_capacities(tensor=True)
 
     # Model, optimizer and scheduler
     optimizer = optim.Adam(model.parameters(), lr)
@@ -186,9 +190,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
             print("Training the model with LD bound as loss...", flush=True)
 
         results_eval,results = train_LD(model, diff_method, eval_solver,
-                                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                                    train_loaders, eval_loader, test_loader, optimizer, scheduler, 
                                     epochs, time_limit, eval_freq=1, report_times=report_times,
-                                    run=run, verbose=verbose, muloss=muloss)
+                                    run=run, verbose=verbose, muloss=muloss, mains=mains)
     elif jobtype == "cla":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
@@ -201,7 +205,7 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         eval_freq_cla = 100 if diff_method_name == "SPOPlus" else 1
             
         results_eval,results = train_classic(model, diff_method, eval_solver, 
-                                            train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                                            train_loaders[0], eval_loader, test_loader, optimizer, scheduler, 
                                             epochs, time_limit, eval_freq=eval_freq_cla, report_times=report_times,
                                             run=run, verbose=verbose)
 
@@ -218,9 +222,9 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         else:
             solvers = [solver_X_knapsack(weights[:keep], capacities[:keep])]
         solvers += [solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0)) for i in range(keep, dim)]
-        optimizer_mu = OptimizationBatchModel(solvers)
+        optimizer_mu = OptimizationBatchModel(solvers, main=mains[0])
         
-        mu_global0 = torch.ones(len(train_loader.dataset), dim - keep, num_item, device=device, dtype=torch.float32)
+        mu_global0 = torch.ones(len(train_loaders[0].dataset), dim - keep, num_item, device=device, dtype=torch.float32)
 
         if verbose:
             print("Training the model with dynamic mu and LD bound as loss...", flush=True)
@@ -228,16 +232,16 @@ def run_train(model, jobtype, dim, keep, num_feat, num_item, num_data_train, num
         eval_freq_SG = 10 if diff_method_name == "SPOPlus" else 2
 
         results_eval,results = train_SG(model, diff_method, eval_solver, 
-                                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                                    train_loaders, eval_loader, test_loader, optimizer, scheduler, 
                                     epochs, time_limit, eval_freq=eval_freq_SG, report_times=report_times,
                                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                                     mu_global0=mu_global0,
-                                    run=run, verbose=verbose, muloss=muloss)
+                                    run=run, verbose=verbose, muloss=muloss, mains=mains)
     elif jobtype == "MSE":
         if verbose:
             print("Training the model with MSE as loss", flush=True)
         results_eval,results = train_MSE(model, eval_solver, 
-                                        train_loader, eval_loader, test_loader, optimizer, scheduler,
+                                        train_loaders[0], eval_loader, test_loader, optimizer, scheduler,
                                         epochs, time_limit, eval_freq=2000, report_times=report_times,
                                         run=run, verbose=verbose)
 
@@ -361,7 +365,7 @@ wandbarg = {
             "diff_method_arg": diff_method_arg
         }
 }
-run_train(model, method, dim, keep, num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
+run_train(model, method, dim, keep, mains,num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
         batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl, report_times=report_times,
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,

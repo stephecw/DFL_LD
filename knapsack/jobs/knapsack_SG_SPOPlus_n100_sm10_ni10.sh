@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=03:30:00
+#SBATCH --time=04:30:00
 #SBATCH --account=def-qcappart
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=8G
@@ -19,5 +19,6 @@ python -m knapsack.run_experiments \
   --step_mu 10 \
   --n_iter_mu 10 \
   --report 60 600 1800 3600 \
-  --out_file knapsack/results_deg4.csv \
+  --out_file knapsack/results_deg8_mains1.csv \
+  --mains 1 \
 
