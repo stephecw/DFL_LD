@@ -334,7 +334,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
 
 def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval, dataloader_test, optimizer, scheduler,
           epochs, time_limit, eval_freq, report_times,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True, mains=[0]):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True, mains=[0], combine = "random"):
     """
     Training a DFL-model by minimizing LD loss.
 
@@ -375,10 +375,11 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
         start_time = time.time()
         train_time = 0
 
+    
     mu_add = []
     for i in range(1,len(mains)):
         mu_add.append(dataloader_train[i].dataset.tensors[4].clone().to(device))
-    
+
     X1_add = []
     for i in range(1,len(mains)):
         X1_add.append(dataloader_train[i].dataset.tensors[3].clone().to(device))
@@ -399,14 +400,26 @@ def train_LD(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             mu_batch_add = [mu_add[i][idx] for i in range(len(mu_add))] # select mu associated with the batch
             X1_batch_add = [X1_add[i][idx] for i in range(len(X1_add))]
 
-            mu_sum = torch.sum(mu, dim=1) # Shape (batch_size, num_item)
-            mu_sum2 = torch.sum(mu, dim=1) if muloss else 0
-            loss = diff(c_hat + mu_sum, c + mu_sum2, X1).to(device)
+            if combine == "sum":
+                mu_sum = torch.sum(mu, dim=1) # Shape (batch_size, num_item)
+                mu_sum2 = torch.sum(mu, dim=1) if muloss else 0
+                loss = diff(c_hat + mu_sum, c + mu_sum2, X1).to(device)
 
-            for i in range(1,len(mains)):
-                mu_batch_add_sum = torch.sum(mu_batch_add[i-1], dim=1)
-                mu_batch_add_sum2 = torch.sum(mu_batch_add[i-1], dim=1) if muloss else 0
-                loss += diff(c_hat + mu_batch_add_sum, c + mu_batch_add_sum2, X1_batch_add[i-1]).to(device)
+                for i in range(1,len(mains)):
+                    mu_batch_add_sum = torch.sum(mu_batch_add[i-1], dim=1)
+                    mu_batch_add_sum2 = torch.sum(mu_batch_add[i-1], dim=1) if muloss else 0
+                    loss += diff(c_hat + mu_batch_add_sum, c + mu_batch_add_sum2, X1_batch_add[i-1]).to(device)
+            
+            elif combine == "random":
+                k = np.random.randint(0, len(mains))
+                if k == 0:
+                    mu_sum = torch.sum(mu, dim=1)
+                    mu_sum2 = torch.sum(mu, dim=1) if muloss else 0
+                    loss = diff(c_hat + mu_sum, c + mu_sum2, X1).to(device)
+                else:
+                    mu_batch_add_sum = torch.sum(mu_batch_add[k-1], dim=1)
+                    mu_batch_add_sum2 = torch.sum(mu_batch_add[k-1], dim=1) if muloss else 0
+                    loss = diff(c_hat + mu_batch_add_sum, c + mu_batch_add_sum2, X1_batch_add[k-1]).to(device)
 
             optimizer.zero_grad()
             loss.backward()
@@ -512,7 +525,7 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
           epochs, time_limit, eval_freq, report_times,
           step_mu, num_iter_mu, optimizer_mu,
           mu_global0,
-          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True, mains=[0]):
+          run, verbose=False, patience=None, min_delta=1e-6, device = device, n_jobs=-1, muloss=True, mains=[0], combine = "random"):
     """
     Training a DFL-model by minimizing LD loss, with adaptive mu.
 
@@ -563,13 +576,14 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
     mu_global = mu_global0
     mu_global_add = [mu_global.clone() for i in range(len(mains)-1)]
 
-    mu_add = []
-    for i in range(1,len(mains)):
-        mu_add.append(dataloader_train[i].dataset.tensors[4].clone().to(device))
-    
-    X1_add = []
-    for i in range(1,len(mains)):
-        X1_add.append(dataloader_train[i].dataset.tensors[3].clone().to(device))
+    if muloss:
+        mu_add = []
+        for i in range(1,len(mains)):
+            mu_add.append(dataloader_train[i].dataset.tensors[4].clone().to(device))
+        
+        X1_add = []
+        for i in range(1,len(mains)):
+            X1_add.append(dataloader_train[i].dataset.tensors[3].clone().to(device))
 
     for epoch in range(epochs):
         if monitoring:
@@ -586,8 +600,9 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
             mu_tilde = mu_global[idx] # select mu associated with the batch
             mu_tilde_add = [mu_global_add[i][idx] for i in range(len(mu_global_add))] # select mu associated with the batch
 
-            mu_batch_add = [mu_add[i][idx] for i in range(len(mu_add))] # select mu associated with the batch
-            X1_batch_add = [X1_add[i][idx] for i in range(len(X1_add))] # select X1 associated with the batch
+            if muloss:
+                mu_batch_add = [mu_add[i][idx] for i in range(len(mu_add))] # select mu associated with the batch
+                X1_batch_add = [X1_add[i][idx] for i in range(len(X1_add))] # select X1 associated with the batch
 
             # Update mu_global
             if epoch % step_mu == 0:
@@ -601,14 +616,28 @@ def train_SG(model, diff_method, eval_solver, dataloader_train, dataloader_eval,
                     mu_global_add[i-1][idx] = mu_tilde_add[i-1]
 
             # Forward and Backward pass
-            mu_tilde_sum = mu_tilde.sum(dim=1) # Shape (batch_size, num_item)
-            mu_sum = mu.sum(dim=1) if muloss else 0 # Shape (batch_size, num_item)
-            loss = diff(c_hat + mu_tilde_sum, c + mu_sum, X1).to(device)
+            if combine == "sum":
+                mu_tilde_sum = mu_tilde.sum(dim=1) # Shape (batch_size, num_item)
+                mu_sum = mu.sum(dim=1) if muloss else 0 # Shape (batch_size, num_item)
+                loss = diff(c_hat + mu_tilde_sum, c + mu_sum, X1).to(device)
 
-            for i in range(1,len(mains)):
-                mu_tilde_add_sum = mu_tilde_add[i-1].sum(dim=1)
-                mu_batch_add_sum = mu_batch_add[i-1].sum(dim=1) if muloss else 0
-                loss += diff(c_hat + mu_tilde_add_sum, c + mu_batch_add_sum, X1_batch_add[i-1]).to(device)
+                for i in range(1,len(mains)):
+                    mu_tilde_add_sum = mu_tilde_add[i-1].sum(dim=1)
+                    mu_batch_add_sum = 0 if not muloss else mu_batch_add[i-1].sum(dim=1)
+                    X1_ = x if not muloss else X1_batch_add[i-1]     # comme ça on a plus besoin des X1* pour la loss de Tias
+                    loss += diff(c_hat + mu_tilde_add_sum, c + mu_batch_add_sum, X1_).to(device)
+            
+            elif combine == "random":
+                k = np.random.randint(0, len(mains))
+                if k == 0:
+                    mu_tilde_sum = mu_tilde.sum(dim=1)
+                    mu_sum = mu.sum(dim=1) if muloss else 0
+                    loss = diff(c_hat + mu_tilde_sum, c + mu_sum, X1).to(device)
+                else:
+                    mu_tilde_add_sum = mu_tilde_add[k-1].sum(dim=1)
+                    mu_batch_add_sum = 0 if not muloss else mu_batch_add[k-1].sum(dim=1)
+                    X1_ = x if not muloss else X1_batch_add[k-1]
+                    loss = diff(c_hat + mu_tilde_add_sum, c + mu_batch_add_sum, X1_).to(device)
 
             optimizer.zero_grad()
             loss.backward()
