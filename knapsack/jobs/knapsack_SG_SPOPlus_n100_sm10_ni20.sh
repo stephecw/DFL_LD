@@ -19,6 +19,6 @@ python -m knapsack.run_experiments \
   --step_mu 10 \
   --n_iter_mu 20 \
   --report 60 600 1800 3600 \
-  --out_file knapsack/results_deg8_mains1.csv \
-  --mains 1 \
+  --out_file knapsack/seed/results_seed0.csv \
+  --seed 0 \
 

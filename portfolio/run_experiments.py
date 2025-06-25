@@ -1,4 +1,6 @@
+from ast import parse
 from operator import mul
+from random import seed
 import re
 from statistics import median
 import time
@@ -14,13 +16,14 @@ from models_class import CustomMLP
 from diff_methods import I_MLE, SPOPlus, Exact, SPOPlus2
 from opti_X_mu_CPU import OptimizationBatchModel
 from portfolio.my_solver import BatchSolverLin, BatchSolverQuad, Solveur_lin, Solveur_quad, gb_portfolio_solver, BatchSolverExact
+from utils import seed_everything
 
 import argparse
 
 # Define command line arguments
 parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
-parser.add_argument('--n', type=int, default=30, help='Number of items.')
-parser.add_argument('--deg', type=int, default=1, help='Degré du polynôme pour la génération des features.')
+parser.add_argument('--n', type=int, default=50, help='Number of items.')
+parser.add_argument('--deg', type=int, default=8, help='Degré du polynôme pour la génération des features.')
 parser.add_argument('--ep_cla', type=int, default=0, help='Number of epochs for classic training. (0 to skip)')
 parser.add_argument('--ep_ld', type=int, default=0, help='Number of epochs for LD training. (0 to skip)')
 parser.add_argument('--ep_sg', type=int, default=0, help='Number of epochs for SG training. (0 to skip)')
@@ -29,15 +32,17 @@ parser.add_argument('--step_mu', type=int, default=10, help='Number of epochs be
 parser.add_argument('--n_iter_mu', type=int, default=30, help='Number of iterations for mu optimization. ')
 parser.add_argument('--lin', type= int, default=0, help='0 for the quadratic constraint and 1 for the linear one.')
 parser.add_argument('--method', type=str, default="SPOPlus", help='Differentiation method to use. "IMLE" or "SPOPlus".')
-parser.add_argument('--n_samples', type=int, default=10, help='Number of samples for IMLE. Only used if method is "IMLE".')
-parser.add_argument('--lambda_imle', type=float, default=0.1, help='Lambda for IMLE. Only used if method is "IMLE".')
-parser.add_argument('--sigma', type=float, default=0.1, help='Sigma for IMLE. Only used if method is "IMLE".')
+parser.add_argument('--n_samples', type=int, default=1, help='Number of samples for IMLE. Only used if method is "IMLE".')
+parser.add_argument('--lambda_imle', type=float, default=10, help='Lambda for IMLE. Only used if method is "IMLE".')
+parser.add_argument('--sigma', type=float, default=1, help='Sigma for IMLE. Only used if method is "IMLE".')
 parser.add_argument('--out_file', type=str, default='portfolio/results.csv',
                     help='Chemin du fichier CSV où stocker les résultats.')
-parser.add_argument('--time_limit', type=int, default=300, help='Time limit for training in seconds. Default is 300 seconds.')
-parser.add_argument('--report', type=int, nargs='+', default=[0], help='List of times to report results.')
+parser.add_argument('--time_limit', type=int, default=600, help='Time limit for training in seconds. Default is 300 seconds.')
+parser.add_argument('--report', type=int, nargs='+', default=[10, 60, 300, 600], help='List of times to report results.')
 parser.add_argument('--muloss', type=int, default=1, help='If 1, use mu_sum in the loss function. Default is 1.')
-
+parser.add_argument('--seed', type=int, default=0, help='Random seed for reproducibility.')
+parser.add_argument('--regenerate', type=int, default=0, help='If 1, regenerate the datasets. Default is 0.')
+parser.add_argument('--lr', type=float, default=0.002, help='Learning rate for the optimizer. Default is 0.001.')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Training on:", device)
@@ -140,7 +145,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             print("Training the model with LD bound as loss...")
 
         results_eval, results = train_LD(model, diff_method, eval_solver,
-                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                    [train_loader], eval_loader, test_loader, optimizer, scheduler, 
                     epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
                     run=run, verbose=verbose, patience=patience, muloss=muloss)
     elif jobtype == "classic":
@@ -189,7 +194,7 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
             print("Training the model with dynamic mu and LD bound as loss...")
 
         results_eval, results = train_SG(model, diff_method, eval_solver, 
-                    train_loader, eval_loader, test_loader, optimizer, scheduler, 
+                    [train_loader], eval_loader, test_loader, optimizer, scheduler, 
                     epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                     mu_global0=mu_global0,
@@ -221,9 +226,8 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
                 'jobtype': jobtype,
                 'time limit': report_time,
                 'method': diff_method_name or 'MSE',
-                'n_samples': diff_method_arg.get('n_samples', '') if diff_method_arg else '',
-                'lambda_imle': diff_method_arg.get('lambd', '') if diff_method_arg else '',
-                'sigma': diff_method_arg.get('sigma', '') if diff_method_arg else '',
+                'muloss': muloss,
+                'lr': lr,
                 'step_mu': step_mu if 'step_mu' in locals() else '',
                 'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
                 'mean_relat_eval': results_eval[i].mean().item(),
@@ -248,9 +252,8 @@ def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_dat
         'jobtype': jobtype,
         'time limit': time_limit,
         'method': diff_method_name or 'MSE',
-        'n_samples': diff_method_arg.get('n_samples', '') if diff_method_arg else '',
-        'lambda_imle': diff_method_arg.get('lambd', '') if diff_method_arg else '',
-        'sigma': diff_method_arg.get('sigma', '') if diff_method_arg else '',
+        'muloss': muloss,
+        'lr': lr,
         'step_mu': step_mu if 'step_mu' in locals() else '',
         'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
         'mean_relat_eval': mean_relat_eval,
@@ -297,6 +300,9 @@ args = parser.parse_args()
 report_times = args.report
 muloss = True if args.muloss == 1 else False
 
+# Set random seed for reproducibility
+seed_everything(args.seed)
+
 # Problem dimensions
 num_feat = 5
 num_data_train = 100  # Training dataset size
@@ -307,29 +313,37 @@ gamma = 2.25
 gamma_str = str(gamma).replace('.', '-')
 num_item = args.n
 
+if args.regenerate:
+    # Regenerate datasets
+    if not os.path.exists("portfolio/datasets"):
+        os.makedirs("portfolio/datasets")
+    print(f"Regenerating datasets for {num_item} items, {num_data_train} training data, {num_data_eval} eval data, {num_feat} features, degree {deg}, gamma {gamma_str}.")
+    from portfolio.gen_data import gen_datafile
+    gen_datafile(num_data_train, num_data_eval,num_data_test, num_feat, num_item, deg, gamma, 1000, principal_lin = 0, verbose=False)
+
 
 # Classic parameters
 epochs_classic = args.ep_cla
 time_limit_classic = args.time_limit
 batch_size_classic = 32
-lr_classic = 0.002
+lr_classic = args.lr
 model_shape_classic = [num_feat, num_item]
 dropout_classic = 0.0
 schedulerType_classic = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_classic = {'patience': 100,
+sched_arg_classic = {'patience': 3,
                      'factor': 0.5,
                      'min_lr':1e-6
                      }
 diff_method_classic = args.method  # "IMLE", "SPOPlus"
 diff_method_arg_classic = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
 patience_classic = 10000000
-eval_freq_classic = 10
+eval_freq_classic = 1
 
 # LD parameters
 epochs_LD = args.ep_ld
 time_limit_LD = args.time_limit
 batch_size_LD = 32
-lr_LD = 0.002
+lr_LD = args.lr
 model_shape_LD = [num_feat, num_item]
 dropout_LD = 0.0
 schedulerType_LD = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
@@ -348,7 +362,7 @@ eval_freq_LD = 100 if diff_method_LD == "Exact" else 10
 epochs_SG = args.ep_sg
 time_limit_SG = args.time_limit
 batch_size_SG = 32
-lr_SG = 0.002
+lr_SG = args.lr
 model_shape_SG = [num_feat, num_item]
 dropout_SG = 0.0
 schedulerType_SG = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
@@ -367,11 +381,11 @@ eval_freq_SG = 100 if diff_method_SG == "Exact" else 10
 epochs_MSE = args.ep_mse
 time_limit_MSE = args.time_limit
 batch_size_MSE = 32
-lr_MSE = 0.001
+lr_MSE = args.lr
 model_shape_MSE = [num_feat, num_item]
 dropout_MSE = 0.0
 schedulerType_MSE = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_MSE = {'patience': 400,
+sched_arg_MSE = {'patience': 100,
                 'factor': 0.5,
                 'min_lr':1e-6
                 }
@@ -391,7 +405,7 @@ if epochs_LD > 0:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
-            'name': f"{diff_method_LD}_LD_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
+            'name': f"{diff_method_LD}_LD_{muloss}_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'job_type': f"{time_limit_LD}sec_LD",
             'config': {
@@ -453,7 +467,7 @@ if epochs_SG > 0:
             'entity': "hugoper-polytechnique-montr-al",
             'project': "DFL_LD_portfolio_temps",
             'dir': "./",
-            'name': f"{diff_method_SG}_SG_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
+            'name': f"{diff_method_SG}_SG_{muloss}_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
             'job_type': f"{time_limit_SG}sec_SG",
             'config': {

@@ -1,4 +1,5 @@
 from ast import arg
+from calendar import c
 import re
 from statistics import median
 import time
@@ -16,6 +17,8 @@ from diff_methods import I_MLE, SPOPlus
 from opti_X_mu_CPU import OptimizationBatchModel
 from knapsack.solver import solver_X_knapsack
 
+from utils import seed_everything
+
 import argparse
 import os, csv
 
@@ -26,6 +29,7 @@ parser.add_argument("--diff", type=str, default="IMLE", help="Name of the DFL mo
 parser.add_argument("--method", type=str, default="cla", help="Name of the training method to evaluate (e.g., 'cla', 'LD', 'SG', 'MSE')")
 parser.add_argument('--keep', type=int, default=1, help='Number of constraints to keep in the main subproblem. (1 for 1D solver, >1 for MD solver)')
 parser.add_argument('--mains', type=int, nargs ='+', default=[0], help='List of the decompositions uses for the loss. (default: [0])')
+parser.add_argument('--combine', type=str, default='random', help='How to combine the different decompositions. (default: random)')
 parser.add_argument('--deg', type=int, default=8, help='Degree of the polynomial features. (default: 8)')
 
 parser.add_argument('--dim', type=int, default=10, help='Number of constraints.')
@@ -46,6 +50,7 @@ parser.add_argument("--n_samples", type=int, default=1, help="Number of samples 
 parser.add_argument("--kappa", type=int, default=5, help="Parameter kappa for IMLE noise distribution")
 
 parser.add_argument('--out_file', type=str, default='knapsack/results.csv', help='Output file for results.')
+parser.add_argument('--seed', type=int, default=0, help='Random seed for reproducibility.')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Training on:", device)
@@ -53,6 +58,8 @@ print("→ Training on:", device)
 
 ### EXPERIMENT EXECUTION ###
 args = parser.parse_args()
+
+seed_everything(args.seed)
 method = args.method
 # Problem dimensions
 num_feat = 12
@@ -67,6 +74,7 @@ num_item = args.n
 keep = args.keep
 mains = args.mains
 muloss = True if args.muloss == 1 else False
+combine = args.combine
 
 epochs = args.ep if args.ep > 0 else int(1e10)
 tl = args.tl if args.tl > 0 else int(1e10)
@@ -95,7 +103,7 @@ num_iter_mu = args.n_iter_mu
 
 
 
-def run_train(model, jobtype, dim, keep, mains,num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
+def run_train(model, jobtype, dim, keep, mains,combine,num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
               batch_size, epochs, lr,
               schedulerType, sched_arg,
               diff_method_name=None, diff_method_arg=None, muloss=True,
@@ -192,7 +200,7 @@ def run_train(model, jobtype, dim, keep, mains,num_feat, num_item, num_data_trai
         results_eval,results = train_LD(model, diff_method, eval_solver,
                                     train_loaders, eval_loader, test_loader, optimizer, scheduler, 
                                     epochs, time_limit, eval_freq=1, report_times=report_times,
-                                    run=run, verbose=verbose, muloss=muloss, mains=mains)
+                                    run=run, verbose=verbose, muloss=muloss, mains=mains, combine=combine)
     elif jobtype == "cla":
         # Differentiation method for backpropagation when training 
         if diff_method_name == "IMLE":
@@ -236,7 +244,7 @@ def run_train(model, jobtype, dim, keep, mains,num_feat, num_item, num_data_trai
                                     epochs, time_limit, eval_freq=eval_freq_SG, report_times=report_times,
                                     step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
                                     mu_global0=mu_global0,
-                                    run=run, verbose=verbose, muloss=muloss, mains=mains)
+                                    run=run, verbose=verbose, muloss=muloss, mains=mains, combine=combine)
     elif jobtype == "MSE":
         if verbose:
             print("Training the model with MSE as loss", flush=True)
@@ -365,7 +373,7 @@ wandbarg = {
             "diff_method_arg": diff_method_arg
         }
 }
-run_train(model, method, dim, keep, mains,num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
+run_train(model, method, dim, keep, mains,combine, num_feat, num_item, num_data_train, num_data_eval, num_data_test,deg,
         batch_size=batch_size, epochs=epochs, lr=lr, time_limit=tl, report_times=report_times,
         schedulerType=schedulerType, sched_arg=sched_arg,
         step_mu=step_mu, num_iter_mu=num_iter_mu,

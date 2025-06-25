@@ -297,7 +297,7 @@ def train_classic(model, diff_method, eval_solver, dataloader_train, dataloader_
                     epochs_no_improvement = 0
                     best_model_state = {k: v.cpu().clone() for k, v in model.state_dict().items()}
                     best_epoch = epoch
-                    best_model.load_state_dict(model.state_dict())
+                    best_model.load_state_dict(best_model_state)
                 elif patience is not None:
                     epochs_no_improvement += 1
                     if epochs_no_improvement >= patience:

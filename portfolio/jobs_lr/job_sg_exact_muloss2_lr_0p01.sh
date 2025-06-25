@@ -1,0 +1,22 @@
+#!/bin/bash
+#SBATCH --time=01:00:00
+#SBATCH --account=def-qcappart
+#SBATCH --cpus-per-task=4
+#SBATCH --mem=8G
+#SBATCH --job-name=portfolio_SG_Exact_lr0p01_muloss
+#SBATCH --output=logs/portfolio_SG_Exact_lr0p01_muloss.out
+#SBATCH --error=logs/portfolio_SG_Exact_lr0p01_muloss.err
+
+module load StdEnv/2023 cuda/12.2 python/3.10 scipy-stack
+source ~/env_projet/bin/activate
+
+python -m portfolio.run_experiments \
+  --n 50 \
+  --ep_sg 1000000 --step_mu 20 --n_iter_mu 20 \
+  --method Exact \
+  --seed 0 \
+  --report 10 60 300 600 \
+  --out_file portfolio/seed/results_lr.csv \
+  --time_limit 600 \
+  --muloss 0 \
+  --lr 0.01
