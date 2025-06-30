@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --time=01:00:00
 #SBATCH --account=def-qcappart
-#SBATCH --cpus-per-task=4
+#SBATCH --cpus-per-task=1
 #SBATCH --mem=8G
 #SBATCH --job-name=portfolio_SG_Exact_n50_sm20_ni20_seed0
 #SBATCH --output=logs/portfolio_SG_Exact_n50_sm20_ni20_seed0.out
