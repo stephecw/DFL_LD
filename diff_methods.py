@@ -2,6 +2,13 @@ import torch
 import pyepo.func.perturbed as pyepo_func_pert
 import pyepo.func.surrogate as pyepo_func_surr
 
+class MSE():
+    def __init__(self):
+        self.criterion = torch.nn.MSELoss()
+    
+    def __call__(self, c_hat, c, x):
+        return self.criterion(c_hat, c)
+
 
 class I_MLE():
     """

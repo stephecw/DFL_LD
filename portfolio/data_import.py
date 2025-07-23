@@ -32,8 +32,8 @@ class ImportDataset:
         
         self.c_tensor  = torch.tensor(self.c , dtype=torch.float32)
         self.x_tensor  = torch.tensor(self.x , dtype=torch.float32)
-        self.X_tensor  = torch.tensor(self.X , dtype=torch.float32)
-        self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32).unsqueeze(1)
+        self.X_tensor  = torch.tensor(self.X , dtype=torch.float32).unsqueeze(1)
+        self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32).unsqueeze(1).unsqueeze(1)
 
 
         if model is not None:

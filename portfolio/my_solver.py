@@ -185,7 +185,7 @@ def solve_one(c_i_np, n_stocks, cov, gamma):
     if _GLOBAL_SOLVER is None:
         _GLOBAL_SOLVER = Solveur_quad(n_stocks, cov, gamma)
 
-    _GLOBAL_SOLVER.setObj(torch.from_numpy(c_i_np))
+    _GLOBAL_SOLVER.setObj(c_i_np)
     sol, _ = _GLOBAL_SOLVER.solve()
     return sol
 

@@ -3,7 +3,7 @@ import torch
 import pyepo.data as data
 from pyepo.model.grb import portfolioModel
 from portfolio.my_solver import BatchSolverLin, BatchSolverQuad, BatchSolverExact
-from opti_X_mu import OptimizationBatchModel
+from opti_X_mu_CPU import OptimizationBatchModel
 import argparse
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -98,7 +98,7 @@ def gen_datafile(num_data_train, num_data_val, num_data_test, num_feat, num_item
         solvers = [lin_solver, quad_solver]
     else :
         solvers = [quad_solver, lin_solver]
-    optimizer = OptimizationBatchModel(solvers, device)
+    optimizer = OptimizationBatchModel(solvers)
     optimizer.optim_mu(c_batch=c_tensor[0:num_data_train],verbose=verbose, max_iter=num_iter)
 
     X_tensor = optimizer.get_X()
@@ -157,8 +157,8 @@ if __name__ == "__main__":
     parser.add_argument('--n_test', type=int, default=10000, help='Nombre de données de test')
     parser.add_argument('--n_feat', type=int, default=5, help='Nombre de features')
     parser.add_argument('--lin', type=int, default=0, help='1 pour prendre la contrainte linéraire pour le sous-prob principal, 0 pour la contrainte quadratique')
-    parser.add_argument('--n_iter', type=int, default=300, help='Nombre d\'itérations pour l\'optimisation de \mu. (0 pour ne pas l\'exécuter)')
-    parser.add_argument('--deg', type=int, default=1, help='Degré du polynôme pour la génération des données')
+    parser.add_argument('--n_iter', type=int, default=500, help='Nombre d\'itérations pour l\'optimisation de \mu. (0 pour ne pas l\'exécuter)')
+    parser.add_argument('--deg', type=int, default=8, help='Degré du polynôme pour la génération des données')
 
 
     # Paramètres du dataset

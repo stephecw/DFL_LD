@@ -1,523 +1,226 @@
-from ast import parse
-from operator import mul
-from random import seed
+# run_experiments.py  – compatible avec le nouveau train.py
 import re
-from statistics import median
-import time
-import torch
+import argparse, os, csv, time, torch, numpy as np
 from torch import optim
-import numpy as np
-import os,csv
 from pyepo.model.grb import portfolioModel
 
 from portfolio.data_import import ImportDataset
-from train import train_MSE, train_classic, train_LD, train_SG, test
+from train import train, test                     # nouveau train()
 from models_class import CustomMLP
-from diff_methods import I_MLE, SPOPlus, Exact, SPOPlus2
-from opti_X_mu_CPU import OptimizationBatchModel
-from portfolio.my_solver import BatchSolverLin, BatchSolverQuad, Solveur_lin, Solveur_quad, gb_portfolio_solver, BatchSolverExact
+from diff_methods import I_MLE, SPOPlus, Exact, MSE
+from opti_X_mu_CPU import OptimizationBatchModel_serial
+from portfolio.my_solver import (
+    Solveur_lin, Solveur_quad, BatchSolverExact, BatchSolverLin, BatchSolverQuad
+)
 from utils import seed_everything
-
-import argparse
-
-# Define command line arguments
-parser = argparse.ArgumentParser(description="Training script with specified dimensions.")
-parser.add_argument('--n', type=int, default=50, help='Number of items.')
-parser.add_argument('--deg', type=int, default=8, help='Degré du polynôme pour la génération des features.')
-parser.add_argument('--ep_cla', type=int, default=0, help='Number of epochs for classic training. (0 to skip)')
-parser.add_argument('--ep_ld', type=int, default=0, help='Number of epochs for LD training. (0 to skip)')
-parser.add_argument('--ep_sg', type=int, default=0, help='Number of epochs for SG training. (0 to skip)')
-parser.add_argument('--ep_mse', type=int, default=0, help='Number of epochs for MSE training. (0 to skip)')
-parser.add_argument('--step_mu', type=int, default=10, help='Number of epochs between mu updates. ')
-parser.add_argument('--n_iter_mu', type=int, default=30, help='Number of iterations for mu optimization. ')
-parser.add_argument('--lin', type= int, default=0, help='0 for the quadratic constraint and 1 for the linear one.')
-parser.add_argument('--method', type=str, default="SPOPlus", help='Differentiation method to use. "IMLE" or "SPOPlus".')
-parser.add_argument('--n_samples', type=int, default=1, help='Number of samples for IMLE. Only used if method is "IMLE".')
-parser.add_argument('--lambda_imle', type=float, default=10, help='Lambda for IMLE. Only used if method is "IMLE".')
-parser.add_argument('--sigma', type=float, default=1, help='Sigma for IMLE. Only used if method is "IMLE".')
-parser.add_argument('--out_file', type=str, default='portfolio/results.csv',
-                    help='Chemin du fichier CSV où stocker les résultats.')
-parser.add_argument('--time_limit', type=int, default=600, help='Time limit for training in seconds. Default is 300 seconds.')
-parser.add_argument('--report', type=int, nargs='+', default=[10, 60, 300, 600], help='List of times to report results.')
-parser.add_argument('--muloss', type=int, default=1, help='If 1, use mu_sum in the loss function. Default is 1.')
-parser.add_argument('--seed', type=int, default=0, help='Random seed for reproducibility.')
-parser.add_argument('--regenerate', type=int, default=0, help='If 1, regenerate the datasets. Default is 0.')
-parser.add_argument('--lr', type=float, default=0.002, help='Learning rate for the optimizer. Default is 0.001.')
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print("→ Training on:", device)
 
-def run_train(model, jobtype, gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, deg,principal_lin,
-              batch_size, epochs, lr,
-              schedulerType, sched_arg,
-              diff_method_name=None, diff_method_arg=None, muloss=True,
-              step_mu=5, num_iter_mu=15,
-              verbose=False, wandbarg=None, time_limit=None, report_times = [0], eval_freq = 1, save_model=True, patience=50):
+# ---------- 1. ARGPARSE ----------
+parser = argparse.ArgumentParser("Experiments with new train.py")
+# dimensions & data
+parser.add_argument('--n', type=int, default=50, help='Number of items')
+parser.add_argument('--deg', type=int, default=8, help='Polynôme degree for feature generation')
+parser.add_argument('--seed', type=int, default=0)
+parser.add_argument('--regenerate', type=int, default=0, help='Regenerate datasets')
+# training choices
+parser.add_argument('--ep_classic', type=int, default=0)
+parser.add_argument('--ep_ld',      type=int, default=0)
+parser.add_argument('--ep_sg',      type=int, default=0)
+parser.add_argument('--ep_mse',     type=int, default=0)
+# timing / checkpoints
+parser.add_argument('--report', type=int, nargs='+', default=[10, 60, 300, 600],
+                    help='Checkpoints (seconds) where model is évaluated / sauvegardé')
+parser.add_argument('--num_eval_per_cp', type=int, default=5,
+                    help='Number of evaluations per checkpoint')
+# optimisation
+parser.add_argument('--lr', type=float, default=2e-3)
+parser.add_argument('--scheduler', type=str, default='ReduceLROnPlateau',
+                    choices=['StepLR', 'ReduceLROnPlateau', 'OneCycleLR', 'None'])
+# SG / LD spécifiques
+parser.add_argument('--method', type=str, default='SPOPlus', choices=['SPOPlus', 'IMLE', 'Exact'])
+parser.add_argument('--n_samples', type=int, default=1)     # IMLE
+parser.add_argument('--lambda_imle', type=float, default=10)
+parser.add_argument('--sigma', type=float, default=1.0)
+parser.add_argument('--step_mu', type=int, default=10)      # SG
+parser.add_argument('--n_iter_mu', type=int, default=30)
+parser.add_argument('--muloss', type=int, default=1)
+# sorties
+parser.add_argument('--out_file', default='portfolio/results_new.csv')
+parser.add_argument('--wandb', type=int, default=0, help='1 pour activer wandb (offline)')
+args = parser.parse_args()
+
+# ---------- 2. UTILITAIRES ----------
+seed_everything(args.seed)
+muloss_bool = bool(args.muloss)
+
+# datasets parameters
+num_feat          = 5
+num_item          = args.n
+num_data_train    = 100
+num_data_eval     = 25
+num_data_test     = 10000
+gamma             = 2.25
+gamma_str         = str(gamma).replace('.', '-')
+
+def ensure_datasets_exist():
+    if args.regenerate:
+        from portfolio.gen_data import gen_datafile
+        os.makedirs("portfolio/datasets", exist_ok=True)
+        print("[regen] génération des datasets …")
+        gen_datafile(num_data_train, num_data_eval, num_data_test,
+                     num_feat, num_item, args.deg, gamma, 1000,
+                     principal_lin=0, verbose=False)
+
+def load_sets():
+    """retourne train_loader, eval_loader, test_loader & covariance matrix"""
+    train_set = ImportDataset(f"portfolio/datasets/train_{num_item}_{num_data_train}_{num_feat}_{args.deg}_{gamma_str}.txt")
+    eval_set  = ImportDataset(f"portfolio/datasets/validation_{num_item}_{num_data_eval}_{num_feat}_{args.deg}_{gamma_str}.txt")
+    test_set  = ImportDataset(f"portfolio/datasets/test_{num_item}_{num_data_test}_{num_feat}_{args.deg}_{gamma_str}.txt")
+    return (
+        train_set.get_dataloader(batch_size=32, shuffle=True),
+        eval_set.get_dataloader(batch_size=32, shuffle=False),
+        test_set.get_dataloader(batch_size=32, shuffle=False),
+        1e5 * train_set.get_cov()
+    )
+
+def make_scheduler(opt):
+    if args.scheduler == "ReduceLROnPlateau":
+        return optim.lr_scheduler.ReduceLROnPlateau(opt, patience=100, factor=0.5, min_lr=1e-6)
+    elif args.scheduler == "StepLR":
+        return optim.lr_scheduler.StepLR(opt, step_size=1000, gamma=0.5)
+    elif args.scheduler == "OneCycleLR":
+        return optim.lr_scheduler.OneCycleLR(opt, max_lr=args.lr, total_steps=args.ep_classic or 1)
+    return None
+
+def build_diff_method(name, approach, num_item, cov, gamma, principal_lin=False):
+    """retourne une instance de I_MLE / SPOPlus / Exact"""
+    if approach == "LD" or approach == "SG":
+        if name == "IMLE":
+            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
+            return I_MLE(solver, device,
+                        n_samples=args.n_samples, lambd=args.lambda_imle, sigma=args.sigma)
+        if name == "SPOPlus":
+            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
+            return SPOPlus(solver, device)
+        if name == "Exact":
+            solver = BatchSolverExact(num_item, cov, gamma, device)
+            return Exact(solver, device)
+        raise ValueError("méthode inconnue")
+    elif approach == "classic":
+        if name == "IMLE":
+            solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
+            return I_MLE(solver, device,
+                        n_samples=args.n_samples, lambd=args.lambda_imle, sigma=args.sigma)
+        elif name == "SPOPlus":
+            solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
+            return SPOPlus(solver, device)
+    elif approach == "MSE":
+        return MSE()
+
+def wandb_init(job_name, cfg):
+    if not args.wandb:
+        return None
+    import wandb
+    return wandb.init(
+        mode="offline",
+        entity="hugoper-polytechnique-montr-al",
+        project="DFL_portfolio_newTrain",
+        name=job_name,
+        config=cfg,
+        dir="./"
+    )
+
+# ---------- 3. COEUR : run_train ----------
+def run_train(approach:str, num_epochs:int):
     """
-    Main function to load dataset and train the model.
-    model: nn.Module: Model to train.
-    LD: bool: If True, use Lagrangian decomposition.
-    num_feat: int: Number of features.
-    num_item: int: Number of items.
-    num_data_train: int: Number of training data points.
-    batch_size: int: Batch size.
-    epochs: int: Number of training epochs.
-    lr: float: Learning rate.
-    schedulerType: str: Type of scheduler to use. 'StepLR' or 'None'.
-    sched_step_size: int: Step size for scheduler.
-    sched_gamma: float: Gamma for scheduler.
-    IMLE_n_samples: int: Number of Monte Carlo samples for IMLE.
-    IMLE_sigma: float: Sigma for IMLE.
-    IMLE_lambd: float: Lambda for IMLE.
-    IMLE_two_sides: bool: If True, use two-sided perturbation.
-    IMLE_processes: int: Number of processes for IMLE.
-    verbose: bool: If True, show progress.
-    wandbarg: dict: Arguments for wandb.init() if wandb is used, else None.
-    save_model: bool: If True, save model after training.
+    approche ∈ {'classic','LD','SG','MSE'} – num_epochs est gardé
+    même si train() s'arrête via les checkpoints (utile pour OneCycleLR)
     """
-    run = None
-    if wandbarg is not None:
-        import wandb
-        #wandb.login(key="c656dc47be1ed8b7866027b0569dca27b78821d9")  # Replace with your API key
-        run = wandb.init(mode="offline", **wandbarg)
-
-    # Load training dataset
-    gamma_str = str(gamma).replace('.', '-')
-    fold = "/lin" if principal_lin else "/quad"
-    if verbose:
-        print(f"Loading train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt")
-    try:
-        train_set = ImportDataset(f"portfolio/datasets/train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt")
-    except FileNotFoundError:
-        print(f"File not found.")
+    if num_epochs <= 0:
         return
 
-    if verbose:
-        print(f"Loading validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt")
-    try:
-        eval_set = ImportDataset(f"portfolio/datasets/validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt")
-    except FileNotFoundError:
-        print(f"File not found.")
-        return
-    
-    if verbose:
-        print(f"Loading test_{num_item}_{num_data_test}_{num_feat}_{deg}_{gamma_str}.txt")
-    try:
-        test_set = ImportDataset(f"portfolio/datasets/test_{num_item}_{num_data_test}_{num_feat}_{deg}_{gamma_str}.txt")
-    except FileNotFoundError:
-        print(f"File not found.")
-        return
-
-    # Create dataloaders
-    train_loader = train_set.get_dataloader(batch_size=batch_size, shuffle=True)
-    eval_loader = eval_set.get_dataloader(batch_size=batch_size, shuffle=False)
-    test_loader = test_set.get_dataloader(batch_size=batch_size, shuffle=False)
-
-    # Problem parameters
-    cov = 1e5*train_set.get_cov()
-
-    # Model, optimizer and scheduler
-    optimizer = optim.Adam(model.parameters(), lr)
-    scheduler = None
-    if schedulerType == "StepLR":
-        scheduler = optim.lr_scheduler.StepLR(optimizer, **sched_arg)
-    elif schedulerType == "ReduceLROnPlateau":
-        scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, **sched_arg)
-    elif schedulerType == "OneCycleLR":
-        scheduler = optim.lr_scheduler.OneCycleLR(optimizer, **sched_arg)
-        
-    # Solveur to compute regret when evaling
+    print(f"\n=== {approach.upper()} experiment – {num_epochs} epochs ===")
+    # === 3.1 data & solver
+    train_loader, eval_loader, test_loader, cov = load_sets()
     eval_solver = portfolioModel(num_assets=num_item, covariance=cov, gamma=gamma)
 
-    # Training
-    if jobtype == "LD":
-        # Differentiation method for backpropagation when training 
-        if diff_method_name == "IMLE":
-            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
-            diff_method = I_MLE(solver, device, **diff_method_arg)
-        elif diff_method_name == "SPOPlus":
-            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
-            diff_method = SPOPlus(solver, device, **diff_method_arg)
-        elif diff_method_name == "Exact":
-            solver = BatchSolverExact(num_item, cov, gamma, device)
-            diff_method = Exact(solver, device)
-        if verbose:
-            print("Training the model with LD bound as loss...")
+    # === 3.2 model, opti, sched
+    model = CustomMLP([num_feat, num_item]).to(device)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
+    scheduler = make_scheduler(optimizer)
 
-        results_eval, results = train_LD(model, diff_method, eval_solver,
-                    [train_loader], eval_loader, test_loader, optimizer, scheduler, 
-                    epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
-                    run=run, verbose=verbose, patience=patience, muloss=muloss)
-    elif jobtype == "classic":
-        # Differentiation method for backpropagation when training 
-        if diff_method_name == "IMLE":
-            solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
-            diff_method = I_MLE(solver, device, **diff_method_arg)
-        elif diff_method_name == "SPOPlus":
-            solver = portfolioModel(num_assets=cov.shape[0], covariance=cov, gamma=gamma) 
-            diff_method = SPOPlus(solver, device, **diff_method_arg)
-        elif diff_method_name == "Exact":
-            solver = BatchSolverExact(num_item, cov, gamma, device)
-            diff_method = Exact(solver, device)
-        if verbose:
-            print("Training the model with regret as loss...")
-            
-        results_eval, results = train_classic(model, diff_method, eval_solver, test_loader,
-                        train_loader, eval_loader, optimizer, scheduler, 
-                        epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
-                        run=run, verbose=verbose, patience=patience)
+    # === 3.3 diff_list
+    diff = build_diff_method(args.method, approach, num_item, cov, gamma, principal_lin=False)
+    diff_list = [diff]
 
-    elif jobtype == "SG":
-        # Differentiation method for backpropagation when training 
-        if diff_method_name == "IMLE":
-            solver = Solveur_lin(cov.shape[0], maximize=True) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
-            diff_method = I_MLE(solver, device, **diff_method_arg)
-        elif diff_method_name == "SPOPlus":
-            solver = Solveur_lin(cov.shape[0], maximize=False) if principal_lin else Solveur_quad(cov.shape[0], cov, gamma)
-            diff_method = SPOPlus(solver, device, **diff_method_arg)
-        elif diff_method_name == "Exact":
-            solver = BatchSolverExact(num_item, cov, gamma, device)
-            diff_method = Exact(solver, device)
-        # Optimizer for mu
-        lin_solver = BatchSolverLin(num_item, device)
+    # === 3.4 SG spécifiques
+    opt_mu = None
+    mu0    = None
+    if approach == "SG":
+        lin_solver  = BatchSolverLin(num_item, device)
         quad_solver = BatchSolverQuad(num_item, cov, gamma, device)
-        exact_quad_solver = BatchSolverExact(num_item, cov, gamma, device)
-        if principal_lin:
-            solvers = [lin_solver, quad_solver] if diff_method_name != "Exact" else [lin_solver, exact_quad_solver]
-        else :
-            solvers = [quad_solver, lin_solver] if diff_method_name != "Exact" else [exact_quad_solver, lin_solver]
-        optimizer_mu = OptimizationBatchModel(solvers)
+        exact_solver = BatchSolverExact(num_item, cov, gamma, device)
+        solvers = [quad_solver, lin_solver] if args.method != "Exact" else [exact_solver, lin_solver]
+        opt_mu  = OptimizationBatchModel_serial(solvers)
+        mu0     = torch.ones(len(train_loader.dataset), len(solvers), cov.shape[0]-1, num_item,
+                             device=device, dtype=torch.float32)
 
-        mu_global0 = torch.ones(len(train_loader.dataset), 1, num_item, device=device, dtype=torch.float32)
+    # === 3.5 wandb
+    run = wandb_init(
+        f"{args.method}_{approach}_{num_item}_{num_data_train}_{num_feat}_{args.deg}_{gamma_str}",
+        dict(
+            approach    = approach,
+            diff_method = args.method ,
+            lr          = args.lr,
+            n           = num_item,
+            deg         = args.deg,
+            checkpoints = args.report
+        )
+    )
 
-        if verbose:
-            print("Training the model with dynamic mu and LD bound as loss...")
+    # === 3.6 paramètres CSV
+    param_csv = dict(
+        n        = num_item,
+        jobtype  = approach,
+        method   = args.method if approach != "MSE" else "",
+        lr       = args.lr,
+        muloss   = muloss_bool,
+        step_mu  = args.step_mu if approach == "SG" else 0,
+        num_iter_mu = args.n_iter_mu if approach == "SG" else 0,
+    )
 
-        results_eval, results = train_SG(model, diff_method, eval_solver, 
-                    [train_loader], eval_loader, test_loader, optimizer, scheduler, 
-                    epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
-                    step_mu=step_mu, num_iter_mu=num_iter_mu, optimizer_mu=optimizer_mu,
-                    mu_global0=mu_global0,
-                    run=run, verbose=verbose, patience=patience, muloss=muloss)
-    elif jobtype == "MSE":
-        if verbose:
-            print("Training the model with MSE as loss")
-        results_eval, results = train_MSE(model, eval_solver, 
-                    train_loader, eval_loader, test_loader, optimizer, scheduler,
-                    epochs, time_limit, eval_freq=eval_freq, report_times=report_times,
-                    run=run, verbose=verbose, patience=patience)
-        
-    # Évaluer d’abord sur le set d’éval avec le modèle au meilleur epoch
-    regrets_eval = test(model, eval_loader, eval_solver, device, run=None)
-    mean_relat_eval = np.mean(regrets_eval)
-    median_relat_eval = np.median(regrets_eval)
-    std_relat_eval = np.std(regrets_eval)
+    # === 3.7 appel TRAIN
+    train(
+        model, diff_list, eval_solver,
+        train_loader, eval_loader, test_loader,
+        optimizer, scheduler,
+        checkpoints=args.report,
+        num_eval_per_cp=args.num_eval_per_cp,
+        output_file=args.out_file,
+        approach=approach,
+        loss_with_mu=muloss_bool,
+        decompositions=[0],                # une seule décomposition ici
+        freq_dec_change=1,
+        step_mu=args.step_mu,
+        num_iter_mu=args.n_iter_mu,
+        optimizer_mu=opt_mu,
+        mu_global0=mu0,
+        run=run, verbose=True,
+        param=param_csv, metric="time",
+        device=device
+    )
 
-    # Test the model on the test set
-    regrets_test = test(model, test_loader, eval_solver, device, run)
-    mean_relat_test = np.mean(regrets_test)
-    median_relat_test = np.median(regrets_test)
-    std_relat_test = np.std(regrets_test)
-
-    for i, report_time in enumerate(report_times):
-        if report_time < time_limit:
-            row = {
-                'n': num_item,
-                'jobtype': jobtype,
-                'time limit': report_time,
-                'method': diff_method_name or 'MSE',
-                'muloss': muloss,
-                'lr': lr,
-                'step_mu': step_mu if 'step_mu' in locals() else '',
-                'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
-                'mean_relat_eval': results_eval[i].mean().item(),
-                'median_relat_eval': results_eval[i].median().item(),
-                'std_relat_eval': results_eval[i].std().item(),
-                'mean_relat_test': results[i].mean().item(),
-                'median_relat_test': results[i].median().item(),
-                'std_relat_test': results[i].std().item()
-            }
-            # Écrire en mode « append » avec en‑têtes créés si le fichier n’existe pas
-            write_header = not os.path.exists(args.out_file)
-            with open(args.out_file, 'a', newline='') as f:
-                writer = csv.DictWriter(f, fieldnames=row.keys())
-                if write_header:
-                    writer.writeheader()
-                writer.writerow(row)
-    
-
-    
-    row = {
-        'n': num_item,
-        'jobtype': jobtype,
-        'time limit': time_limit,
-        'method': diff_method_name or 'MSE',
-        'muloss': muloss,
-        'lr': lr,
-        'step_mu': step_mu if 'step_mu' in locals() else '',
-        'n_iter_mu': num_iter_mu if 'num_iter_mu' in locals() else '',
-        'mean_relat_eval': mean_relat_eval,
-        'median_relat_eval': median_relat_eval,
-        'std_relat_eval': std_relat_eval,
-        'mean_relat_test': mean_relat_test,
-        'median_relat_test': median_relat_test,
-        'std_relat_test': std_relat_test
-    }
-    # Écrire en mode « append » avec en‑têtes créés si le fichier n’existe pas
-    write_header = not os.path.exists(args.out_file)
-    with open(args.out_file, 'a', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=row.keys())
-        if write_header:
-            writer.writeheader()
-        writer.writerow(row)
-
-    # Save model
-    if save_model:
-        if jobtype == "LD":
-            if verbose:
-                print(f"Saving the model to portfolio/models/{diff_method_name}_LD_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_LD_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
-        elif jobtype == "classic":
-            if verbose:
-                print(f"Saving the model to portfolio/models/{diff_method_name}_classic_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_classic_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
-        elif jobtype == "SG":
-            if verbose:
-                print(f"Saving the model to portfolio/models/{diff_method_name}_SG_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/{diff_method_name}_SG_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
-        elif jobtype == "MSE":
-            if verbose:
-                print(f"Saving the model to portfolio/models/MSE_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth")
-            torch.save(model.state_dict(), f'portfolio/models/MSE_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.pth')
-
-
-    # End execution
     if run is not None:
         run.finish()
 
-### EXPERIMENT EXECUTION ###
-args = parser.parse_args()
-report_times = args.report
-muloss = True if args.muloss == 1 else False
+# ---------- 4. LANCEMENT DES EXPERIMENTS ----------
+ensure_datasets_exist()
 
-# Set random seed for reproducibility
-seed_everything(args.seed)
+run_train("classic", args.ep_classic)
+run_train("LD",      args.ep_ld)
+run_train("SG",      args.ep_sg)
+run_train("MSE",     args.ep_mse)
 
-# Problem dimensions
-num_feat = 5
-num_data_train = 100  # Training dataset size
-num_data_eval = 25   # eval dataset size
-num_data_test = 10000
-deg = args.deg  # Degree of the polynomial for feature generation
-gamma = 2.25
-gamma_str = str(gamma).replace('.', '-')
-num_item = args.n
-
-if args.regenerate:
-    # Regenerate datasets
-    if not os.path.exists("portfolio/datasets"):
-        os.makedirs("portfolio/datasets")
-    print(f"Regenerating datasets for {num_item} items, {num_data_train} training data, {num_data_eval} eval data, {num_feat} features, degree {deg}, gamma {gamma_str}.")
-    from portfolio.gen_data import gen_datafile
-    gen_datafile(num_data_train, num_data_eval,num_data_test, num_feat, num_item, deg, gamma, 1000, principal_lin = 0, verbose=False)
-
-
-# Classic parameters
-epochs_classic = args.ep_cla
-time_limit_classic = args.time_limit
-batch_size_classic = 32
-lr_classic = args.lr
-model_shape_classic = [num_feat, num_item]
-dropout_classic = 0.0
-schedulerType_classic = "ReduceLROnPlateau"  # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_classic = {'patience': 3,
-                     'factor': 0.5,
-                     'min_lr':1e-6
-                     }
-diff_method_classic = args.method  # "IMLE", "SPOPlus"
-diff_method_arg_classic = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
-patience_classic = 10000000
-eval_freq_classic = 1
-
-# LD parameters
-epochs_LD = args.ep_ld
-time_limit_LD = args.time_limit
-batch_size_LD = 32
-lr_LD = args.lr
-model_shape_LD = [num_feat, num_item]
-dropout_LD = 0.0
-schedulerType_LD = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_LD = {'patience': 100,
-                'factor': 0.5,
-                'min_lr':1e-6
-                }
-diff_method_LD = args.method  # "IMLE", "SPOPlus"
-diff_method_arg_LD = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
-principal_lin = False if args.lin == 0 else True
-patience_LD = 80 if diff_method_LD != "Exact" else 1000
-eval_freq_LD = 100 if diff_method_LD == "Exact" else 10
-
-
-# SG parameters
-epochs_SG = args.ep_sg
-time_limit_SG = args.time_limit
-batch_size_SG = 32
-lr_SG = args.lr
-model_shape_SG = [num_feat, num_item]
-dropout_SG = 0.0
-schedulerType_SG = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_SG = {'patience': 100,
-                'factor': 0.5,
-                'min_lr':1e-6
-                }
-diff_method_SG = args.method  # "IMLE", "SPOPlus"
-diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
-step_mu = args.step_mu
-num_iter_mu = args.n_iter_mu
-patience_SG = 80 if diff_method_SG != "Exact" else 1000
-eval_freq_SG = 100 if diff_method_SG == "Exact" else 10
-
-# MSE parameters
-epochs_MSE = args.ep_mse
-time_limit_MSE = args.time_limit
-batch_size_MSE = 32
-lr_MSE = args.lr
-model_shape_MSE = [num_feat, num_item]
-dropout_MSE = 0.0
-schedulerType_MSE = "ReduceLROnPlateau" # "StepLR", "ReduceLROnPlateau", "OneCycleLR", None
-sched_arg_MSE = {'patience': 100,
-                'factor': 0.5,
-                'min_lr':1e-6
-                }
-patience_MSE = 3000
-diff_method_SG = args.method  # "IMLE", "SPOPlus"
-diff_method_arg_SG = {'n_samples':args.n_samples, 'lambd':args.lambda_imle, 'sigma': args.sigma } if args.method == "IMLE" else {}
-eval_freq_MSE = 100
-
-print(f"Training for {epochs_classic} epochs for classic model, {epochs_LD} epochs for LD model, {epochs_SG} for SG model with mu and {epochs_MSE} for MSE model on {num_item} items.")
-
-
-### EXECUTION ###
-## LD ##
-if epochs_LD > 0:
-    model = CustomMLP(model_shape_LD, dropout=dropout_LD).to(device)
-    wandbarg = {
-            'entity': "hugoper-polytechnique-montr-al",
-            'project': "DFL_LD_portfolio_temps",
-            'dir': "./",
-            'name': f"{diff_method_LD}_LD_{muloss}_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'job_type': f"{time_limit_LD}sec_LD",
-            'config': {
-                "architecture": model_shape_LD,
-                "dropout": dropout_LD,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
-                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
-                "batch_size": batch_size_LD,
-                "epochs": epochs_LD,
-                "time_limit": time_limit_LD,
-                "learning_rate": lr_LD,
-                "schedulerType": schedulerType_LD,
-                "sched_arg": sched_arg_LD,
-                "diff_method": diff_method_LD,
-                "diff_method_arg": diff_method_arg_LD
-            }
-    }
-    run_train(model, "LD", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
-            batch_size=batch_size_LD, epochs=epochs_LD, lr=lr_LD,
-            schedulerType=schedulerType_LD, sched_arg=sched_arg_LD,
-            diff_method_name=diff_method_LD, diff_method_arg=diff_method_arg_LD, muloss=muloss,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_LD, report_times=report_times, eval_freq=eval_freq_LD, patience=patience_LD)
-
-## Classic ##
-if epochs_classic > 0:
-    model = CustomMLP(model_shape_classic, dropout=dropout_classic).to(device)
-    wandbarg = {
-            'entity': "hugoper-polytechnique-montr-al",
-            'project': "DFL_LD_portfolio_temps",
-            'dir': "./",
-            'name': f"{diff_method_classic}_classic_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'job_type': f"{time_limit_classic}sec_classic",
-            'config': {
-                "architecture": model_shape_classic,
-                "dropout": dropout_classic,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
-                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
-                "batch_size": batch_size_classic,
-                "epochs": epochs_classic,
-                "time_limit": time_limit_classic,
-                "learning_rate": lr_classic,
-                "schedulerType": schedulerType_classic,
-                "sched_arg": sched_arg_classic,
-                "diff_method": diff_method_classic,
-                "diff_method_arg": diff_method_arg_classic
-            }
-    }
-    run_train(model, "classic", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
-            batch_size=batch_size_classic, epochs=epochs_classic, lr=lr_classic,
-            schedulerType=schedulerType_classic, sched_arg=sched_arg_classic,
-            diff_method_name=diff_method_classic, diff_method_arg=diff_method_arg_classic,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_classic, report_times=report_times, eval_freq=eval_freq_classic, patience=patience_classic)
-
-## SG ##
-if epochs_SG > 0:
-    model = CustomMLP(model_shape_SG, dropout=dropout_SG).to(device)
-    wandbarg = {
-            'entity': "hugoper-polytechnique-montr-al",
-            'project': "DFL_LD_portfolio_temps",
-            'dir': "./",
-            'name': f"{diff_method_SG}_SG_{muloss}_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'group': f"portfolio_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'job_type': f"{time_limit_SG}sec_SG",
-            'config': {
-                "architecture": model_shape_SG,
-                "dropout": dropout_SG,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
-                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
-                "batch_size": batch_size_SG,
-                "epochs": epochs_SG,
-                "time_limit": time_limit_SG,
-                "learning_rate": lr_SG,
-                "schedulerType": schedulerType_SG,
-                "sched_arg": sched_arg_SG,
-                "diff_method": diff_method_SG,
-                "diff_method_arg": diff_method_arg_SG,
-                "step_mu": step_mu,
-                "num_iter_mu": num_iter_mu
-            }
-
-    }
-    run_train(model, "SG", gamma, num_feat, num_item, num_data_train, num_data_eval, num_data_test, deg, principal_lin,
-            batch_size=batch_size_SG, epochs=epochs_SG, lr=lr_SG,
-            schedulerType=schedulerType_SG, sched_arg=sched_arg_SG,
-            diff_method_name=diff_method_SG, diff_method_arg=diff_method_arg_SG, muloss=muloss,
-            step_mu=step_mu, num_iter_mu=num_iter_mu,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_SG, report_times=report_times, eval_freq = eval_freq_SG, patience=patience_SG)
-
-if epochs_MSE > 0:
-    model = CustomMLP(model_shape_MSE, dropout=dropout_MSE).to(device)
-    wandbarg = {
-            'entity': "hugoper-polytechnique-montr-al",
-            'project': "DFL_LD_portfolio_temps",
-            'dir': "./",
-            'name': f"MSE_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'group': f"portfolio_temps_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}",
-            'job_type': f"{time_limit_MSE}sec_MSE",
-            'config': {
-                "architecture": model_shape_MSE,
-                "dropout": dropout_MSE,
-                "dataset_train": f"train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
-                "dataset_eval": f"validation_{num_item}_{num_data_eval}_{num_feat}_{deg}_{gamma_str}.txt",
-                "batch_size": batch_size_MSE,
-                "epochs": epochs_MSE,
-                "time_limit": time_limit_MSE,
-                "learning_rate": lr_MSE,
-                "schedulerType": schedulerType_MSE,
-                "sched_arg": sched_arg_MSE,
-            }
-    }
-    run_train(model, "MSE", gamma, num_feat, num_item, num_data_train, num_data_eval,num_data_test, deg, principal_lin,
-            batch_size=batch_size_MSE, epochs=epochs_MSE, lr=lr_MSE,
-            schedulerType=schedulerType_MSE, sched_arg=sched_arg_MSE,
-            verbose=True, wandbarg=wandbarg, time_limit=time_limit_MSE, report_times=report_times, eval_freq=eval_freq_MSE, patience=patience_MSE)
+print("\n✔ Tous les entraînements demandés sont terminés.")

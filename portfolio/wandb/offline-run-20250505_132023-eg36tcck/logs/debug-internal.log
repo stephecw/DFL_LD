@@ -1,7 +1,0 @@
-{"time":"2025-05-05T13:20:26.205976983-04:00","level":"INFO","msg":"stream: starting","core version":"0.19.6","symlink path":"wandb/offline-run-20250505_132023-eg36tcck/logs/debug-core.log"}
-{"time":"2025-05-05T13:20:26.603647211-04:00","level":"INFO","msg":"created new stream","id":"eg36tcck"}
-{"time":"2025-05-05T13:20:26.603729669-04:00","level":"INFO","msg":"stream: started","id":"eg36tcck"}
-{"time":"2025-05-05T13:20:26.60374906-04:00","level":"INFO","msg":"writer: Do: started","stream_id":"eg36tcck"}
-{"time":"2025-05-05T13:20:26.603773078-04:00","level":"INFO","msg":"handler: started","stream_id":"eg36tcck"}
-{"time":"2025-05-05T13:20:26.60378487-04:00","level":"INFO","msg":"sender: started","stream_id":"eg36tcck"}
-{"time":"2025-05-05T13:20:26.61008829-04:00","level":"INFO","msg":"Starting system monitor"}
