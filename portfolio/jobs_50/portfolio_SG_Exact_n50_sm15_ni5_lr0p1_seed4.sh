@@ -16,5 +16,5 @@ python -m portfolio.run_experiments \
   --method Exact \
   --seed 4 \
   --report 10 60 300 600 1800 3600 --num_eval_per_cp 500\
-  --out_file portfolio/n50/results_seed4.csv \
+  --out_file portfolio/n50/results_sg_seed4 \
   --muloss 0

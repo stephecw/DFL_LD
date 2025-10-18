@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=24:00:00
+#SBATCH --time=2:00:00
 #SBATCH --account=def-qcappart
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=64G
@@ -13,6 +13,8 @@ source ~/env_projet/bin/activate
 
 export LC_ALL=C
 
-python -m portfolio.gen_data \
-  --n 500 \
-  --n_iter 300 \
+# Lancement du script
+python -m portfolio.changement_data \
+  --fname portfolio/datasets/train_50_100_5_8_2-25.txt \
+  --iters 1000\
+  --principal_lin 0

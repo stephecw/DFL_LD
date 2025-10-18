@@ -1,5 +1,3 @@
-# run_experiments.py  – compatible avec le nouveau train.py
-import re
 import argparse, os, csv, time, torch, numpy as np
 from torch import optim
 from pyepo.model.grb import portfolioModel
@@ -85,9 +83,10 @@ def load_sets():
         1e5 * train_set.get_cov()
     )
 
-def make_scheduler(opt):
+def make_scheduler(approach,opt):
     if args.scheduler == "ReduceLROnPlateau":
-        return optim.lr_scheduler.ReduceLROnPlateau(opt, patience=100, factor=0.5, min_lr=1e-6)
+        patience = 100 if approach != "classic" else 10
+        return optim.lr_scheduler.ReduceLROnPlateau(opt, patience=patience, factor=0.5, min_lr=1e-6)
     elif args.scheduler == "StepLR":
         return optim.lr_scheduler.StepLR(opt, step_size=1000, gamma=0.5)
     elif args.scheduler == "OneCycleLR":
@@ -149,7 +148,7 @@ def run_train(approach:str, num_epochs:int):
     # === 3.2 model, opti, sched
     model = CustomMLP([num_feat, num_item]).to(device)
     optimizer = optim.Adam(model.parameters(), lr=args.lr)
-    scheduler = make_scheduler(optimizer)
+    scheduler = make_scheduler(approach,optimizer)
 
     # === 3.3 diff_list
     diff = build_diff_method(args.method, approach, num_item, cov, gamma, principal_lin=False)

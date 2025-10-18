@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --time=48:00:00
+#SBATCH --time=80:00:00
 #SBATCH --account=def-qcappart
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=128G
@@ -14,5 +14,5 @@ source ~/env_projet/bin/activate
 export LC_ALL=C
 
 python -m portfolio.gen_data \
-  --n 500 \
-  --n_iter 500 \
+  --n 400 \
+  --n_iter 300 \

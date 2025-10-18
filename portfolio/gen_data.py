@@ -84,6 +84,25 @@ def gen_datafile(num_data_train, num_data_val, num_data_test, num_feat, num_item
     if verbose:
         print("Done !")
     
+    # Découpage
+    Z_train, Z_val, Z_test = Z[:num_data_train], Z[num_data_train:num_data_train + num_data_val], Z[num_data_train + num_data_val:]
+    c_train, c_val, c_test = c[:num_data_train], c[num_data_train:num_data_train + num_data_val], c[num_data_train + num_data_val:]
+    x_star_train, x_star_val, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:num_data_train + num_data_val], x_star_array[num_data_train + num_data_val:]
+
+    X_val = np.zeros((num_data_val, num_item), dtype=float)
+    mu_val = np.zeros((num_data_val, num_item), dtype=float)
+    X_test = np.zeros((num_data_test, num_item), dtype=float)
+    mu_test = np.zeros((num_data_test, num_item), dtype=float)
+
+    gamma_str = str(gamma).replace('.', '-')
+
+    write_dataset_file(f"portfolio/datasets/validation_{num_item}_{num_data_val}_{num_feat}_{deg}_{gamma_str}.txt",
+                       num_feat, num_item, num_data_val, deg,
+                       cov, gamma, Z_val, c_val, x_star_val, X_val, mu_val)
+    
+    write_dataset_file(f"portfolio/datasets/test_{num_item}_{num_data_test}_{num_feat}_{deg}_{gamma_str}.txt",
+                       num_feat, num_item, num_data_test, deg,
+                       cov, gamma, Z_test, c_test, x_star_test, X_test, mu_test)
 
 
     # Optimisation µ
@@ -110,16 +129,9 @@ def gen_datafile(num_data_train, num_data_val, num_data_test, num_feat, num_item
     if verbose:
         print(f" Optimisation done (device: {device})")
 
-    # Découpage
-    Z_train, Z_val, Z_test = Z[:num_data_train], Z[num_data_train:num_data_train + num_data_val], Z[num_data_train + num_data_val:]
-    c_train, c_val, c_test = c[:num_data_train], c[num_data_train:num_data_train + num_data_val], c[num_data_train + num_data_val:]
-    x_star_train, x_star_val, x_star_test = x_star_array[:num_data_train], x_star_array[num_data_train:num_data_train + num_data_val], x_star_array[num_data_train + num_data_val:]
     X_train = X
     mu_train = mu
-    X_val = np.zeros((num_data_val, num_item), dtype=float)
-    mu_val = np.zeros((num_data_val, num_item), dtype=float)
-    X_test = np.zeros((num_data_test, num_item), dtype=float)
-    mu_test = np.zeros((num_data_test, num_item), dtype=float)
+
     
     # print(f"x : {x_star_train[0]}")
     # print(f"X : {X_train[0]}")
@@ -132,19 +144,12 @@ def gen_datafile(num_data_train, num_data_val, num_data_test, num_feat, num_item
     # print(gamma*np.mean(cov))
 
     # Sauvegarde
-    gamma_str = str(gamma).replace('.', '-')
+    
     fold = "/lin" if principal_lin else "/quad"
     write_dataset_file(f"portfolio/datasets/train_{num_item}_{num_data_train}_{num_feat}_{deg}_{gamma_str}.txt",
                        num_feat, num_item, num_data_train, deg,
                        cov, gamma, Z_train, c_train, x_star_train, X_train, mu_train)
 
-    write_dataset_file(f"portfolio/datasets/validation_{num_item}_{num_data_val}_{num_feat}_{deg}_{gamma_str}.txt",
-                       num_feat, num_item, num_data_val, deg,
-                       cov, gamma, Z_val, c_val, x_star_val, X_val, mu_val)
-    
-    write_dataset_file(f"portfolio/datasets/test_{num_item}_{num_data_test}_{num_feat}_{deg}_{gamma_str}.txt",
-                       num_feat, num_item, num_data_test, deg,
-                       cov, gamma, Z_test, c_test, x_star_test, X_test, mu_test)
     
 if __name__ == "__main__":
 
