@@ -1,8 +1,19 @@
+# Fichiers système Mac
 .DS_Store
-.DS_Store
+
+# Dossiers de logs ou de runs
 wandb/
 job_test/
+
+# Scripts spécifiques
 run_mac.py
 opti_hyper_port.py
-knapsack/*.csv
-portfolio/*.csv
+
+# Ignorer tous les fichiers CSV dans le dossier knapsack
+knapsack/**/*.csv
+
+# Ignorer tous les fichiers CSV dans portfolio (et sous-dossiers)
+portfolio/**/*.csv
+
+# Ignorer tous les gros fichiers texte dans portfolio/datasets
+portfolio/datasets/**/*.txt
