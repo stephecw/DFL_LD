@@ -265,8 +265,8 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
         #wandb.login(key="")  # Replace with your API key
         run = wandb.init(mode="offline", **wandbarg)
     
-    input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}.txt"
-    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}.txt"
+    input_train_txt = f"knapsack/datasets/train_base_{global_dim}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt"
+    output_train_txt = f"knapsack/datasets/train_{global_dim}_{keep}_{num_feat}_{num_items}_{num_data_train}_{deg}.txt"
     if verbose:
         print(f"Reading existing file : {input_train_txt}")
     if not os.path.isfile(input_train_txt):
@@ -332,7 +332,7 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
         
     if monitor:
         obj_array = ds.get_obj(tensor=False)  # (num_data_train)
-        with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{num_iter}.txt", mode="a") as f:
+        with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{num_iter}_{deg}.txt", mode="a") as f:
             for i, vals in enumerate(vals_full):
                 line = f"{i};"
                 rapport = (vals - obj_array)/torch.tensor(obj_array)
