@@ -3,7 +3,7 @@ import numpy as np
 import torch
 import pyepo
 from pyepo.model.grb import knapsackModel
-from opti_X_mu_CPU import OptimizationBatchModel
+from opti_X_mu_CPU import OptimizationBatchModel_serial
 from knapsack.solver import solver_X_knapsack
 from knapsack.data_import import ImportDataset
 import os
@@ -120,7 +120,10 @@ def gen_base_data(num_data_train, num_data_eval, num_data_test, num_feat, num_it
                        global_dim ,num_feat, num_items, num_data_test,deg,
                        capacities, weights, obj_test, Z_test, c_test, x_star_test)
     
-    return end_time - begin_time
+    if wandbarg is not None:
+        return end_time - begin_time
+    else:
+        return None
 
 def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, deg, keep=1, main=0,
              num_iter=10000, convergence=1e-8, timelimit= None,
@@ -154,7 +157,7 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, deg, keep=1
     if not os.path.isfile(input_train_txt):
         raise FileNotFoundError(f"Can't find '{input_train_txt}'.")
     
-    ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=True)
+    ds = ImportDataset(input_train_txt, device)
     gd, nf, ni, nd = ds.get_sizes()
     if gd != global_dim or nf != num_feat or ni != num_items or nd != num_data_train:
         raise ValueError("The dataset dimensions do not match the expected values.")
@@ -166,24 +169,24 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, deg, keep=1
     c_train       = ds.c           # (num_data_train, num_item)
     x_star_train  = ds.x           # (num_data_train, num_item)
 
-    solvers = [solver_X_knapsack(np.expand_dims(weights[keep],axis=0), np.expand_dims(capacities[keep],axis=0))]
-    for i in range(global_dim):
-        if i != keep:
-            solvers.append(
-                solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
-            )
-    
+    solvers = [
+        solver_X_knapsack(np.expand_dims(weights[i],axis=0),
+                          np.expand_dims(capacities[i],axis=0))
+        for i in range(global_dim)
+    ]
+
     if verbose:
         print(f" Optimisation of mu...", flush=True)
         
     if wandbarg is not None:
         import time
         begin_time = time.time()
-    
-    optimizer_mu = OptimizationBatchModel(solvers,main)
+
+    optimizer_mu = OptimizationBatchModel_serial(solvers)
     c_tensor = torch.tensor(c_train, dtype=torch.int32)
     optimizer_mu.optim_mu(
         c_batch=c_tensor,
+        main_solver=main,
         verbose=verbose,
         max_iter=num_iter,
         convergence=convergence,
@@ -209,13 +212,13 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, deg, keep=1
         with open(f"knapsack/datasets/gap_{num_data_train}_{num_items}_{global_dim}_{keep}_{main}_{num_iter}_{deg}.txt", mode="w") as f:
             line = f""
             rapport = (vals - obj_array)/torch.tensor(obj_array)
-            for i in range(rapport.shape[0]):
+            for i in range(rapport.shape[0]-1):
                 line += f"{rapport[i]};"
             line += f"{rapport[-1]}\n"
             f.write(line)
 
     # Extraire la première composante X[:,0,:] et aplatir μ
-    X_principal = X_batch[:, main, :]                # (num_data_train, num_item)
+    X_principal = X_batch[:, 0, :]                # (num_data_train, num_item)
     mu_flat     = np.reshape(mu_batch, (num_data_train, -1))  # (num_data_train, (global_dim-keep)*num_item)
     
     if verbose:
@@ -241,7 +244,7 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, deg, keep=1
     if verbose:
         print("Dataset updated with X and mu variables.", flush=True)
 
-def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim, 
+def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim, deg,
              num_iter=10000, convergence=1e-8, timelimit=None,
              monitor=False, verbose=False, wandbarg=None):
     """
@@ -260,6 +263,7 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
         monitor (bool): Whether to monitor the optimization process.
         verbose (bool): Whether to print verbose output.
     """
+    keep = -1  # Indicate that we are generating multiple decompositions
     if wandbarg is not None:
         import wandb
         #wandb.login(key="")  # Replace with your API key
@@ -272,7 +276,7 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
     if not os.path.isfile(input_train_txt):
         raise FileNotFoundError(f"Can't find '{input_train_txt}'.")
     
-    ds = ImportDataset(input_train_txt, model=None, z_stats=None, test=True)
+    ds = ImportDataset(input_train_txt, device)
     gd, nf, ni, nd = ds.get_sizes()
     if gd != global_dim or nf != num_feat or ni != num_items or nd != num_data_train:
         raise ValueError("The dataset dimensions do not match the expected values.")
@@ -297,13 +301,13 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
         solvers.append(
             solver_X_knapsack(np.expand_dims(weights[i],axis=0), np.expand_dims(capacities[i],axis=0))
         )
-    optimizer_mu = OptimizationBatchModel(solvers)
+    optimizer_mu = OptimizationBatchModel_serial(solvers)
     
     for i in range(global_dim):
         if verbose:
             print(f" Optimisation of mu keeping constraint {i}", flush=True)    
         optimizer_mu.optim_mu(
-            c_batch=c_train,
+            c_batch=torch.tensor(c_train, dtype=torch.int32),
             main_solver=i,  # On garde la contrainte i comme principale
             verbose=verbose,
             max_iter=num_iter,
@@ -318,8 +322,7 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
         mu_full.append(np.reshape(mu_batch, (num_data_train, -1)))  # On garde toutes les composantes de mu
         vals = optimizer_mu.get_value().cpu().numpy() # shape (num_data_train)
         vals_full.append(vals)  # On garde les valeurs de l'optimisation
-        
-                
+
     if wandbarg is not None:
         end_time = time.time()
         wandb.log({
@@ -336,19 +339,20 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim,
             for i, vals in enumerate(vals_full):
                 line = f"{i};"
                 rapport = (vals - obj_array)/torch.tensor(obj_array)
-                for i in range(rapport.shape[0]):
-                    line += f"{rapport[i]};"
+                for k in range(rapport.shape[0]-1):
+                    line += f"{rapport[k]};"
                 line += f"{rapport[-1]}\n"
                 f.write(line)
 
-    X_full = np.hstack(X_full)               # (num_data_train, num_item)
-    mu_full = np.hstack(mu_full)  # (num_data_train, (global_dim-keep)*num_item)
+    X_full = np.hstack(X_full)               # (num_data_train, global_dim * num_items)
+    mu_full = np.hstack(mu_full)  #  (num_data_train, global_dim * (global_dim - 1) * num_items)
     
     if verbose:
         print(f"Writing on file {output_train_txt}", flush=True)
     write_dataset_file(
         output_train_txt,
         global_dim=global_dim,
+        deg=deg,
         keep=-1,
         num_feat=num_feat,
         num_item=num_items,
@@ -441,6 +445,6 @@ if __name__ == "__main__":
                                     }
                         }
             if keep == -1:
-                add_X_mu_multiple(num_data_train, num_feat, n, gd, num_iter, convergence, tl, monitor, verbose, wandbarg)
+                add_X_mu_multiple(num_data_train, num_feat, n, gd, deg, num_iter, convergence, tl, monitor, verbose, wandbarg)
             else:
-                add_X_mu_single(num_data_train, num_feat, n, gd, keep, main, num_iter, convergence, tl, monitor, verbose, wandbarg)
+                add_X_mu_single(num_data_train, num_feat, n, gd, deg, keep, main, num_iter, convergence, tl, monitor, verbose, wandbarg)

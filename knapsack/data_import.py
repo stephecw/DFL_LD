@@ -5,53 +5,45 @@ import torch
 from torch.utils.data import DataLoader, TensorDataset
 
 class ImportDataset:
-    def __init__(self, fname, model=None, z_stats=None, base=False):
-        self.base = base
+    def __init__(self, fname, device, normalize_feat=True):
+        self.device = device
         self.read_file(fname)
 
         Z_tensor = torch.tensor(self.Z, dtype=torch.float32)
+        self.z_mean = Z_tensor.mean(dim=0, keepdim=True)
+        self.z_std  = Z_tensor.std(dim=0, keepdim=True)
+        self.z_std[self.z_std == 0] = 1.0 
+        
+        if normalize_feat: # Normalize features              
+            Z_tensor = (Z_tensor - self.z_mean) / self.z_std
 
-        if z_stats is None:               # on calcule les stats sur CE dataset
-            self.z_mean = Z_tensor.mean(dim=0, keepdim=True)
-            self.z_std  = Z_tensor.std (dim=0, keepdim=True)
-            self.z_std[self.z_std == 0] = 1.0         # évite div/0
-        else:                             # on ré-utilise celles passées
-            self.z_mean, self.z_std = z_stats
-        Z_tensor = (Z_tensor - self.z_mean) / self.z_std
-
-        self.Z_tensor  = Z_tensor
-        self.c_tensor  = torch.tensor(self.c , dtype=torch.float32)
-        self.x_tensor  = torch.tensor(self.x , dtype=torch.int32)
-        self.X_tensor  = torch.tensor(self.X , dtype=torch.int32)
-        self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32)
-
-
-        if model is not None:
-            self.dataset = dataset.optDataset(
-                model, self.Z_tensor, self.c_tensor,
-                self.x_tensor, self.X_tensor, self.mu_tensor
-            )
-        else:
-            self.dataset = TensorDataset(
-                self.Z_tensor, self.c_tensor,
-                self.x_tensor, self.X_tensor, self.mu_tensor
-            )
+        self.Z_tensor  = Z_tensor.to(self.device)
+        self.c_tensor  = torch.tensor(self.c , dtype=torch.float32, device=self.device)
+        self.x_tensor  = torch.tensor(self.x , dtype=torch.int32, device=self.device)
+        self.X_tensor  = torch.tensor(self.X , dtype=torch.int32, device=self.device)
+        self.mu_tensor = torch.tensor(self.mu, dtype=torch.float32, device=self.device)
     
     def read_file(self,fname):
-        """
-        Lit le fichier de données.
+        """Extract data from a given file.
+
+        Args:
+            fname (str): file name to get data from.
         """
         with open(fname, 'r') as f:
             lines = f.readlines()
-            if not self.test:
-                self.global_dim, self.keep , self.main, self.num_feat, self.num_item, self.num_data, self.deg = map(int, lines[0].split(","))
+            line = lines[0].split(",")
+            self.main = None
+            if len(line) == 5:
+                train = False
+                self.dim, self.num_feat, self.num_items, self.num_data, self.seed = map(int, line)
             else:
-                self.global_dim, self.num_feat, self.num_item, self.num_data,self.deg = map(int, lines[0].split(","))
-              
+                train = True
+                self.dim, self.main ,self.num_feat, self.num_items, self.num_data, self.seed = map(int, line)
+                               
             self.capacities = []
             self.weights = []
-            for i in range(self.global_dim):
-                line = lines[i+1].split(",")
+            for line in lines[1:self.dim+1]:
+                line = line.split(",")
                 self.capacities.append(int(line[0]))
                 self.weights.append(list(map(int, line[1:])))
             self.capacities = np.array(self.capacities)
@@ -63,104 +55,135 @@ class ImportDataset:
             self.x = []
             self.X = []
             self.mu = []
-            for i in range(self.num_data):
-                line = lines[self.global_dim+1+i].split(",")
+            for line in lines[self.dim+1:]:
+                line = line.split(",")
                 self.obj.append(float(line[0])) 
                 self.Z.append(list(map(float, line[1:1+self.num_feat])))
-                self.c.append(list(map(int, line[1+self.num_feat:1+self.num_feat+self.num_item])))
-                self.x.append(list(map(int, line[1+self.num_feat+self.num_item:1+self.num_feat+2*self.num_item])))
-                if not self.base:
-                    ptr = 1 + self.num_feat + 2*self.num_item
-                    if self.keep == -1:
-                        self.X.append(list(map(int, line[ptr:ptr+self.num_item*self.global_dim])))
-                        self.mu.append(list(map(float, line[ptr+self.num_item*self.global_dim:])))
+                self.c.append(list(map(float, line[1+self.num_feat:1+self.num_feat+self.num_items])))
+                self.x.append(list(map(int, line[1+self.num_feat+self.num_items:1+self.num_feat+2*self.num_items])))
+                if train:
+                    ptr = 1 + self.num_feat + 2*self.num_items
+                    if self.main == -1:
+                        self.X.append(list(map(int, line[ptr:ptr+self.num_items*self.dim])))
+                        self.mu.append(list(map(float, line[ptr+self.num_items*self.dim:])))
                     else:
-                        self.X.append(list(map(int, line[ptr:ptr+self.num_item])))
-                        self.mu.append(list(map(float, line[ptr+self.num_item:])))
+                        self.X.append(list(map(int, line[ptr:ptr+self.num_items])))
+                        self.mu.append(list(map(float, line[ptr+self.num_items:])))
+
             self.obj = np.array(self.obj)
             self.Z = np.array(self.Z)
             self.c = np.array(self.c)
             self.x = np.array(self.x)
-            if not self.base: 
-                if self.keep == -1:
-                    self.X = np.array(self.X).reshape(self.num_data, self.global_dim, self.num_item)
-                    self.mu = np.array(self.mu).reshape(self.num_data, self.global_dim, self.global_dim-1,self.num_item)
+            if train: 
+                if self.main == -1:
+                    self.X = np.reshape(np.array(self.X), (self.num_data, self.dim, self.num_items))
+                    self.mu = np.reshape(np.array(self.mu), (self.num_data, self.dim, self.dim-1,self.num_items))
                 else:
-                    self.X = np.array(self.X).reshape(self.num_data, 1, self.num_item)
-                    self.mu = np.array(self.mu).reshape(self.num_data, 1, self.global_dim-1, self.num_item)
+                    self.X = np.reshape(np.array(self.X), (self.num_data, 1, self.num_items))
+                    self.mu = np.reshape(np.array(self.mu), (self.num_data, 1, self.dim-1, self.num_items))
             else:
-                self.X = np.zeros((self.num_data, 1, 1, 1))
-                self.mu = np.zeros((self.num_data, 1, 1, 1))
+                self.X = np.zeros((self.num_data, 1, 1))
+                self.mu = np.zeros((self.num_data, 1, 1))
 
     def get_z_stats(self):
-        """Retourne (mean, std) utilisés pour la normalisation."""
+        """Get the mean and standard deviation of the features (before normalization if applicable).
+
+        Returns:
+            (float, float): (mean, std).
+        """
         return self.z_mean, self.z_std
 
-    def get_obj(self, tensor=False):
-        """
-        Retourne les valeurs de l'objectif.
-        tensor : bool : Si True, retourne un tenseur PyTorch.
+    def get_obj(self, tensor=False, device=torch.device("cpu")):
+        """ Get the optimal values (of objective function) of each problem instances in the dataset. 
+
+        Args:
+            tensor (bool, optional): Whether to return a PyTorch tensor. Defaults to False.
+            device (torch.device, optional): Device on which the PyTorch tensor is created. Defaults to 'cpu'.
+
+        Returns:
+            numpy.ndarray or torch.Tensor shape(num_data, num_items): optimal values.
         """
         if tensor:
-            return torch.tensor(self.obj, dtype=torch.float32)
+            return torch.tensor(self.obj, dtype=torch.float32, device=device)
         return self.obj
 
+    def get_seed(self):
+        """ Get the random seed used during dataset generation.
+
+        Returns:
+            int: seed.
+        """
+        return self.seed
+
     def get_sizes(self):
+        """Get various informations about dataset shape.
+
+        Returns: tuple of int
+            int: number of constraints
+            int: index of main problem (None if not applicable)
+            int: feature vector size
+            int: number of items
+            int: number of instances
         """
-        Retourne les tailles du dataset sous la forme (dim, num_feat, num_item, num_data).
-        global_dim : int : Nombre de contraintes dans le problème primal.
-        main_dim : int : Nombre de contraintes dans le sous-problème principal
-        num_feat : int : Nombre de features.
-        num_item : int : Nombre d'items.
-        num_data : int : Nombre de données.
-        """
-        if not self.base:
-            return self.global_dim, self.keep, self.num_feat, self.num_item, self.num_data
-        return self.global_dim, self.num_feat, self.num_item, self.num_data
+        return self.dim, self.main, self.num_feat, self.num_items, self.num_data
     
-    def get_capacities(self, tensor=False):
-        """
-        Retourne les capacités du dataset.
-        tensor : bool : Si True, retourne un tenseur PyTorch.
+    def get_capacities(self, tensor=False, device=torch.device("cpu")):
+        """ Get capacities of the constraints in the dataset
+        Args:
+            tensor (bool, optional): Whether to return a PyTorch tensor. Defaults to False.
+            device (torch.device, optional): Device on which the PyTorch tensor is created. Defaults to 'cpu'.
+
+        Returns:
+            numpy.ndarray or torch.Tensor shape(dim,): capacities.
         """
         if tensor:
-            return torch.tensor(self.capacities, dtype=torch.int32)
+            return torch.tensor(self.capacities, dtype=torch.int32, device=device)
         return self.capacities
         
-    def get_weights(self, tensor=False):
-        """
-        Retourne les poids du dataset.
-        tensor : bool : Si True, retourne un tenseur PyTorch.
+    def get_weights(self, tensor=False, device=torch.device("cpu")):
+        """ Get weights of the constraints in the dataset
+        Args:
+            tensor (bool, optional): Whether to return a PyTorch tensor. Defaults to False.
+            device (torch.device, optional): Device on which the PyTorch tensor is created. Defaults to 'cpu'.
+
+        Returns:
+            numpy.ndarray or torch.Tensor shape(dim, num_items): capacities.
         """
         if tensor:
-            return torch.tensor(self.weights, dtype=torch.int32)
+            return torch.tensor(self.weights, dtype=torch.int32, device=device)
         return self.weights
     
+    def get_device(self):
+        """Get data device
+
+        Returns:
+            torch.device: device
+        """
+        return self.device
+    
     def get_dataset(self):
+        """Build dataset object from the data
+        Shape : feature Z ; cost c ; optimal solution x* ; dual optimal solution X* ; lagr. mult. mu
+        
+        Returns:
+            torch.utils.data.TensorDataset: dataset
         """
-        Retourne le dataset PyEPO.
-        """
+        self.dataset = TensorDataset(
+            self.Z_tensor, self.c_tensor,
+            self.x_tensor, self.X_tensor, self.mu_tensor
+        )
         return self.dataset
     
     def get_dataloader(self, batch_size=32, shuffle=True):
+        """Build a dataloader from the dataset
+
+        Args:
+            batch_size (int, optional): Batch size of the dataloader. Defaults to 32.
+            shuffle (bool, optional): Whether to suffle data. Defaults to True.
+
+        Returns:
+            torch.utils.data.DataLoader: dataloader
         """
-        Retourne le DataLoader PyTorch, avec des batchs de (Z, c, X°, [mu_2, mu_3, ...]).
-        batch_size : int : Taille du batch.
-        shuffle : bool : Si True, mélange les données.
-        """
+        self.get_dataset()
         dataloader = DataLoader(self.dataset, batch_size=batch_size, shuffle=shuffle)
         return dataloader
-    
-    def get_deg(self):
-        """
-        Retourne le degré du polynôme utilisé pour générer les données.
-        """
-        return self.deg
-    
-    def get_main(self):
-        """
-        Retourne l'indice du sous-problème principal.
-        """
-        if not self.test:
-            return self.main
-        return None
