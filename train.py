@@ -52,6 +52,7 @@ def train(model, diff_list, eval_solver, dataloader_train, dataloader_eval, data
     best_relat_regret_std = 0
     best_model_state = None
     best_epoch = 0
+    time_best_epoch = 0.0
     
     mu_global = mu_global0
     main_pb = decompositions[0]  
@@ -118,7 +119,7 @@ def train(model, diff_list, eval_solver, dataloader_train, dataloader_eval, data
         epoch_duration = epoch_end_time - epoch_start_time
         train_time += epoch_duration
         
-        if verbose and epoch%1000:
+        if verbose and (epoch%1000==0):
             print(f"Epochs done {epoch+1} : mean_loss {mean_loss}, main_pb {main_pb}")
         if run is not None:
             current_lr = get_learning_rate(optimizer)
@@ -145,6 +146,7 @@ def train(model, diff_list, eval_solver, dataloader_train, dataloader_eval, data
                 best_relat_regret_std = std_relat_reg
                 best_model_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
                 best_epoch = epoch
+                time_best_epoch = train_time
             model.load_state_dict(model_state)
             
             
@@ -154,6 +156,7 @@ def train(model, diff_list, eval_solver, dataloader_train, dataloader_eval, data
                             'train_time':train_time,
                             'epoch':epoch, 
                             'best_epoch':best_epoch, 
+                            'time_best_epoch':time_best_epoch,
                             'best_relat_regret':best_relat_regret, 
                             'best_relat_regret_std':best_relat_regret_std, 
                             'best_model_state':best_model_state
@@ -183,6 +186,7 @@ def train(model, diff_list, eval_solver, dataloader_train, dataloader_eval, data
                 best_relat_regret_std = std_relat_reg
                 best_model_state = {k: v.detach().cpu().clone() for k, v in model.state_dict().items()}
                 best_epoch = epoch+1
+                time_best_epoch = train_time
 
 
     if run is not None:
@@ -193,7 +197,7 @@ def train(model, diff_list, eval_solver, dataloader_train, dataloader_eval, data
     return save
 
 def saving(model, save, param, test_loader, eval_solver, output_file, verbose):
-    # Construction du nom du fichier du modèle
+    # Build the model filename
     param = {'cp': save['cp'], **param}
     # model_filename = "knapsack/models/lin"
     # for v in param.values():
@@ -204,7 +208,7 @@ def saving(model, save, param, test_loader, eval_solver, output_file, verbose):
     #     print(f"Saving model to {model_filename}", flush=True)
     # torch.save(model.state_dict(), model_filename)
     
-    # Test du modèle
+    # Test the model
     if verbose:
         print(f"Testing model.", flush=True)
     regrets_test = test(model, test_loader, eval_solver)
@@ -212,12 +216,13 @@ def saving(model, save, param, test_loader, eval_solver, output_file, verbose):
     median_relat_test = np.median(regrets_test)
     std_relat_test = np.std(regrets_test)
     
-    # Création de la ligne de données
+    # Build the output row
     row = {
         'cp': save['cp'], **param,
         'train_time': save['train_time'], 
         'epoch': save['epoch'],
         'best_epoch': save['best_epoch'],
+        'time_best_epoch': save['time_best_epoch'],
         'mean_relat_eval': save['best_relat_regret'],
         'std_relat_eval': save['best_relat_regret_std'],
         'mean_relat_test': mean_relat_test,
@@ -228,17 +233,17 @@ def saving(model, save, param, test_loader, eval_solver, output_file, verbose):
 
     write_header = not os.path.exists(output_file)
     
-    # Écriture dans un CSV
+    # Write to CSV
     with open(output_file, 'a', newline='') as csvfile:
         fieldnames = ['cp', 'train_time',
-                      'epoch', 'best_epoch', 'mean_relat_eval', 'std_relat_eval',
+                      'epoch', 'best_epoch', 'time_best_epoch', 'mean_relat_eval', 'std_relat_eval',
               'mean_relat_test', 'median_relat_test', 'std_relat_test'] + list(param.keys()) + ['regrets_test']
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         
         if write_header:
             writer.writeheader()
         
-        # On transforme regrets_test en string JSON-like pour ne pas casser la structure CSV
+        # Serialize regrets_test as a string to preserve the CSV structure
         row['regrets_test'] = ','.join(map(str, row['regrets_test']))
         writer.writerow(row)
 

@@ -202,7 +202,7 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, deg, keep=1
         })
         wandb.finish()
 
-    # 5. Récupérer X et μ calculés
+    # 5. Retrieve computed X and μ
     X_batch  = optimizer_mu.get_X(tensor=False)   # shape (num_data_train, global_dim, num_item)
     mu_batch = optimizer_mu.get_mu(tensor=False)  # shape (num_data_train, global_dim-new_keep, num_item)
     vals = optimizer_mu.get_value().cpu().numpy() # shape (num_data_train)
@@ -217,7 +217,7 @@ def add_X_mu_single(num_data_train, num_feat, num_items, global_dim, deg, keep=1
             line += f"{rapport[-1]}\n"
             f.write(line)
 
-    # Extraire la première composante X[:,0,:] et aplatir μ
+    # Extract the first component X[:,0,:] and flatten μ
     X_principal = X_batch[:, 0, :]                # (num_data_train, num_item)
     mu_flat     = np.reshape(mu_batch, (num_data_train, -1))  # (num_data_train, (global_dim-keep)*num_item)
     
@@ -308,20 +308,20 @@ def add_X_mu_multiple(num_data_train, num_feat, num_items, global_dim, deg,
             print(f" Optimisation of mu keeping constraint {i}", flush=True)    
         optimizer_mu.optim_mu(
             c_batch=torch.tensor(c_train, dtype=torch.int32),
-            main_solver=i,  # On garde la contrainte i comme principale
+            main_solver=i,  # Keep constraint i as the main one
             verbose=verbose,
             max_iter=num_iter,
             convergence=convergence,
             timelimit=timelimit//global_dim if timelimit is not None else None
         )
         
-        # 5. Récupérer X et μ calculés
+        # 5. Retrieve computed X and μ
         X_batch  = optimizer_mu.get_X(tensor=False)   # shape (num_data_train, global_dim, num_item)
-        X_full.append(X_batch[:, 0, :])  # On garde seulement la première composante X[:,0,:]
+        X_full.append(X_batch[:, 0, :])  # Keep only the first component X[:,0,:]
         mu_batch = optimizer_mu.get_mu(tensor=False)  # shape (num_data_train, global_dim-new_keep, num_item)
-        mu_full.append(np.reshape(mu_batch, (num_data_train, -1)))  # On garde toutes les composantes de mu
+        mu_full.append(np.reshape(mu_batch, (num_data_train, -1)))  # Keep all μ components
         vals = optimizer_mu.get_value().cpu().numpy() # shape (num_data_train)
-        vals_full.append(vals)  # On garde les valeurs de l'optimisation
+        vals_full.append(vals)  # Keep optimization values
 
     if wandbarg is not None:
         end_time = time.time()
@@ -410,8 +410,6 @@ if __name__ == "__main__":
             if verbose:
                 print(f"Generating base dataset with {n} items, {gd} constraints, {deg} degree, noise width {noise_width}, {num_feat} features, {num_data_train} train, {num_data_eval} eval, {num_data_test} test, and {num_iter} iterations.")
             wandbarg = {
-                        'entity': "hugoper-polytechnique-montr-al",
-                        'project': "DFL_LD",
                         'dir': "./",
                         'name': f"base_data_{n}_{gd}_{deg}_{noise_width}_{num_feat}_{num_data_train}_{num_data_eval}_{num_data_test}_{num_iter}",
                         'group': f"knapsack",
@@ -427,8 +425,6 @@ if __name__ == "__main__":
                 print(f"Adding X and mu variables to the dataset with {n} items, {gd} constraints, {num_feat} features, {num_data_train} train, {num_iter} iterations, convergence {convergence}, keep {keep}.")
             keep_str = f"{keep}" if keep != -1 else "multiple"
             wandbarg = {
-                        'entity': "hugoper-polytechnique-montr-al",
-                        'project': "DFL_LD",
                         'dir': "./",
                         'name': f"opti_X_mu_{n}_{gd}_{deg}_{keep_str}_{main}_{num_feat}_{num_data_train}_{num_iter}",
                         'group': f"knapsack",

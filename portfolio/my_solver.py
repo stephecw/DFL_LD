@@ -16,9 +16,9 @@ class Solveur_lin_torch(optModel):
 
     def _getModel(self):
         """
-        Juste pour satisfaire l’interface requise par optModel.  
+        Only here to satisfy the interface required by optModel.
         """
-        m = gp.Model()               # nécessite « import gurobipy as gp »
+        m = gp.Model()               # requires `import gurobipy as gp`
         x = [m.addVar(vtype=gp.GRB.BINARY, name=f"x{i}")
              for i in range(self.num_item)]
         m.update()
@@ -127,7 +127,7 @@ class gb_portfolio_solver(optModel):
         self.qp_model.optimize()
         if self.qp_model.status != GRB.OPTIMAL:
             print(self.qp_model.status)
-            raise RuntimeError("Gurobi n’a pas trouvé d’optimum.")
+            raise RuntimeError("Gurobi did not find an optimal solution.")
         sol_np = self.qp_w.X.copy()
         obj_val = self.qp_model.ObjVal
         sol_t = torch.tensor(sol_np, dtype=self.c.dtype,
@@ -140,10 +140,10 @@ from joblib import Parallel, delayed
 
 
 class BatchSolverLin:
-    """Batch wrapper autour de Solveur_lin."""
+    """Batch wrapper around Solveur_lin."""
     def __init__(self, num_item: int, maximize: bool = True, device: str = "cpu"):
         self.device = device
-        # Un solveur (stateless) suffit : on réutilise la même instance
+        # A (stateless) solver is enough: reuse the same instance
         self.solver = Solveur_lin(num_item, maximize=maximize)
 
     def __call__(self, c_batch: Tensor) -> Tensor:
@@ -152,11 +152,11 @@ class BatchSolverLin:
         return: (B, n) torch.Tensor de 0/1
         """
         B, n = c_batch.shape
-        # on va collecter chaque solution
+        # collect each solution
         sols = []
         for i in range(B):
             c_i = c_batch[i]
-            # met à jour l'objectif
+            # update the objective
             self.solver.setObj(c_i)
             sol_i, _ = self.solver.solve()      # sol_i: Tensor(n,)
             sols.append(sol_i)
@@ -164,22 +164,22 @@ class BatchSolverLin:
     
 from functools import partial
 
-# On déclare un solveur global par processus
+# Declare one global solver per process
 _GLOBAL_SOLVER = None
 
 def init_solver(n_stocks, cov, gamma, maximize):
     """
-    (Cette fonction n'est plus passée à Parallel,
-    mais on la conserve pour ne pas changer le nom.)
+    (This function is no longer passed to Parallel,
+    but it is kept to avoid changing the name.)
     """
     global _GLOBAL_SOLVER
     _GLOBAL_SOLVER = Solveur_quad(n_stocks, cov, gamma, maximize=maximize)
 
 def solve_one(c_i_np, n_stocks, cov, gamma):
     """
-    Cette fonction est exécutée dans chaque process (ou dans le même process si n_jobs=1).
-    Elle instancie le solveur une seule fois (lazy init) dans _GLOBAL_SOLVER
-    puis réutilise ce même solveur pour chaque appel ultérieur dans ce process.
+    This function runs in each process (or in the same process if n_jobs=1).
+    It instantiates the solver only once (lazy init) in _GLOBAL_SOLVER,
+    then reuses that solver for subsequent calls within the same process.
     """
     global _GLOBAL_SOLVER
     if _GLOBAL_SOLVER is None:
@@ -191,14 +191,14 @@ def solve_one(c_i_np, n_stocks, cov, gamma):
 
 
 class BatchSolverQuad:
-    """Wrapper qui lance chaque sous-problème quadratique dans un process séparé."""
+    """Wrapper that runs each quadratic sub-problem in a separate process."""
     def __init__(self, n_stocks, cov, gamma, device="cpu", n_jobs=-1):
-        # Réinitialisation du solveur global au moment de la création de l'instance
+        # Reset the global solver at instance creation time
         global _GLOBAL_SOLVER
         _GLOBAL_SOLVER = None
 
         self.n_stocks = n_stocks
-        # on stocke en numpy (pickle-friendly) si nécessaire
+        # store as numpy (pickle-friendly) if needed
         self.cov = cov.detach().cpu().numpy() if torch.is_tensor(cov) else cov.copy()
         self.gamma = gamma
         self.device = device
@@ -207,14 +207,13 @@ class BatchSolverQuad:
     def __call__(self, c_batch):
         """
         c_batch : (B, n) numpy.ndarray
-        -> renvoie sol_np : (B, n) numpy.ndarray
+        -> returns sol_np : (B, n) numpy.ndarray
         """
-        # c_batch est déjà un numpy.ndarray, on l'utilise directement
+        # c_batch is already a numpy.ndarray, use it directly
         c_np = c_batch
         B = c_np.shape[0]
 
-        # On crée une version « partielle » de solve_one,
-        # qui lie n_stocks, cov, gamma, maximize
+        # Create a "partial" version of solve_one binding n_stocks, cov, gamma
         bound_solve_one = partial(
             solve_one,
             n_stocks=self.n_stocks,
@@ -222,7 +221,7 @@ class BatchSolverQuad:
             gamma=self.gamma
         )
 
-        # On lance Parallel sans initializer, en passant à bound_solve_one uniquement c_i_np
+        # Run Parallel without initializer; pass only c_i_np to bound_solve_one
         sols = Parallel(
             n_jobs=self.n_jobs,
             backend="loky"
@@ -230,13 +229,13 @@ class BatchSolverQuad:
             delayed(bound_solve_one)(c_np[i]) for i in range(B)
         )
 
-        # On reconstruit le tableau numpy des solutions
+        # Rebuild the numpy array of solutions
         sol_np = np.stack(sols, axis=0)  # forme (B, n)
         return sol_np
 
 class BatchSolverExact:
     """
-    Renvoie la solution exacte du sous problème avec contrainte quadratique grâce à la formule analytique
+    Returns the exact solution of the quadratic-constraint sub-problem using the analytic formula.
     """
     def __init__(self, num_item, cov, gamma, device="cpu", n_jobs=-1):
         self.num_item = num_item
@@ -253,7 +252,7 @@ class BatchSolverExact:
     def __call__(self, c_batch: torch.Tensor) -> torch.Tensor:
         """
         c_batch : (B, n) torch.Tensor
-        -> renvoie sol_batch : (B, n) torch.Tensor
+        -> returns sol_batch : (B, n) torch.Tensor
         """
         if not isinstance(c_batch, torch.Tensor):
             c_batch = torch.tensor(c_batch, dtype=torch.float32, device=self.device)

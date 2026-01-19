@@ -8,7 +8,7 @@ class CustomMLP(nn.Module):
         layers = []
         for i in range(len(layer_sizes) - 1):
             layers.append(nn.Linear(layer_sizes[i], layer_sizes[i + 1]))
-            if i < len(layer_sizes) - 2:  # Ajouter une activation sauf pour la dernière couche
+            if i < len(layer_sizes) - 2:  # Add an activation except for the last layer
                 layers.append(activation())
                 if dropout > 0:
                     layers.append(nn.Dropout(dropout))

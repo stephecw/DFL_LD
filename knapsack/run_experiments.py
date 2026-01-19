@@ -273,7 +273,7 @@ def run_train(model, jobtype, dim, keep, mains,combine,num_feat, num_item, num_d
             torch.save(model.state_dict(), f'knapsack/models/MSE_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}.pth')
 
 
-    # Évaluer d’abord sur le set d’éval avec le modèle au meilleur epoch
+    # First evaluate on the eval set using the model from the best epoch
     regrets_eval = test(model, eval_loader, eval_solver, device, run=None)
     mean_relat_eval = np.mean(regrets_eval)
     median_relat_eval = np.median(regrets_eval)
@@ -352,8 +352,6 @@ def run_train(model, jobtype, dim, keep, mains,combine,num_feat, num_item, num_d
 print(f"Training using {method} with {diff_method_name} for {epochs} epochs ({tl} seconds max) on {dim} constraints and {num_item} items.", flush=True)
 model = CustomMLP(model_shape, dropout=dropout).to(device)
 wandbarg = {
-        'entity': "hugoper-polytechnique-montr-al",
-        'project': "DFL_LD",
         'dir': "./",
         'name': f"knapsack_{diff_method_name}_{method}_{dim}_{keep}_{num_feat}_{num_item}_{num_data_train}",
         'group': f"knapsack_{dim}_{num_feat}_{num_item}_{num_data_train}",

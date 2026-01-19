@@ -172,7 +172,7 @@ class OptimizationBatchModel_serial:
     
     def gradient_descent(self, lr=0.01, max_iter=3000, convergence=1e-8, timelimit=None, verbose=False):
         """
-        Descente de gradient batch pour tous les problèmes simultanément
+        Batch gradient descent for all problems simultaneously
         """
         if timelimit is not None:
             start_time = time.time()

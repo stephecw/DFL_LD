@@ -59,9 +59,9 @@ class solver_X_knapsack():
     def __call__(self, c_batch):
         """
         c_batch : (B, n) torch.Tensor
-        -> renvoie sol_batch : (B, n) torch.Tensor
+        -> returns sol_batch : (B, n) torch.Tensor
         """
-        # on passe en numpy pour joblib
+        # convert to numpy for joblib
         c_np = c_batch
         X = np.zeros((c_np.shape[0], c_np.shape[1]), dtype=int)
         for i in range(c_np.shape[0]):

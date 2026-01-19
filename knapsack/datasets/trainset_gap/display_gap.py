@@ -14,11 +14,11 @@ for file in os.listdir("./"):
         lis.append(np.sort(np.array(list(map(float,lines[0].split(";"))))))
 
 print(files)
-# Calcul de la FRE
+# Compute the ECDF
 n = len(lis[0])
 y = np.arange(1, n+1)
 
-# Couleurs pour les approches
+# Colors for each approach
 colors = ["red", "blue", "green", "black", "orange", "brown"]
 for i, li in enumerate(lis):
     plt.step(li,np.arange(1, len(li)+1) / len(li) , color=colors[i%6], where='post', label=files[i][4:])
@@ -27,11 +27,10 @@ for i, li in enumerate(lis):
     # plt.axvline(median, color=colors[i%6], linestyle='--', ymax=np.interp(median, li, y))
     # plt.axvline(max_value, color=colors[i%6], linestyle=':')
 
-plt.xlabel('Ecart relatif')
-plt.ylabel('Repartition')
+plt.xlabel('Relative gap')
+plt.ylabel('Distribution')
 plt.title('n=30, dim=5')
 plt.legend()
 plt.grid(True)
 plt.gca().yaxis.set_major_formatter(PercentFormatter(1))
 plt.show()
-

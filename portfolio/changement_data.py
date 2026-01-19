@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Recalcule X et μ dans un fichier train_*.txt puis réécrit le fichier en place
-(sans générer de copie .bak).
+Recomputes X and μ in a `train_*.txt` file and rewrites the file in place
+(without generating a `.bak` copy).
 
-Exemple :
+Example:
 python update_mu_X.py \
     --fname portfolio/datasets/train_200_10000_5_8_2-25.txt \
     --iters 500 \
@@ -23,13 +23,13 @@ from portfolio.my_solver import BatchSolverLin, BatchSolverQuad, BatchSolverExac
 from opti_X_mu_CPU import OptimizationBatchModel
 
 # --------------------------------------------------------------------------- #
-#  Détection automatique du device (même logique que gen_data.py)
+#  Automatic device detection (same logic as gen_data.py)
 # --------------------------------------------------------------------------- #
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 # --------------------------------------------------------------------------- #
-#  Fonctions utilitaires
+#  Utility functions
 # --------------------------------------------------------------------------- #
 def load_file(fname):
     with open(fname, "r") as f:
@@ -97,17 +97,17 @@ def update_lines(original, meta, new_X, new_mu):
 
 
 # --------------------------------------------------------------------------- #
-#  Script principal
+#  Main script
 # --------------------------------------------------------------------------- #
 def main():
     parser = argparse.ArgumentParser(
-        description="Recalcule μ et X et met à jour un dataset train (sans .bak)."
+        description="Recomputes μ and X and updates a training dataset (no .bak)."
     )
     parser.add_argument(
-        "--fname", required=True, type=str, help="Chemin du fichier train_*.txt"
+        "--fname", required=True, type=str, help="Path to the train_*.txt file"
     )
     parser.add_argument(
-        "--iters", default=500, type=int, help="Nombre d'itérations pour optim_mu"
+        "--iters", default=500, type=int, help="Number of iterations for optim_mu"
     )
     parser.add_argument(
         "--principal_lin",
@@ -120,22 +120,22 @@ def main():
 
     meta, lines = load_file(args.fname)
     print(
-        f"Dataset : {args.fname} | {meta['num_data']} instances | {args.iters} itérations "
+        f"Dataset: {args.fname} | {meta['num_data']} instances | {args.iters} iterations "
         f"{meta['num_item']} items • γ={meta['gamma']} • deg={meta['deg']}"
     )
-    print(f"Device détecté : {device}")
+    print(f"Detected device: {device}")
 
     X, mu, elapsed = recompute_X_mu(
         args.fname, args.iters, bool(args.principal_lin)
     )
     print(
-        f"Optimisation terminée en {elapsed:.2f}s "
+        f"Optimization finished in {elapsed:.2f}s "
         f"(avg {elapsed/meta['num_data']:.4f}s/instance)"
     )
 
     new_lines = update_lines(lines, meta, X, mu)
     write_file(args.fname, new_lines)
-    print("Fichier mis à jour avec les nouveaux X et μ.")
+    print("File updated with the new X and μ.")
 
 
 if __name__ == "__main__":

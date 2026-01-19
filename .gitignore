@@ -17,3 +17,35 @@ portfolio/**/*.csv
 
 # Ignorer tous les gros fichiers texte dans portfolio/datasets
 portfolio/datasets/**/*.txt
+
+*.ipynb
+
+portfolio/__pycache__/*
+
+portfolio/datasets/*
+portfolio/datasets_inf/*
+portfolio/datasets_restreint/*
+
+portfolio/jobs_50/*
+portfolio/jobs_200/*
+portfolio/jobs_400/*
+portfolio/jobs_hyper_n50/*
+portfolio/jobs_hyper_n200/*
+portfolio/jobs_hyper_n400/*
+
+portfolio/logs/*
+
+portfolio/n50/*
+portfolio/n50_inf/*
+portfolio/n50_restreint/*
+
+portfolio/n200/*
+portfolio/n200_inf/*
+
+portfolio/n400/*
+portfolio/n400_inf/*
+portfolio/n400_restreint/*
+
+portfolio/qptl/*
+
+*.sh
