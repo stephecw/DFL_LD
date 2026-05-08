@@ -1,9 +1,14 @@
 # Fichiers système Mac
 .DS_Store
 
+# Caches Python
+__pycache__/
+**/__pycache__/
+
 # Dossiers de logs ou de runs
 wandb/
 job_test/
+logs/
 
 # Scripts spécifiques
 run_mac.py
@@ -19,8 +24,6 @@ portfolio/**/*.csv
 portfolio/datasets/**/*.txt
 
 *.ipynb
-
-portfolio/__pycache__/*
 
 portfolio/datasets/*
 portfolio/datasets_inf/*
@@ -47,3 +50,21 @@ portfolio/n400_inf/*
 portfolio/n400_restreint/*
 
 *.sh
+
+# Utilitaires SLURM internes (non publiés)
+knapsack/gen_job.py
+knapsack/select_hp.py
+knapsack/hp_*.txt
+knapsack/jobfiles/
+knapsack/jobs/
+knapsack/jobs_mains/
+knapsack/jobs_mains_sum/
+knapsack/jobs_muloss*/
+knapsack/seed/
+knapsack/output/
+knapsack/test_results_*.txt
+knapsack/results*.csv
+
+# Modèles entraînés (regenérables)
+knapsack/models/
+portfolio/models/

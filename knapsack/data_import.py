@@ -33,12 +33,17 @@ class ImportDataset:
             lines = f.readlines()
             line = lines[0].split(",")
             self.main = None
+            self.keep = None
             if len(line) == 5:
                 train = False
-                self.dim, self.num_feat, self.num_items, self.num_data, self.seed = map(int, line)
-            else:
+                self.dim, self.num_feat, self.num_items, self.num_data, self.deg = map(int, line)
+            elif len(line) == 7:
                 train = True
-                self.dim, self.main ,self.num_feat, self.num_items, self.num_data, self.seed = map(int, line)
+                self.dim, self.keep, self.main, self.num_feat, self.num_items, self.num_data, self.deg = map(int, line)
+            else:
+                raise ValueError(
+                    f"Unknown header format in {fname}: expected 5 (base/eval/test) or 7 (train) fields, got {len(line)}"
+                )
                                
             self.capacities = []
             self.weights = []
@@ -107,25 +112,24 @@ class ImportDataset:
             return torch.tensor(self.obj, dtype=torch.float32, device=device)
         return self.obj
 
-    def get_seed(self):
-        """ Get the random seed used during dataset generation.
+    def get_deg(self):
+        """ Get the polynomial degree used during dataset generation.
 
         Returns:
-            int: seed.
+            int: degree.
         """
-        return self.seed
+        return self.deg
 
     def get_sizes(self):
         """Get various informations about dataset shape.
 
         Returns: tuple of int
             int: number of constraints
-            int: index of main problem (None if not applicable)
             int: feature vector size
             int: number of items
             int: number of instances
         """
-        return self.dim, self.main, self.num_feat, self.num_items, self.num_data
+        return self.dim, self.num_feat, self.num_items, self.num_data
     
     def get_capacities(self, tensor=False, device=torch.device("cpu")):
         """ Get capacities of the constraints in the dataset
