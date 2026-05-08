@@ -88,7 +88,7 @@ All commands below should be executed from the **repository root**.
 
 ## Workflow
 
-The typical workflow is the following:
+The typical workflow is the same for both benchmarks:
 
 1. **Generate datasets** with `gen_data.py` (one per problem). The script
    produces `(features, costs, primal optimum)` for the base dataset, then
@@ -97,152 +97,11 @@ The typical workflow is the following:
 2. **Train** with `run_experiments.py` (one per problem). The script trains a
    model with one or more of the four approaches and writes a CSV log
    (mean / median / std test regret per checkpoint).
-3. *(optional)* **Re-evaluate** a saved checkpoint or recompute LD variables on
-   an existing dataset.
 
-### 1. Multi-dimensional knapsack
+Per-benchmark instructions, full CLI reference and example commands:
 
-#### 1.1 Data generation
-
-Generate a base dataset and append the LD variables for one decomposition
-(single-decomposition mode, `--keep K`):
-
-```bash
-python -m knapsack.gen_data \
-    --n 100 --dim 10 --deg 4 \
-    --n_train 200 --n_eval 100 --n_test 1000 \
-    --n_feat 12 --noise 0.5 \
-    --keep 1 --main 0 \
-    --n_iter 10000 --conv 1e-4
-```
-
-This produces three files in `knapsack/datasets/`:
-
-- `train_base_{dim}_{n_feat}_{n}_{n_train}_{deg}.txt` (intermediate, no LD vars)
-- `eval_{dim}_{n_feat}_{n}_{n_eval}_{deg}.txt`
-- `test_{dim}_{n_feat}_{n}_{n_test}_{deg}.txt`
-- `train_{dim}_{keep}_{main}_{n_feat}_{n}_{n_train}_{deg}.txt` (with `X*`, `mu*`)
-
-For multi-decomposition (`--keep -1`) the script computes `X*`, `mu*` for every
-constraint and produces a single file
-`train_{dim}_-1_{n_feat}_{n}_{n_train}_{deg}.txt` that stores all decompositions:
-
-```bash
-python -m knapsack.gen_data \
-    --n 100 --dim 10 --deg 4 \
-    --n_train 200 --n_eval 100 --n_test 1000 \
-    --keep -1 --n_iter 10000 --conv 1e-4
-```
-
-Useful flags:
-
-| Flag                          | Meaning                                                       |
-|-------------------------------|---------------------------------------------------------------|
-| `--n N1 N2 ...`               | List of item counts to iterate over.                          |
-| `--dim D1 D2 ...`             | List of constraint counts to iterate over.                    |
-| `--n_iter`                    | Maximum sub-gradient iterations to optimize each `mu*`.       |
-| `--conv`                      | Convergence tolerance for the mu-optimizer (Adam).            |
-| `--monitor`                   | Save the LD relative gap to disk (one file per decomposition).|
-
-#### 1.2 Training
-
-Run all four training approaches in a single command:
-
-```bash
-python -m knapsack.run_experiments \
-    --diff SPOPlus \
-    --dim 10 --n 100 --n_feat 12 --deg 4 \
-    --keep 1 --mains 0 \
-    --ep_classic 1 --ep_ld 1 --ep_sg 1 --ep_mse 1 \
-    --report 60 300 600 \
-    --lr 1e-3 \
-    --step_mu 10 --n_iter_mu 30 \
-    --muloss 1 \
-    --save_model 1 \
-    --out_file knapsack/results.csv
-```
-
-For multi-decomposition, replace the decomposition flags by `--keep -1` and
-pass the indices of the decompositions you want to train on via `--mains`:
-
-```bash
-python -m knapsack.run_experiments \
-    --diff IMLE --dim 10 --n 100 --deg 4 \
-    --keep -1 --mains 0 1 2 3 \
-    --ep_ld 1 --ep_sg 1 \
-    --report 60 300 \
-    --lambd 10 --sigma 1.0 --n_samples 1 --kappa 5 \
-    --out_file knapsack/results.csv
-```
-
-Set `--ep_*` to `0` for the approaches you want to skip.
-
-Important flags:
-
-| Flag                            | Meaning                                                   |
-|---------------------------------|-----------------------------------------------------------|
-| `--diff {SPOPlus, IMLE}`        | Differentiation technique.                                |
-| `--keep K \| -1`                | Single-decomposition (`K >= 1`) or multi-decomposition.   |
-| `--mains m0 m1 ...`             | Indices of the decompositions used in training.           |
-| `--report S1 S2 ...`            | Checkpoint times in seconds at which to evaluate.         |
-| `--ep_{classic,ld,sg,mse}`      | Number of epochs per approach (0 disables it).            |
-| `--muloss {0, 1}`               | 1 = use loss `L1` (with mu term); 0 = use loss `L2`.      |
-| `--step_mu`, `--n_iter_mu`      | Online mu-update frequency and inner iterations (SG only).|
-| `--save_model {0, 1}`           | Save the best checkpoint to `knapsack/models/...pth`.     |
-| `--regenerate 1`                | Regenerate the datasets before training (calls gen_data). |
-
-The CSV produced by `--out_file` contains one row per checkpoint and per
-training approach with columns `cp`, `train_time`, `epoch`, `best_epoch`,
-`mean_relat_eval`, `mean_relat_test`, `median_relat_test`, `std_relat_test`,
-`regrets_test`, plus the run hyperparameters (`dim`, `keep`, `mains`, `deg`,
-`jobtype`, `method`, `lr`, `muloss`, `step_mu`, `num_iter_mu`).
-
-### 2. Quadratic portfolio optimization
-
-#### 2.1 Data generation
-
-```bash
-python -m portfolio.gen_data \
-    --n 50 --gamma 2.25 \
-    --n_train 100 --n_validation 25 --n_test 10000 \
-    --n_feat 5 --deg 8 \
-    --lin 0 \
-    --n_iter 500
-```
-
-This generates three files in `portfolio/datasets/`:
-
-- `train_{n}_{n_train}_{n_feat}_{deg}_{gamma}.txt` (with `X*`, `mu*`)
-- `validation_{n}_{n_validation}_{n_feat}_{deg}_{gamma}.txt`
-- `test_{n}_{n_test}_{n_feat}_{deg}_{gamma}.txt`
-
-`--lin 0` keeps the quadratic constraint as the *main* subproblem (recommended);
-`--lin 1` keeps the linear constraint instead.
-
-#### 2.2 Training
-
-```bash
-python -m portfolio.run_experiments \
-    --n 50 --deg 8 \
-    --method SPOPlus \
-    --ep_classic 1 --ep_ld 1 --ep_sg 1 --ep_mse 1 \
-    --report 60 300 600 \
-    --lr 2e-3 \
-    --step_mu 10 --n_iter_mu 30 \
-    --muloss 1 \
-    --regenerate 0 \
-    --out_file portfolio/results.csv
-```
-
-Setting `--regenerate 1` will call `gen_data` automatically before training.
-
-| Flag                              | Meaning                                                     |
-|-----------------------------------|-------------------------------------------------------------|
-| `--method {SPOPlus, IMLE, Exact}` | Differentiation technique. `Exact` uses the closed-form solver of the QP subproblem. |
-| `--lambda_imle`, `--sigma`, `--n_samples` | IMLE hyperparameters.                              |
-| `--ep_{classic,ld,sg,mse}`        | Number of epochs per approach (0 disables it).              |
-| `--scheduler`                     | LR scheduler (`ReduceLROnPlateau`, `StepLR`, `OneCycleLR`, `None`). |
-| `--num_eval_per_cp`               | Number of intermediate evaluations per checkpoint.          |
+- [`knapsack/README.md`](knapsack/README.md) — multi-dimensional knapsack
+- [`portfolio/README.md`](portfolio/README.md) — quadratic portfolio optimization
 
 ## License
 
