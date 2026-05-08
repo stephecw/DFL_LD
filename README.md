@@ -66,15 +66,7 @@ The four training approaches available in `train.py` are:
 ## Installation
 
 The code targets Python 3.12+. Required packages are listed in
-[requirements.txt](requirements.txt):
-
-- `torch` (>= 2.0)
-- `numpy`, `joblib`
-- `gurobipy` (a valid Gurobi license is required)
-- `pyepo` (https://github.com/khalil-research/PyEPO)
-- `numba` *(optional, only for the GPU 1D-knapsack solver)*
-- `wandb` *(optional, only for offline experiment tracking)*
-- `matplotlib` *(optional, only for the LD-gap visualization script)*
+[requirements.txt](requirements.txt).
 
 A minimal install via conda:
 
